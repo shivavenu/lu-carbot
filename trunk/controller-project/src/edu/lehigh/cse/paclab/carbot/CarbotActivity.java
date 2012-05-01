@@ -50,5 +50,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnOnOffControl)) {
             startActivity(new Intent(this, OnOffControllerActivity.class));
         }
+        else if (v == findViewById(R.id.btnCameraPreview)) {
+            startActivity(new Intent(this, CameraPreviewActivity.class));
+        }
     }
 }

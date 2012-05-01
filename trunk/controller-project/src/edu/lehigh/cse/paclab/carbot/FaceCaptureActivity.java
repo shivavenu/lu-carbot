@@ -42,7 +42,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
      * a callback to save it, this is the UID the callback uses to notify us of
      * completion
      */
-    static final int INTENT_PHOTO_DONE = 0;
+    static final int INTENT_PHOTO_DONE = 66711324;
 
     /**
      * Standard Android practice is to give a TAG that can be used in logcat
