@@ -33,6 +33,7 @@
         <activity android:name=".BlueToothActivity"></activity>
         <activity android:name=".TouchDrawActivity"></activity>
         <activity android:name="OnOffControllerActivity"></activity>
+        <activity android:name="CameraPreviewActivity"></activity>
     </application>
 
 </manifest>
