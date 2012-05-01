@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 
 /**
  * Simple demo to show how to draw with touch. This is from

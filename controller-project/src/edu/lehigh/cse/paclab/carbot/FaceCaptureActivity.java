@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +21,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -91,6 +89,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         // NB: we aren't handling lifecycle right now... we will need to,
         // eventually...
         Bundle extras = getIntent().getExtras();
+        Log.e(TAG, extras.toString());
 
         // draw the screen
         setContentView(R.layout.facecapturelayout);

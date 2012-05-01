@@ -93,13 +93,13 @@ public class BlueToothActivity extends Activity
     }
 
     // this is a member so we can access it easily
-    private ArrayAdapter mConversationArrayAdapter;
+    private ArrayAdapter<String> mConversationArrayAdapter;
     
     /** initialize the adapters for chatting */
     private void setupChat() 
     {
         // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        mConversationArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         ListView mConversationView = (ListView) findViewById(R.id.listView1);
         mConversationView.setAdapter(mConversationArrayAdapter);
 
