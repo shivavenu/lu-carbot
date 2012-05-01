@@ -45,4 +45,11 @@
         android:onClick="launchActivity"
         android:text="TouchDrawActivity" />
 
+    <Button
+        android:id="@+id/btnOnOffControl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="OnOffControlActivity" />
+
 </LinearLayout>

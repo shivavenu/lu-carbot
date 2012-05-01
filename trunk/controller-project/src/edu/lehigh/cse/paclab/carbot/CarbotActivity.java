@@ -47,5 +47,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnTouchDraw)) {
             startActivity(new Intent(this, TouchDrawActivity.class));
         }
+        else if (v == findViewById(R.id.btnOnOffControl)) {
+            startActivity(new Intent(this, OnOffControllerActivity.class));
+        }
     }
 }
