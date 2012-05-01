@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose an activity to test" />
+
+    <Button
+        android:id="@+id/btnFaceCapture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="FaceCaptureActivity" />
+
+    <Button
+        android:id="@+id/btnTalkBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="TalkBackActivity" />
+
+    <Button
+        android:id="@+id/btnVoiceRecognizer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="VoiceRecognizerActivity" />
+
+    <Button
+        android:id="@+id/btnBTChat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="BlueToothActivity" />
+
+    <Button
+        android:id="@+id/btnTouchDraw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="launchActivity"
+        android:text="TouchDrawActivity" />
+
+</LinearLayout>
