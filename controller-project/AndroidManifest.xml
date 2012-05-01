@@ -32,6 +32,7 @@
         <activity android:name="BTFindDeviceActivity"></activity>
         <activity android:name=".BlueToothActivity"></activity>
         <activity android:name=".TouchDrawActivity"></activity>
+        <activity android:name="OnOffControllerActivity"></activity>
     </application>
 
 </manifest>
