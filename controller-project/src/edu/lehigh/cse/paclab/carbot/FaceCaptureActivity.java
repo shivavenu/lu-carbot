@@ -89,7 +89,8 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         // NB: we aren't handling lifecycle right now... we will need to,
         // eventually...
         Bundle extras = getIntent().getExtras();
-        Log.e(TAG, extras.toString());
+        if (extras != null)
+        	Log.e(TAG, extras.toString());
 
         // draw the screen
         setContentView(R.layout.facecapturelayout);

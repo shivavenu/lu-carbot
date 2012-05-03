@@ -38,7 +38,7 @@ public class BTFindDeviceActivity extends Activity
         setResult(Activity.RESULT_CANCELED);
 
         // Wire up the button
-        Button b = (Button) findViewById(R.id.button1);
+        Button b = (Button) findViewById(R.id.btnDiscoverySearch);
         b.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
@@ -49,11 +49,11 @@ public class BTFindDeviceActivity extends Activity
 
         // set up the adapters, give them an onclicklistener
         pairedDevices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView lv = (ListView) findViewById(R.id.listView1);
+        ListView lv = (ListView) findViewById(R.id.lvDiscoveryDevices);
         lv.setAdapter(pairedDevices);
         lv.setOnItemClickListener(myLVListener);
         newDevices = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        lv = (ListView) findViewById(R.id.listView2);
+        lv = (ListView) findViewById(R.id.lvDiscoveryNewDevices);
         lv.setAdapter(newDevices);
         lv.setOnItemClickListener(myLVListener);
 
