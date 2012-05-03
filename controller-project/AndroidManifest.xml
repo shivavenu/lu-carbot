@@ -23,17 +23,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="FaceCaptureActivity" >
-        </activity>
-        <activity android:name="TalkBackActivity" >
-        </activity>
-        <activity android:name="VoiceRecognizerActivity" >
-        </activity>
+        <activity android:name="FaceCaptureActivity" ></activity>
+        <activity android:name="TalkBackActivity" ></activity>
+        <activity android:name="VoiceRecognizerActivity" ></activity>
         <activity android:name="BTFindDeviceActivity"></activity>
-        <activity android:name=".BlueToothActivity"></activity>
-        <activity android:name=".TouchDrawActivity"></activity>
+        <activity android:name="BlueToothActivity"></activity>
+        <activity android:name="TouchDrawActivity"></activity>
         <activity android:name="OnOffControllerActivity"></activity>
         <activity android:name="CameraPreviewActivity"></activity>
+        <activity android:name=".RCReceiverActivity"></activity>
+        <activity android:name=".RCSenderActivity"></activity>
     </application>
 
 </manifest>
