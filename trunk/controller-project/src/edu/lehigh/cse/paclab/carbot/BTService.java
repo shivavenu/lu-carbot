@@ -475,7 +475,7 @@ public class BTService
         public void run()
         {
             Log.i(TAG, "BEGIN mConnectedThread");
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[65536];
             int bytes;
 
             // Keep listening to the InputStream while connected

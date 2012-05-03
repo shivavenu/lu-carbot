@@ -59,5 +59,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnRCReceiver)) {
             startActivity(new Intent(this, RCReceiverActivity.class));
         }
+        else if (v == findViewById(R.id.btnBTZap)) {
+            startActivity(new Intent(this, BTZapActivity.class));
+        }
     }
 }
