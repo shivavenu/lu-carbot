@@ -5,33 +5,33 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tvDiscoveryDevices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Known Devices" />
 
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/lvDiscoveryDevices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
     </ListView>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvDiscoveryNewDevices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Devices" />
 
     <ListView
-        android:id="@+id/listView2"
+        android:id="@+id/lvDiscoveryNewDevices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
         android:layout_weight="1" >
     </ListView>
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/btnDiscoverySearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search Again" />

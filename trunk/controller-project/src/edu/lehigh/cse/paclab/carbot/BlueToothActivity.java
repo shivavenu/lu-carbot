@@ -44,7 +44,7 @@ public class BlueToothActivity extends Activity
         // attach the custom title to our "title" layout
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         // set the text for the RHS
-        TextView tv = (TextView) findViewById(R.id.textView2);
+        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
         tv.setText("Not Connected");
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -100,15 +100,15 @@ public class BlueToothActivity extends Activity
     {
         // Initialize the array adapter for the conversation thread
         mConversationArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView mConversationView = (ListView) findViewById(R.id.listView1);
+        ListView mConversationView = (ListView) findViewById(R.id.btList);
         mConversationView.setAdapter(mConversationArrayAdapter);
 
         // Initialize the send button with a listener that for click events
-        Button mSendButton = (Button) findViewById(R.id.button_send);
+        Button mSendButton = (Button) findViewById(R.id.btnBTSend);
         mSendButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 // Send a message using content of the edit text widget
-                EditText et = (EditText) findViewById(R.id.editText1);
+                EditText et = (EditText) findViewById(R.id.etBTMessage);
                 String message = et.getText().toString();
                 sendMessage(message);
             }
@@ -171,7 +171,7 @@ public class BlueToothActivity extends Activity
             btService.write(send);
 
             // Reset out string buffer to zero and clear the edit text field
-            EditText et = (EditText) findViewById(R.id.editText1);
+            EditText et = (EditText) findViewById(R.id.etBTMessage);
             et.setText("");
         }
     }
@@ -184,7 +184,7 @@ public class BlueToothActivity extends Activity
         @Override
         public void handleMessage(Message msg) {
             // get the title status field
-            TextView tv = (TextView) findViewById(R.id.textView2);
+            TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
             
             switch (msg.what) {
             case MESSAGE_STATE_CHANGE:

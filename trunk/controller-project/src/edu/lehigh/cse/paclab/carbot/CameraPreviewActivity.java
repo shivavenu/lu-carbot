@@ -22,9 +22,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 /**
- * Example for taking a picture.  Unlike previous example, this actually works.
+ * Example for taking a picture. Unlike previous example, this actually works.
  * 
- * TODO: crop the image, resize it, and then send it over bluetooth
+ * TODO: crop the image, resize it, and then send it over bluetooth. Then on to
+ * video streaming, which may benefit from
+ * http://stackoverflow.com/questions/3376672/how-to-capture-preview-image-frames-from-camera-application-in-android-programmi
  */
 public class CameraPreviewActivity extends Activity {
 

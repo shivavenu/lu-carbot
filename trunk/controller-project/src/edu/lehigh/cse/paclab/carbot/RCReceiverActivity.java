@@ -10,12 +10,8 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,11 +36,11 @@ public class RCReceiverActivity extends Activity
         // declare desire for a custom title
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         // inflate the layout
-        setContentView(R.layout.bluetoothlayout);
+        setContentView(R.layout.rcreceiverlayout);
         // attach the custom title to our "title" layout
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         // set the text for the RHS
-        TextView tv = (TextView) findViewById(R.id.textView2);
+        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
         tv.setText("Not Connected");
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -100,19 +96,8 @@ public class RCReceiverActivity extends Activity
     {
         // Initialize the array adapter for the conversation thread
         mConversationArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView mConversationView = (ListView) findViewById(R.id.listView1);
+        ListView mConversationView = (ListView) findViewById(R.id.lstRCReceive);
         mConversationView.setAdapter(mConversationArrayAdapter);
-
-        // Initialize the send button with a listener that for click events
-        Button mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                EditText et = (EditText) findViewById(R.id.editText1);
-                String message = et.getText().toString();
-                sendMessage(message);
-            }
-        });
 
         // Initialize the BluetoothChatService to perform bluetooth connections
         btService = new BTService(this, mHandler);
@@ -154,28 +139,6 @@ public class RCReceiverActivity extends Activity
         }
     }
     
-    /**
-     * Sends a message.
-     */
-    private void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (btService.getState() != BTService.STATE_CONNECTED) {
-            Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes();
-            btService.write(send);
-
-            // Reset out string buffer to zero and clear the edit text field
-            EditText et = (EditText) findViewById(R.id.editText1);
-            et.setText("");
-        }
-    }
-
     /** name of the remote device */
     private String devName = null;
     
@@ -184,7 +147,7 @@ public class RCReceiverActivity extends Activity
         @Override
         public void handleMessage(Message msg) {
             // get the title status field
-            TextView tv = (TextView) findViewById(R.id.textView2);
+            TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
             
             switch (msg.what) {
             case MESSAGE_STATE_CHANGE:

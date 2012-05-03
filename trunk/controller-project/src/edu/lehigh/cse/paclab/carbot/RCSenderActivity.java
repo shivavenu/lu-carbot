@@ -11,12 +11,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,11 +38,11 @@ public class RCSenderActivity extends Activity
         // declare desire for a custom title
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         // inflate the layout
-        setContentView(R.layout.bluetoothlayout);
+        setContentView(R.layout.rcsenderlayout);
         // attach the custom title to our "title" layout
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         // set the text for the RHS
-        TextView tv = (TextView) findViewById(R.id.textView2);
+        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
         tv.setText("Not Connected");
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -92,23 +90,15 @@ public class RCSenderActivity extends Activity
         }
     }
 
-    // this is a member so we can access it easily
-    private ArrayAdapter<String> mConversationArrayAdapter;
-    
     /** initialize the adapters for chatting */
     private void setupChat() 
     {
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView mConversationView = (ListView) findViewById(R.id.listView1);
-        mConversationView.setAdapter(mConversationArrayAdapter);
-
         // Initialize the send button with a listener that for click events
-        Button mSendButton = (Button) findViewById(R.id.button_send);
+        Button mSendButton = (Button) findViewById(R.id.btnRCSend);
         mSendButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 // Send a message using content of the edit text widget
-                EditText et = (EditText) findViewById(R.id.editText1);
+                EditText et = (EditText) findViewById(R.id.etRCSend);
                 String message = et.getText().toString();
                 sendMessage(message);
             }
@@ -167,13 +157,11 @@ public class RCSenderActivity extends Activity
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = "aaa".getBytes();
-            btService.write(send);
-            send = message.getBytes();
+            byte[] send = message.getBytes();
             btService.write(send);
 
             // Reset out string buffer to zero and clear the edit text field
-            EditText et = (EditText) findViewById(R.id.editText1);
+            EditText et = (EditText) findViewById(R.id.etRCSend);
             et.setText("");
         }
     }
@@ -186,14 +174,13 @@ public class RCSenderActivity extends Activity
         @Override
         public void handleMessage(Message msg) {
             // get the title status field
-            TextView tv = (TextView) findViewById(R.id.textView2);
+            TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
             
             switch (msg.what) {
             case MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
                 case BTService.STATE_CONNECTED:
                     tv.setText("connected to " + devName);
-                    mConversationArrayAdapter.clear();
                     break;
                 case BTService.STATE_CONNECTING:
                     tv.setText("Connecting...");
@@ -205,16 +192,8 @@ public class RCSenderActivity extends Activity
                 }
                 break;
             case MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;
-                // construct a string from the buffer
-                String writeMessage = new String(writeBuf);
-                mConversationArrayAdapter.add("Me:  " + writeMessage);
                 break;
             case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                mConversationArrayAdapter.add(devName+":  " + readMessage);
                 break;
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
