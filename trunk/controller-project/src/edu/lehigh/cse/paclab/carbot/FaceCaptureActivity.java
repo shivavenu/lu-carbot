@@ -137,9 +137,30 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
     public void surfaceCreated(SurfaceHolder holder)
     {
         Log.e(TAG, "surfaceCreated");
-        mCamera = Camera.open();
+        mCamera = getBestCamera();
     }
 
+    /**
+     * Open a camera... favor the front-facing one...
+     */
+    private Camera getBestCamera()
+    {
+		Camera.CameraInfo info = new Camera.CameraInfo();
+		int num = Camera.getNumberOfCameras();
+		for (int i = 0; i < num; ++i) {
+			Camera.getCameraInfo(i, info);
+			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				try {
+					Camera c = Camera.open(i);
+					return c;
+				} 
+				catch (RuntimeException e) { }
+			}
+		}
+		// worst case: use the default
+    	return Camera.open();
+    }
+    
     /**
      * Connect the surface to the camera so we can see what the camera sees
      */
@@ -164,6 +185,9 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         // for now, we set the camera to 480x320 (landscape)
         // then we connect the camera to the surface via the holder
         p.setPreviewSize(480, 320);
+        
+       
+        
         mCamera.setParameters(p);
         try {
             mCamera.setPreviewDisplay(holder);
