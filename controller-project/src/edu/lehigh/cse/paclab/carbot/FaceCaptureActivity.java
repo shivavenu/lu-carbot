@@ -145,6 +145,11 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
      */
     private Camera getBestCamera()
     {
+		// this code only works with a target of 2.3 or higher... since I am
+		// testing on 2.2. and 2.3 devices simultaneously, I've turned this off
+		// for now...
+
+    	/*
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		int num = Camera.getNumberOfCameras();
 		for (int i = 0; i < num; ++i) {
@@ -157,6 +162,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
 				catch (RuntimeException e) { }
 			}
 		}
+		*/
 		// worst case: use the default
     	return Camera.open();
     }
@@ -184,11 +190,11 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
 
         // for now, we set the camera to 480x320 (landscape)
         // then we connect the camera to the surface via the holder
-        p.setPreviewSize(480, 320);
+        //p.setPreviewSize(480, 320);
         
        
         
-        mCamera.setParameters(p);
+        //mCamera.setParameters(p);
         try {
             mCamera.setPreviewDisplay(holder);
         }
