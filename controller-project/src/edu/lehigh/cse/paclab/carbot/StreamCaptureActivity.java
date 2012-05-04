@@ -1,18 +1,20 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,8 +23,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.FrameLayout.LayoutParams;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 /**
@@ -35,7 +35,7 @@ import android.widget.Toast;
  * TODO: it's quite ugly to implement OnClickListener and
  * SurfaceHolder.Callback. We should use anonymous classes
  */
-public class FaceCaptureActivity extends Activity implements OnClickListener, SurfaceHolder.Callback
+public class StreamCaptureActivity extends Activity implements OnClickListener, SurfaceHolder.Callback
 {
     /**
      * For disambiguation of intent replies. When we snap a picture and then use
@@ -90,10 +90,10 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         // eventually...
         Bundle extras = getIntent().getExtras();
         if (extras != null)
-        	Log.e(TAG, extras.toString());
+            Log.e(TAG, extras.toString());
 
         // draw the screen
-        setContentView(R.layout.facecapturelayout);
+        setContentView(R.layout.streamcapturelayout);
 
         // wire up the surfaceview to the camera, connect the surfaceholder to
         // the surfaceview
@@ -104,15 +104,6 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         // clicking the screen triggers a picture, then calls our callback
         mSurfaceView.setOnClickListener(this);
         mSurfaceHolder.addCallback(this);
-
-        // let's try to center the square on the screen.
-        //
-        // TODO: this isn't working yet...
-        ImageView iv = (ImageView) findViewById(R.id.squareView);
-        LayoutParams params = (LayoutParams) iv.getLayoutParams();
-        params.leftMargin = 50;
-        iv.setLayoutParams(params);
-        iv.requestLayout();
     }
 
     /**
@@ -123,13 +114,18 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         public void onPictureTaken(byte[] imageData, Camera c)
         {
             if (imageData != null) {
-                Intent mIntent = new Intent();
-                StoreByteImage(FaceCaptureActivity.this, imageData, 50, "ImageName");
+                StoreByteImage(StreamCaptureActivity.this, imageData, 50, "ImageName");
                 mCamera.startPreview();
-                setResult(INTENT_PHOTO_DONE, mIntent);
+
+                // If we wanted to return the picture immediately, this is how
+                // we would do it:
+                // Intent mIntent = new Intent();
+                // setResult(INTENT_PHOTO_DONE, mIntent);
             }
         }
     };
+
+    int imgcounter = 0;
 
     /**
      * When the SurfaceView is created, we open up the camera
@@ -138,6 +134,57 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
     {
         Log.e(TAG, "surfaceCreated");
         mCamera = getBestCamera();
+
+        // set a callback
+        Camera.PreviewCallback previewCallback = new Camera.PreviewCallback()
+        {
+            public void onPreviewFrame(byte[] data, Camera camera)
+            {
+
+                // only save 10 previews, to prevent us from filling the
+                // sdcard...
+                if (imgcounter > 10)
+                    return;
+                imgcounter++;
+
+                Camera.Parameters parameters = camera.getParameters();
+                int format = parameters.getPreviewFormat();
+
+                // YUV formats require more conversion, but that's what we're using...
+                assert (format == ImageFormat.NV21);
+
+                int w = parameters.getPreviewSize().width;
+                int h = parameters.getPreviewSize().height;
+                // Get the YuV image
+                YuvImage yuv_image = new YuvImage(data, format, w, h, null);
+                // Convert YuV to Jpeg
+                Rect rect = new Rect(0, 0, w, h);
+                ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
+                yuv_image.compressToJpeg(rect, 100, output_stream);
+                byte[] byt = output_stream.toByteArray();
+                File sdImageMainDirectory = new File("/sdcard");
+                FileOutputStream fileOutputStream = null;
+                try {
+                    fileOutputStream = new FileOutputStream(sdImageMainDirectory.toString() + "/image" + imgcounter
+                            + ".jpg");
+                    BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+                    bos.write(byt);
+                    bos.flush();
+                    bos.close();
+
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        };
+
+        mCamera.setPreviewCallback(previewCallback);
+
     }
 
     /**
@@ -145,27 +192,28 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
      */
     private Camera getBestCamera()
     {
-		// this code only works with a target of 2.3 or higher... since I am
-		// testing on 2.2. and 2.3 devices simultaneously, I've turned this off
-		// for now...
+        // this code only works with a target of 2.3 or higher... since I am
+        // testing on 2.2. and 2.3 devices simultaneously, I've turned this off
+        // for now...
 
         Camera.CameraInfo info = new Camera.CameraInfo();
-		int num = Camera.getNumberOfCameras();
-		for (int i = 0; i < num; ++i) {
-			Camera.getCameraInfo(i, info);
-			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				try {
-					Camera c = Camera.open(i);
-					return c;
-				} 
-				catch (RuntimeException e) { }
-			}
-		}
-        
-		// worst case: use the default
-    	return Camera.open();
+        int num = Camera.getNumberOfCameras();
+        for (int i = 0; i < num; ++i) {
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                try {
+                    Camera c = Camera.open(i);
+                    return c;
+                }
+                catch (RuntimeException e) {
+                }
+            }
+        }
+
+        // worst case: use the default
+        return Camera.open();
     }
-    
+
     /**
      * Connect the surface to the camera so we can see what the camera sees
      */
@@ -178,23 +226,23 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
             mCamera.stopPreview();
         }
 
+        // jpeg previewing... not a good idea for performance...
+        // Camera.Parameters p = mCamera.getParameters();
+        // p.setPreviewFormat(ImageFormat.JPEG);
+        // mCamera.setParameters(p);
+
         /*
-        // configure the camera for a height and width. Note that we're
-        // currently dumping the camera info to logcat so we can find a good
-        // size
-        Camera.Parameters p = mCamera.getParameters();
-        List<Camera.Size> sizes = p.getSupportedPreviewSizes();
-        for (Camera.Size s : sizes) {
-            Log.d(TAG, s.width + " : " + s.height);
-        }
-        */
+         * // configure the camera for a height and width. Note that we're //
+         * currently dumping the camera info to logcat so we can find a good //
+         * size Camera.Parameters p = mCamera.getParameters(); List<Camera.Size>
+         * sizes = p.getSupportedPreviewSizes(); for (Camera.Size s : sizes) {
+         * Log.d(TAG, s.width + " : " + s.height); }
+         */
         // for now, we set the camera to 480x320 (landscape)
         // then we connect the camera to the surface via the holder
-        //p.setPreviewSize(480, 320);
-        
-       
-        
-        //mCamera.setParameters(p);
+        // p.setPreviewSize(480, 320);
+
+        // mCamera.setParameters(p);
         try {
             mCamera.setPreviewDisplay(holder);
         }
@@ -214,6 +262,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         Log.e(TAG, "surfaceDestroyed");
         mCamera.stopPreview();
         mPreviewRunning = false;
+        mCamera.setPreviewCallback(null);
         mCamera.release();
     }
 
@@ -227,7 +276,8 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
 
     /**
      * Save the picture that we took. This is copied code, which I don't yet
-     * understand. Worse, it doesn't quite work yet.  The final picture taken is a mess!
+     * understand. Worse, it doesn't quite work yet. The final picture taken is
+     * a mess!
      * 
      * @param mContext
      * @param imageData
@@ -240,7 +290,6 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
         File sdImageMainDirectory = new File("/sdcard");
         FileOutputStream fileOutputStream = null;
         try {
-            // TODO: need to understand what this is doing wrong...
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 5;
             Bitmap myImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);

@@ -34,6 +34,7 @@
         <activity android:name=".RCReceiverActivity"></activity>
         <activity android:name=".RCSenderActivity"></activity>
         <activity android:name=".BTZapActivity"></activity>
+        <activity android:name=".StreamCaptureActivity"></activity>
     </application>
 
 </manifest>
