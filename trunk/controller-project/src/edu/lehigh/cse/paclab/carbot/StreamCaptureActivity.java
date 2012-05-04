@@ -26,14 +26,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 /**
- * For now, this is a pretty weak activity. My goal is to figure out how to take
- * a picture using the front-facing camera of my phone, but in addition, the
- * Activity needs to overlay a square on top of the camera display, so that the
- * user can center his/her face inside of the square. This will be useful for
- * face recognition, if we can get that far...
- * 
- * TODO: it's quite ugly to implement OnClickListener and
- * SurfaceHolder.Callback. We should use anonymous classes
+ * Demo how to use preview callbacks to snap a bunch of pictures
  */
 public class StreamCaptureActivity extends Activity implements OnClickListener, SurfaceHolder.Callback
 {
@@ -88,6 +81,8 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
 
         // NB: we aren't handling lifecycle right now... we will need to,
         // eventually...
+        // 
+        // we could also use this to specify the prefix for images being captured...
         Bundle extras = getIntent().getExtras();
         if (extras != null)
             Log.e(TAG, extras.toString());
@@ -121,6 +116,7 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
                 // we would do it:
                 // Intent mIntent = new Intent();
                 // setResult(INTENT_PHOTO_DONE, mIntent);
+                // finish();
             }
         }
     };
@@ -140,7 +136,6 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
         {
             public void onPreviewFrame(byte[] data, Camera camera)
             {
-
                 // only save 10 previews, to prevent us from filling the
                 // sdcard...
                 if (imgcounter > 10)
@@ -150,17 +145,19 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
                 Camera.Parameters parameters = camera.getParameters();
                 int format = parameters.getPreviewFormat();
 
-                // YUV formats require more conversion, but that's what we're using...
+                // YUV formats require more conversion, but since our image is YUV, we have no choice...
                 assert (format == ImageFormat.NV21);
 
                 int w = parameters.getPreviewSize().width;
                 int h = parameters.getPreviewSize().height;
                 // Get the YuV image
                 YuvImage yuv_image = new YuvImage(data, format, w, h, null);
-                // Convert YuV to Jpeg
-                Rect rect = new Rect(0, 0, w, h);
+                // Convert YuV to Jpeg... note that we can auto-crop it right
+                // here ;)
+                Rect rect = new Rect(10, 10, w - 10, h - 10);
                 ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
                 yuv_image.compressToJpeg(rect, 100, output_stream);
+
                 byte[] byt = output_stream.toByteArray();
                 File sdImageMainDirectory = new File("/sdcard");
                 FileOutputStream fileOutputStream = null;
@@ -171,7 +168,6 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
                     bos.write(byt);
                     bos.flush();
                     bos.close();
-
                 }
                 catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -192,10 +188,6 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
      */
     private Camera getBestCamera()
     {
-        // this code only works with a target of 2.3 or higher... since I am
-        // testing on 2.2. and 2.3 devices simultaneously, I've turned this off
-        // for now...
-
         Camera.CameraInfo info = new Camera.CameraInfo();
         int num = Camera.getNumberOfCameras();
         for (int i = 0; i < num; ++i) {
@@ -231,13 +223,20 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
         // p.setPreviewFormat(ImageFormat.JPEG);
         // mCamera.setParameters(p);
 
-        /*
-         * // configure the camera for a height and width. Note that we're //
-         * currently dumping the camera info to logcat so we can find a good //
-         * size Camera.Parameters p = mCamera.getParameters(); List<Camera.Size>
-         * sizes = p.getSupportedPreviewSizes(); for (Camera.Size s : sizes) {
-         * Log.d(TAG, s.width + " : " + s.height); }
-         */
+        // default FMT is 256... that's JPEG
+        // Camera.Parameters p = mCamera.getParameters();
+        // Log.i("FMT", "" + p.getPictureFormat());
+
+        // configure the camera for a height and width. Note that we're
+        // currently dumping the camera info to logcat so we can find a good
+        // size
+
+        // Camera.Parameters p = mCamera.getParameters();
+        // List<Camera.Size> sizes = p.getSupportedPreviewSizes();
+        // for (Camera.Size s : sizes) {
+        // Log.d(TAG, s.width + " : " + s.height);
+        // }
+
         // for now, we set the camera to 480x320 (landscape)
         // then we connect the camera to the surface via the holder
         // p.setPreviewSize(480, 320);
@@ -291,8 +290,15 @@ public class StreamCaptureActivity extends Activity implements OnClickListener, 
         FileOutputStream fileOutputStream = null;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
+            // note: we're downsampling here... and note that quality is low, so
+            // we're not a very good looking jpeg
             options.inSampleSize = 5;
-            Bitmap myImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
+            Bitmap myImage_uncrop = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
+            // NB: here's a nice trick for cropping: we can build a Bitmap from
+            // a Bitmap to get the crop. This works for pure Bitmap, which is
+            // nice since the byte[] data we have here is a jpeg...
+            Bitmap myImage = Bitmap.createBitmap(myImage_uncrop, 10, 10, myImage_uncrop.getWidth() / 2,
+                    myImage_uncrop.getHeight() - 10);
             fileOutputStream = new FileOutputStream(sdImageMainDirectory.toString() + "/image.jpg");
             BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
             myImage.compress(CompressFormat.JPEG, quality, bos);
