@@ -149,7 +149,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
 		// testing on 2.2. and 2.3 devices simultaneously, I've turned this off
 		// for now...
 
-    	/*
+        /*
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		int num = Camera.getNumberOfCameras();
 		for (int i = 0; i < num; ++i) {
@@ -162,7 +162,7 @@ public class FaceCaptureActivity extends Activity implements OnClickListener, Su
 				catch (RuntimeException e) { }
 			}
 		}
-		*/
+        */
 		// worst case: use the default
     	return Camera.open();
     }
