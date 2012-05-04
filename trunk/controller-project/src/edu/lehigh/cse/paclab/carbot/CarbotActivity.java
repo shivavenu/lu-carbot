@@ -62,5 +62,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnBTZap)) {
             startActivity(new Intent(this, BTZapActivity.class));
         }
+        else if (v == findViewById(R.id.btnStreamCapture)) {
+            startActivity(new Intent(this, StreamCaptureActivity.class));
+        }
     }
 }

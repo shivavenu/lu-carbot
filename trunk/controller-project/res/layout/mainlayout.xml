@@ -92,6 +92,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="BTZapActivity" />
+
+            <Button
+                android:id="@+id/btnStreamCapture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="StreamCaptureActivity" />
         </LinearLayout>
     </ScrollView>
 
