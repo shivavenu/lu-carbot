@@ -111,7 +111,7 @@ public class CameraPreviewActivity extends Activity {
 	public static final int MEDIA_TYPE_IMAGE = 1;
 
 	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(int type) {
+	public static Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 

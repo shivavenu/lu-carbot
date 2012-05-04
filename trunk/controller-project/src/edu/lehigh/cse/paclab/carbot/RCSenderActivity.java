@@ -20,13 +20,6 @@ import android.widget.Toast;
 
 public class RCSenderActivity extends Activity
 {
-    // Message types sent from the BTService Handler
-    public static final int MESSAGE_STATE_CHANGE = 1;
-    public static final int MESSAGE_READ = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_DEVICE_NAME = 4;
-    public static final int MESSAGE_TOAST = 5;
-
     // this is how we interact with the Bluetooth device
     private BluetoothAdapter btAdapter = null;
 
@@ -177,7 +170,7 @@ public class RCSenderActivity extends Activity
             TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
             
             switch (msg.what) {
-            case MESSAGE_STATE_CHANGE:
+            case BTService.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
                 case BTService.STATE_CONNECTED:
                     tv.setText("connected to " + devName);
@@ -191,17 +184,17 @@ public class RCSenderActivity extends Activity
                     break;
                 }
                 break;
-            case MESSAGE_WRITE:
+            case BTService.MESSAGE_WRITE:
                 break;
-            case MESSAGE_READ:
+            case BTService.MESSAGE_READ:
                 break;
-            case MESSAGE_DEVICE_NAME:
+            case BTService.MESSAGE_DEVICE_NAME:
                 // save the connected device's name
                 devName = msg.getData().getString("devicename");
                 Toast.makeText(getApplicationContext(), "Connected to "
                                + devName, Toast.LENGTH_SHORT).show();
                 break;
-            case MESSAGE_TOAST:
+            case BTService.MESSAGE_TOAST:
                 Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
                                Toast.LENGTH_SHORT).show();
                 break;

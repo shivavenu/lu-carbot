@@ -10,10 +10,10 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,22 +32,17 @@ import android.widget.Toast;
  * We're going to keep it simple, and just send /sdcard/image.jpg. Note that
  * facecapture will make that image for you.
  * 
- * TODO: there is a major bug right now: when data is sent, it is not sent as a
- * single message. Thus we are seeing that even for small files, we're actually
- * sending a bunch of messages, but we don't have anything in place for
- * transforming all those messages into one appropriately-sized message. Fixing
- * this is going to be a pain, because we basically have to implement
- * handshaking on top of the bluetooth protocol stack
+ * TODO: I added a handshaking mechanism so that we send messages and then ACK
+ * them, and so that we send the actual data in small chunks. The net effect of
+ * these changes is that we now have a correctly functioning mechanism for
+ * sending image files that are larger than 1K. However, the mechanism is overly
+ * cumbersome, and we can probably make it much cleaner. Also note that I did
+ * not test if this works for more than one BT transmission, I didn't test for
+ * really big files (256kbps is a high BT bandwidth, so we don't want to do
+ * anything too big), and the file names are currently hard-coded
  */
 public class BTZapActivity extends Activity
 {
-    // Message types sent from the BTService Handler
-    public static final int MESSAGE_STATE_CHANGE = 1;
-    public static final int MESSAGE_READ = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_DEVICE_NAME = 4;
-    public static final int MESSAGE_TOAST = 5;
-
     // this is how we interact with the Bluetooth device
     private BluetoothAdapter btAdapter = null;
 
@@ -72,30 +68,38 @@ public class BTZapActivity extends Activity
         }
     }
 
-    /** if the activity suspends, then on resume we need to start the chat service */
+    /**
+     * if the activity suspends, then on resume we need to start the chat
+     * service
+     */
     @Override
-    public synchronized void onResume() {
+    public synchronized void onResume()
+    {
         super.onResume();
         if (btService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
+            // Only if the state is STATE_NONE, do we know that we haven't
+            // started already
             if (btService.getState() == BTService.STATE_NONE) {
-              // Start the Bluetooth chat services
-              btService.start();
+                // Start the Bluetooth chat services
+                btService.start();
             }
         }
     }
 
     /** stop the service when we're done */
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
-        if (btService != null) btService.stop();
+        if (btService != null)
+            btService.stop();
     }
 
     private BTService btService = null;
-    
+
     final static private int INTENT_TURNITON = 1;
-    final static private int INTENT_CONNECT  = 2;
+    final static private int INTENT_CONNECT = 2;
+
     @Override
     public void onStart()
     {
@@ -111,13 +115,15 @@ public class BTZapActivity extends Activity
     }
 
     /** initialize the adapters for chatting */
-    private void setupChat() 
+    private void setupChat()
     {
         // Initialize the send button with a listener that for click events
         Button mSendButton = (Button) findViewById(R.id.btnBTZap);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                sendMessage();
+        mSendButton.setOnClickListener(new OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                sendBigMessage();
             }
         });
 
@@ -151,7 +157,7 @@ public class BTZapActivity extends Activity
         return false;
     }
 
-    /** make Bluetooth discoverable for 300 seconds*/
+    /** make Bluetooth discoverable for 300 seconds */
     private void setDiscoverable()
     {
         if (btAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
@@ -160,80 +166,221 @@ public class BTZapActivity extends Activity
             startActivity(i);
         }
     }
-    
-    /**
-     * Sends a message.
-     */
-    private void sendMessage() {
+
+    // now we shall try to set up a 2-stage communication
+    // snd -1: size
+    // rcv -1: send ack
+    // snd i: byte[1024*i]...upto 1024 more bytes
+    // rcv i: send ack
+
+    // the size of the data being sent
+    int sendSize;
+
+    // the round that we are on
+    int sendIter = -1;
+
+    // are we sending or receiving?
+    boolean sending = false;
+
+    // the data
+    byte data[];
+
+    private void sendBigMessage()
+    {
         // Check that we're actually connected before trying anything
         if (btService.getState() != BTService.STATE_CONNECTED) {
             Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // move FSM to sending mode
+        sending = true;
+        sendIter = -1;
+
+        // get the data to send (NB: this will change)
+        // 1 - find the file
         File fSDCard = new File("/sdcard");
-		File fImage = new File(fSDCard.toString() + "/image.jpg");
-		byte[] b = new byte[(int)fImage.length()];
-		Log.i("BTZap", "sent "+fImage.length()+" bytes");
-		try {
-			FileInputStream fis = new FileInputStream(fImage);
-            fis.read(b);
+        File fImage = new File(fSDCard.toString() + "/image.jpg");
+        // 2 - get its length, make a buffer
+        sendSize = (int) fImage.length();
+        data = new byte[sendSize];
+        // 3 - get the data
+        try {
+            FileInputStream fis = new FileInputStream(fImage);
+            fis.read(data);
             fis.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return;
-		}
-		btService.write(b);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            sending = false;
+            return;
+        }
+        catch (IOException e1) {
+            e1.printStackTrace();
+            sending = false;
+            return;
+        }
+        // start the send/receive handshaking
+        sendMessage();
+    }
+
+    /**
+     * Sends a message.
+     */
+    private void sendMessage()
+    {
+        if (sending == true) {
+            // first iteration gets the size and populates the buffer
+            // then it sends the size
+            // then it waits for an ack
+            if (sendIter == -1) {
+                btService.write(("" + sendSize).getBytes());
+                sendIter++;
+            }
+            else {
+                // compute size of next transmission
+                int remain = sendSize - 1024 * sendIter;
+                int min = remain > 1024 ? 1024 : remain;
+                // send packet
+                btService.write(data, 1024 * sendIter, min);
+                // advance to next packet
+                sendIter++;
+            }
+        }
+        else {
+            // we are receiving a message, so we are only supposed to send an
+            // ACK
+            btService.write("ACK".getBytes());
+        }
+    }
+
+    /**
+     * Receive a message
+     */
+    private void receiveMessage(byte[] readBuf, int bytes)
+    {
+        // if we are sending, then this is an ack
+        if (sending == true) {
+            // we will just ignore the message, as crazy as that seems...
+
+            // so then all we need to do is advance the FSM
+            if (sendIter * 1024 >= sendSize) {
+                // we've sent the whole file. we're done
+                sending = false;
+            }
+            else {
+                // send more data
+                sendMessage();
+            }
+        }
+        else {
+            // if we haven't started receiving yet, we've got some work to do
+            if (sendIter == -1) {
+                try {
+                    // total size can be determined by the payload of this message
+                    sendSize = Integer.parseInt(new String(readBuf, 0, bytes));
+                // get room for the data
+                data = new byte[sendSize];
+                // advance to next state
+                sendIter++;
+                }
+                catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                    return;
+                }
+            }
+            else {
+                // figure out how much data is in this packet
+                int remain = sendSize - 1024 * sendIter;
+                int min = remain > 1024 ? 1024 : remain;
+                int start = 1024 * sendIter;
+                // copy data into our nice big packet
+                for (int i = 0; i < min; ++i)
+                    data[start + i] = readBuf[i];
+                // advance to next state
+                sendIter++;
+            }
+            // ack the message
+            sendMessage();
+
+            // are we all done?
+            if (sendIter * 1024 >= sendSize) {
+                // clear the counter
+                sendIter = -1;
+                
+                // create a file and dump the byte stream into it
+                File fSDCard = new File("/sdcard");
+                File fImage = new File(fSDCard.toString() + "/image.jpg");
+
+                FileOutputStream fos;
+                try {
+                    fos = new FileOutputStream(fImage);
+                    fos.write(data, 0, sendSize);
+                    fos.close();
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                // if that worked, then update the imageView
+                ImageView iv = (ImageView)findViewById(R.id.imgZapImage);
+                iv.setImageURI(Uri.fromFile(fImage)); 
+
+            }
+        }
     }
 
     /** name of the remote device */
     private String devName = null;
-    
+
     /** the service uses this to communicate with the activity */
-    private final Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler()
+    {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             // get the title status field
             TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
-            
+
             switch (msg.what) {
-            case MESSAGE_STATE_CHANGE:
-                switch (msg.arg1) {
-                case BTService.STATE_CONNECTED:
-                    tv.setText("connected to " + devName);
+                case BTService.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BTService.STATE_CONNECTED:
+                            tv.setText("connected to " + devName);
+                            break;
+                        case BTService.STATE_CONNECTING:
+                            tv.setText("Connecting...");
+                            break;
+                        case BTService.STATE_LISTEN:
+                        case BTService.STATE_NONE:
+                            tv.setText("not connected");
+                            break;
+                    }
                     break;
-                case BTService.STATE_CONNECTING:
-                    tv.setText("Connecting...");
+                case BTService.MESSAGE_WRITE:
+                    //Toast.makeText(BTZapActivity.this, "Send complete", Toast.LENGTH_SHORT).show();
                     break;
-                case BTService.STATE_LISTEN:
-                case BTService.STATE_NONE:
-                    tv.setText("not connected");
+                case BTService.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    // String readMessage = new String(readBuf, 0, msg.arg1);
+                    // mConversationArrayAdapter.add(devName+":  " +
+                    // readMessage);
+                    receiveMessage(readBuf, msg.arg1);
                     break;
-                }
-                break;
-            case MESSAGE_WRITE:
-            	Toast.makeText(BTZapActivity.this, "Send complete", Toast.LENGTH_SHORT).show();
-                break;
-            case MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                //String readMessage = new String(readBuf, 0, msg.arg1);
-                //mConversationArrayAdapter.add(devName+":  " + readMessage);
-                handleIncomingMessage(readBuf, msg.arg1);
-                break;
-            case MESSAGE_DEVICE_NAME:
-                // save the connected device's name
-                devName = msg.getData().getString("devicename");
-                Toast.makeText(getApplicationContext(), "Connected to "
-                               + devName, Toast.LENGTH_SHORT).show();
-                break;
-            case MESSAGE_TOAST:
-                Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
-                               Toast.LENGTH_SHORT).show();
-                break;
+                case BTService.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    devName = msg.getData().getString("devicename");
+                    Toast.makeText(getApplicationContext(), "Connected to " + devName, Toast.LENGTH_SHORT).show();
+                    break;
+                case BTService.MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString("toast"), Toast.LENGTH_SHORT)
+                            .show();
+                    break;
             }
         }
     };
@@ -253,7 +400,8 @@ public class BTZapActivity extends Activity
                 break;
             case INTENT_CONNECT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Connected to" + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Connected to" + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT)
+                            .show();
                     // Get the device MAC address
                     String address = data.getExtras().getString("MAC_ADDRESS");
                     // Get the BLuetoothDevice object
@@ -262,27 +410,5 @@ public class BTZapActivity extends Activity
                     btService.connect(device);
                 }
         }
-    }
-
-    private void handleIncomingMessage(byte[] readBuf, int bytes)
-    {
-    	Log.i("BTZap", "received " + bytes + " bytes");
-        File fSDCard = new File("/sdcard");
-		File fImage = new File(fSDCard.toString() + "/image.jpg");
-
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(fImage);
-			fos.write(readBuf, 0, bytes);
-			fos.close();
-		} 
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
     }
 }
