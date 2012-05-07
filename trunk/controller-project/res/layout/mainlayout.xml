@@ -99,7 +99,14 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="StreamCaptureActivity" />
-        </LinearLayout>
+            
+            <Button
+                android:id="@+id/btnAlarmActivityLaunch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="AlarmActivity" />
+            </LinearLayout>
     </ScrollView>
 
 </LinearLayout>
