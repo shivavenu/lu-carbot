@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -37,6 +39,8 @@
         <activity android:name=".StreamCaptureActivity"></activity>
         <activity android:name="AlarmLaunchActivity"></activity>
         <receiver android:name="AlarmReceiver"></receiver>
+        <activity android:name="WifiClientActivity"></activity>
+        <activity android:name="WifiServerActivity"></activity>
     </application>
 
 </manifest>

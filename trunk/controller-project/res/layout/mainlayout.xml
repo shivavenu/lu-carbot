@@ -99,14 +99,28 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="StreamCaptureActivity" />
-            
+
             <Button
                 android:id="@+id/btnAlarmActivityLaunch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="AlarmActivity" />
-            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLaunchWifiServer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="WifiServerActivity" />
+
+            <Button
+                android:id="@+id/btnLaunchWifiClient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="WifiClientActivity" />
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

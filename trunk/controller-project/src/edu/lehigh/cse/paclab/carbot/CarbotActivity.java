@@ -68,5 +68,11 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnAlarmActivityLaunch)) {
             startActivity(new Intent(this, AlarmLaunchActivity.class));
         }
+        else if (v == findViewById(R.id.btnLaunchWifiServer)) {
+            startActivity(new Intent(this, WifiServerActivity.class));
+        }
+        else if (v == findViewById(R.id.btnLaunchWifiClient)) {
+            startActivity(new Intent(this, WifiClientActivity.class));
+        }
     }
 }
