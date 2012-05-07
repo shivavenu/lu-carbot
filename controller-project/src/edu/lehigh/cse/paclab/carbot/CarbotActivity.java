@@ -65,5 +65,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnStreamCapture)) {
             startActivity(new Intent(this, StreamCaptureActivity.class));
         }
+        else if (v == findViewById(R.id.btnAlarmActivityLaunch)) {
+            startActivity(new Intent(this, AlarmLaunchActivity.class));
+        }
     }
 }
