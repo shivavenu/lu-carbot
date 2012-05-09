@@ -17,7 +17,8 @@ public class WalkablePathActivity extends Activity
     private float current_x;
     private float current_y;
     private double current_orientation = 0;
-    private double current_mag = 1;
+    // [mfs] should try to use magnitude scaling eventually...
+    // private double current_mag = 1;
     public boolean moving = false;
     public CountDownLatch c;
 
