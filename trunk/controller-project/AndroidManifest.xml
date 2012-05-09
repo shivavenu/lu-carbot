@@ -41,6 +41,8 @@
         <receiver android:name="AlarmReceiver"></receiver>
         <activity android:name="WifiClientActivity"></activity>
         <activity android:name="WifiServerActivity"></activity>
+        <activity android:name="JoystickActivity"></activity>
+        <activity android:name="WalkablePathActivity"></activity>
     </application>
 
 </manifest>
