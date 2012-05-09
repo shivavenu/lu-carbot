@@ -20,10 +20,9 @@ public class JoystickActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.joysticklayout);
-        // lcmMessenger l = new lcmMessenger();
+
+        // wire the joystick so that it sends messages
         v = (JoystickSurfaceView) findViewById(R.id.jssv1);
-
-
         v.setOnTouchListener(new OnTouchListener()
         {
             @Override
@@ -31,17 +30,26 @@ public class JoystickActivity extends Activity
             {
                 switch (m.getAction()) {
                     case MotionEvent.ACTION_UP:
-                        Log.i("Joystick", "Set this position as 0,0");
+                        sendPosition(0, 0);
                         return false;
                 }
                 sendMovement();
-
                 return false;
             }
         });
-
     }
 
+    /**
+     * Dummy function... need to send something to the robot...
+     */
+    private void sendPosition(float x, float y)
+    {
+        Log.i("Joystick", "Set this position as 0,0");
+    }
+
+    /**
+     * Dummy function... need to send something to the Robot...
+     */
     private void sendMovement()
     {
         Log.v("Joystick", "X: " + v.move.x + " Y: " + v.move.y);
