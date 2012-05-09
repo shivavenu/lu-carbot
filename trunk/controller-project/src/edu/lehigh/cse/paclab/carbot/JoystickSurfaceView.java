@@ -12,12 +12,12 @@ import android.view.SurfaceView;
 
 public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
-    public class Vector2
+    public class Point
     {
         float x;
         float y;
 
-        Vector2(float _x, float _y)
+        Point(float _x, float _y)
         {
             x = _x;
             y = _y;
@@ -25,9 +25,9 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     }
 
     private TutorialThread _thread;
-    private Vector2 v = new Vector2(this.getWidth() / 2, this.getHeight() / 2);
+    private Point v = new Point(this.getWidth() / 2, this.getHeight() / 2);
     private float linear = 0, omega = 0;
-    public Vector2 move = new Vector2(linear, omega);
+    public Point move = new Point(linear, omega);
     Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
     // b=Bitmap.createScaledBitmap(b, 126, 126, true);
     public boolean touched = false;
@@ -36,20 +36,17 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     {
         super(context);
         init();
-
     }
 
     public JoystickSurfaceView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        // TODO Auto-generated constructor stub
         init();
     }
 
     public JoystickSurfaceView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
         init();
     }
 
@@ -57,19 +54,14 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     {
         b = Bitmap.createScaledBitmap(b, 100, 100, true);
         getHolder().addCallback(this);
-        // _thread = new TutorialThread(getHolder(), this);
         setFocusable(true);
-
     }
 
     @Override
     public void onDraw(Canvas canvas)
     {
-
-        canvas.drawColor(Color.RED);
+        canvas.drawColor(Color.WHITE);
         canvas.drawBitmap(b, v.x - (b.getWidth() / 2), v.y - (b.getHeight() / 2), null);
-        // /canvas.
-
     }
 
     @Override
@@ -78,14 +70,10 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 v = circleMove(e.getX(), e.getY());
-                // x=(int) e.getX();
-                // y=(int) e.getY();
                 touched = true;
                 return true;
             case MotionEvent.ACTION_MOVE:
                 v = circleMove(e.getX(), e.getY());
-                // x=(int) e.getX();
-                // y=(int) e.getY();
                 touched = true;
                 return true;
             case MotionEvent.ACTION_UP:
@@ -100,8 +88,6 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -134,16 +120,15 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         }
     }
 
-    private Vector2 circleMove(float x, float y)
+    private Point circleMove(float x, float y)
     {
-
         float centerX = this.getWidth() / 2;
         float centerY = this.getHeight() / 2;
 
         float circleRadiusY = this.getWidth() * 0.35f;
         float circleRadiusX = this.getHeight() * 0.35f;
         // System.out.println(this.getHeight());
-        float rotate = rotateFromPointToPoint(new Vector2(x, y), new Vector2(centerX, centerY));
+        float rotate = rotateFromPointToPoint(new Point(x, y), new Point(centerX, centerY));
 
         float finalX = (centerX + circleRadiusX * (float) Math.cos(rotate * Math.PI / 180));
         float finalY = (centerY + circleRadiusY * (float) Math.sin(rotate * Math.PI / 180));
@@ -173,11 +158,11 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         omega = -(float) ((finalX - centerX) / circleRadiusX * (Math.PI / 4));
         linear = -(float) (finalY - centerY) / circleRadiusY * .4f;
 
-        move = new Vector2(linear, omega);
-        return (new Vector2(finalX, finalY));
+        move = new Point(linear, omega);
+        return (new Point(finalX, finalY));
     }
 
-    private float rotateFromPointToPoint(final Vector2 pFromPoint, final Vector2 pToPoint)
+    private float rotateFromPointToPoint(final Point pFromPoint, final Point pToPoint)
     {
         // System.out.println("rotateVectors" + " " + pToPoint + " " +
         // pFromPoint);
@@ -195,7 +180,7 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         return rotation + 180;
     }
 
-    public Vector2 returnTouch()
+    public Point returnTouch()
     {
         if (touched) {
             return v;
