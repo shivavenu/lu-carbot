@@ -120,6 +120,20 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="WifiClientActivity" />
+
+            <Button
+                android:id="@+id/btnLaunchJoystick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="JoystickActivity" />
+
+            <Button
+                android:id="@+id/btnLaunchWalkablePath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="WalkablePathActivity" />
         </LinearLayout>
     </ScrollView>
 
