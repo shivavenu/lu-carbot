@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,9 +19,20 @@ public class WalkablePathView extends View
     public float currentY;
     public boolean changed = false;
 
+    public WalkablePathView(Context context, AttributeSet as)
+    {
+        super(context, as);
+        init();
+    }
+
     public WalkablePathView(Context context)
     {
         super(context);
+        init();
+    }
+    
+    private void init()
+    {
         pathPoints = new ArrayList<Point>();
 
         this.setBackgroundColor(Color.GRAY);

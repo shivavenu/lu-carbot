@@ -12,6 +12,12 @@ import android.view.SurfaceView;
 
 public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
+    /**
+     * Simple point type for storing x,y float coordinates
+     * 
+     * @author spear
+     * 
+     */
     public class Point
     {
         float x;
@@ -24,67 +30,140 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         }
     }
 
-    private TutorialThread _thread;
-    private Point v = new Point(this.getWidth() / 2, this.getHeight() / 2);
-    private float linear = 0, omega = 0;
-    public Point move = new Point(linear, omega);
-    Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
-    // b=Bitmap.createScaledBitmap(b, 126, 126, true);
-    public boolean touched = false;
+    /**
+     * Probably not optimal... this is a way to keep drawing on the screen. I'm
+     * almost certain it can be done more simply...
+     */
+    class JoystickHandler extends Thread
+    {
+        private SurfaceHolder _surfaceHolder;
+        private JoystickSurfaceView _MySurfaceView;
+        private boolean _run = false;
 
+        public JoystickHandler(SurfaceHolder surfaceHolder, JoystickSurfaceView MySurfaceView)
+        {
+            _surfaceHolder = surfaceHolder;
+            _MySurfaceView = MySurfaceView;
+        }
+
+        public void setRunning(boolean run)
+        {
+            _run = run;
+        }
+
+        @Override
+        public void run()
+        {
+            Canvas c;
+            while (_run) {
+                c = null;
+                try {
+                    c = _surfaceHolder.lockCanvas(null);
+                    synchronized (_surfaceHolder) {
+                        _MySurfaceView.onDraw(c);
+                    }
+                }
+                finally {
+                    // do this in a finally so that if an exception is thrown
+                    // during the above, we don't leave the Surface in an
+                    // inconsistent state
+                    if (c != null) {
+                        _surfaceHolder.unlockCanvasAndPost(c);
+                    }
+                }
+            }
+        }
+    }
+
+    private JoystickHandler jHandler;
+    
+    // track the position of the joystick
+    private Point joystickPosition;
+    
+    // velocities
+    private float linear = 0, omega = 0;
+    
+    // the movement that we wish to see in the robot
+    public Point move = new Point(linear, omega);
+    
+    // picture of joystick
+    Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.joystick);
+    
+    /**
+     * Grumble... extending SurfaceView means we need multiple constructors...
+     */
     public JoystickSurfaceView(Context context)
     {
         super(context);
         init();
     }
 
+    /**
+     * Grumble... extending SurfaceView means we need multiple constructors...
+     */
     public JoystickSurfaceView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init();
     }
 
+    /**
+     * Grumble... extending SurfaceView means we need multiple constructors...
+     */
     public JoystickSurfaceView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         init();
     }
 
+    /**
+     * Set up the picture of the joystick and its position, and attach a callback
+     * 
+     * NB: if we have a callback, why do we need the thread?
+     */
     private void init()
     {
+        // gross hard-coding of the x,y position of the center...
+        joystickPosition = new Point(210, 210);
         b = Bitmap.createScaledBitmap(b, 100, 100, true);
         getHolder().addCallback(this);
         setFocusable(true);
     }
 
+    /**
+     * This actually draws the joystick in the appropriate place on the screen
+     */
     @Override
     public void onDraw(Canvas canvas)
     {
         canvas.drawColor(Color.WHITE);
-        canvas.drawBitmap(b, v.x - (b.getWidth() / 2), v.y - (b.getHeight() / 2), null);
+        canvas.drawBitmap(b, joystickPosition.x - (b.getWidth() / 2), joystickPosition.y - (b.getHeight() / 2), null);
     }
 
+    /**
+     * On a touch, this figures out where to put the joystick
+     */
     @Override
     public boolean onTouchEvent(MotionEvent e)
     {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                v = circleMove(e.getX(), e.getY());
-                touched = true;
+                joystickPosition = circleMove(e.getX(), e.getY());
                 return true;
             case MotionEvent.ACTION_MOVE:
-                v = circleMove(e.getX(), e.getY());
-                touched = true;
+                joystickPosition = circleMove(e.getX(), e.getY());
                 return true;
             case MotionEvent.ACTION_UP:
-                v.x = this.getWidth() / 2;
-                v.y = this.getHeight() / 2;
-                touched = true;
+                joystickPosition.x = this.getWidth() / 2;
+                joystickPosition.y = this.getHeight() / 2;
                 return true;
         }
         return false;
     }
 
+    /**
+     * Empty method required by our current extends/imports configuration
+     */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
@@ -93,11 +172,9 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
-        // if (!_thread.isAlive()) {
-        _thread = new TutorialThread(getHolder(), this);
-        _thread.setRunning(true);
-        _thread.start();
-        // }
+        jHandler = new JoystickHandler(getHolder(), this);
+        jHandler.setRunning(true);
+        jHandler.start();
     }
 
     @Override
@@ -107,11 +184,11 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         // we have to tell thread to shut down & wait for it to finish, or else
         // it might touch the Surface after we return and explode
         boolean retry = true;
-        _thread.setRunning(false);
+        jHandler.setRunning(false);
         // _thread.suspend();
         while (retry) {
             try {
-                _thread.join();
+                jHandler.join();
                 retry = false;
             }
             catch (InterruptedException e) {
@@ -120,6 +197,9 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         }
     }
 
+    /**
+     * This is going to create a ton of garbage... we can do this more simply...
+     */
     private Point circleMove(float x, float y)
     {
         float centerX = this.getWidth() / 2;
@@ -127,7 +207,7 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 
         float circleRadiusY = this.getWidth() * 0.35f;
         float circleRadiusX = this.getHeight() * 0.35f;
-        // System.out.println(this.getHeight());
+
         float rotate = rotateFromPointToPoint(new Point(x, y), new Point(centerX, centerY));
 
         float finalX = (centerX + circleRadiusX * (float) Math.cos(rotate * Math.PI / 180));
@@ -153,7 +233,6 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
                 finalY = y;
             } // above circle?
         }
-        // System.out.println(rotate + " " + finalX + " " + finalY);
 
         omega = -(float) ((finalX - centerX) / circleRadiusX * (Math.PI / 4));
         linear = -(float) (finalY - centerY) / circleRadiusY * .4f;
@@ -164,71 +243,12 @@ public class JoystickSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 
     private float rotateFromPointToPoint(final Point pFromPoint, final Point pToPoint)
     {
-        // System.out.println("rotateVectors" + " " + pToPoint + " " +
-        // pFromPoint);
-
         float k1 = (float) (pToPoint.y - pFromPoint.y);
         float k2 = (float) (pToPoint.x - pFromPoint.x);
-
-        // float tan = k1 / k2;
 
         float angle = (float) Math.atan2(k1, k2);
         float rotation = (float) Math.toDegrees(angle);
 
-        // System.out.println("currRot: "+Bullet.bulletVelocityX + " " +
-        // Bullet.bulletVelocityY);
         return rotation + 180;
-    }
-
-    public Point returnTouch()
-    {
-        if (touched) {
-            return v;
-        }
-        else {
-            return null;
-        }
-
-    }
-}
-
-class TutorialThread extends Thread
-{
-    private SurfaceHolder _surfaceHolder;
-    private JoystickSurfaceView _MySurfaceView;
-    private boolean _run = false;
-
-    public TutorialThread(SurfaceHolder surfaceHolder, JoystickSurfaceView MySurfaceView)
-    {
-        _surfaceHolder = surfaceHolder;
-        _MySurfaceView = MySurfaceView;
-    }
-
-    public void setRunning(boolean run)
-    {
-        _run = run;
-    }
-
-    @Override
-    public void run()
-    {
-        Canvas c;
-        while (_run) {
-            c = null;
-            try {
-                c = _surfaceHolder.lockCanvas(null);
-                synchronized (_surfaceHolder) {
-                    _MySurfaceView.onDraw(c);
-                }
-            }
-            finally {
-                // do this in a finally so that if an exception is thrown
-                // during the above, we don't leave the Surface in an
-                // inconsistent state
-                if (c != null) {
-                    _surfaceHolder.unlockCanvasAndPost(c);
-                }
-            }
-        }
     }
 }

@@ -1,7 +1,5 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import java.util.concurrent.CountDownLatch;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,97 +10,88 @@ import android.widget.LinearLayout;
 
 public class WalkablePathActivity extends Activity
 {
-    private WalkablePathView view;
+    private WalkablePathView wpView;
     private int index = 1;
     private float current_x;
     private float current_y;
     private double current_orientation = 0;
+    
     // [mfs] should try to use magnitude scaling eventually...
     // private double current_mag = 1;
     public boolean moving = false;
-    public CountDownLatch c;
 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.walkablepathlayout);
+        
+        wpView = (WalkablePathView)findViewById(R.id.wpv1);
 
-        LinearLayout layout = new LinearLayout(this);
-
-        view = new WalkablePathView(this);
-
-        Button b = new Button(this);
-        b.setText("Go!");
+        Button b = (Button)findViewById(R.id.btnWPLGo);
         b.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
             {
-                if (index < view.getSize()) {
-                    current_x = view.getPointX(index - 1);
-                    current_y = view.getPointY(index - 1);
+                if (index < wpView.getSize()) {
+                    current_x = wpView.getPointX(index - 1);
+                    current_y = wpView.getPointY(index - 1);
                     moveToPoint(index);
                 }
             }
         });
 
-        Button clear = new Button(this);
-        clear.setText("Cl");
+        Button clear = (Button)findViewById(R.id.btnWPLClear);
         clear.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
             {
-                view.clearPoints();
+                wpView.clearPoints();
                 index = 1;
                 current_orientation = 0;
             }
         });
-
-        layout.addView(b);
-        layout.addView(clear);
-        layout.addView(view);
-        this.setContentView(layout);
     }
 
     public void moveToPoint(int i)
     {
-        // if(moving == false)
-        {
-            float x = view.getPointX(i);
-            float y = view.getPointY(i);
+        float x = wpView.getPointX(i);
+        float y = wpView.getPointY(i);
 
-            float deltax = x - current_x;
-            float deltay = y - current_y;
-            double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
+        float deltax = x - current_x;
+        float deltay = y - current_y;
+        double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
 
-            Log.v("CURRENT ORIENTATION BEFORE", new Double(current_orientation).toString());
-            Log.v("ANGLE", new Double(ang).toString());
-            angle(current_orientation - ang);
-            Log.v("CURRENT ORIENTATION AFTER", new Double(current_orientation).toString());
+        Log.v("CURRENT ORIENTATION BEFORE", new Double(current_orientation).toString());
+        Log.v("ANGLE", new Double(ang).toString());
+        angle(current_orientation - ang);
+        Log.v("CURRENT ORIENTATION AFTER", new Double(current_orientation).toString());
 
-            double distance = Math.sqrt(((x - current_x) * (x - current_x)) + ((y - current_y) * (y - current_y)));
-            long delay = move(distance, current_x, current_y, x, y);
-            final long t_delay = delay - System.currentTimeMillis();
+        double distance = Math.sqrt(((x - current_x) * (x - current_x)) + ((y - current_y) * (y - current_y)));
+        long delay = move(distance, current_x, current_y, x, y);
+        final long t_delay = delay - System.currentTimeMillis();
 
-            index++;
-            if (index < view.getSize()) {
-                current_x = x;
-                current_y = y;
+        index++;
+        if (index < wpView.getSize()) {
+            current_x = x;
+            current_y = y;
 
-                Thread delayThread = new Thread(new Thread()
+            // [mfs] using threads like this is going to create a lot of system pressure... we could use an alarm instead...
+            Thread delayThread = new Thread(new Thread()
+            {
+                public void run()
                 {
-                    public void run()
-                    {
-                        try {
-                            sleep(t_delay);
-                        }
-                        catch (Exception e) {
-                        }
-                        moveToPoint(index);
+                    try {
+                        sleep(t_delay);
                     }
-                });
+                    catch (Exception e) {
+                    }
+                    moveToPoint(index);
+                }
+            });
 
-                delayThread.start();
-            }
+            delayThread.start();
         }
+
     }
 
     public long move(double _dis, float _old_x, float _old_y, float _new_x, float _new_y)
@@ -131,10 +120,10 @@ public class WalkablePathActivity extends Activity
 
                         double percentTraveled = (double) ((System.currentTimeMillis() - start))
                                 / ((double) (stop - start));
-                        view.currentX = (float) (x + (x_dis * percentTraveled));
+                        wpView.currentX = (float) (x + (x_dis * percentTraveled));
                         Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
-                        view.currentY = (float) (y + (y_dis * percentTraveled));
-                        view.postInvalidate();
+                        wpView.currentY = (float) (y + (y_dis * percentTraveled));
+                        wpView.postInvalidate();
                     }
                 }
                 Log.i("WalkablePath", "0,0");
