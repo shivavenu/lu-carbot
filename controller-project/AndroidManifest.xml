@@ -4,7 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="10" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -43,6 +43,7 @@
         <activity android:name="WifiServerActivity"></activity>
         <activity android:name="JoystickActivity"></activity>
         <activity android:name="WalkablePathActivity"></activity>
+        <activity android:name="DriveTheBotActivity"></activity>
     </application>
 
 </manifest>

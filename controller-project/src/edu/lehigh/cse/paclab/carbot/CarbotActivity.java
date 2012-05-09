@@ -11,7 +11,6 @@ import android.view.View;
  */
 public class CarbotActivity extends Activity
 {
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -79,6 +78,9 @@ public class CarbotActivity extends Activity
         }
         else if (v == findViewById(R.id.btnLaunchWalkablePath)) {
             startActivity(new Intent(this, WalkablePathActivity.class));
+        }
+        else if (v == findViewById(R.id.btnDriveTheBot)) {
+            startActivity(new Intent(this, DriveTheBotActivity.class));
         }
     }
 }
