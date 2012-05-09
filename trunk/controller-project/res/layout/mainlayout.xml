@@ -134,6 +134,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="WalkablePathActivity" />
+
+            <Button
+                android:id="@+id/btnDriveTheBot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="DriveTheBotActivity" />
         </LinearLayout>
     </ScrollView>
 
