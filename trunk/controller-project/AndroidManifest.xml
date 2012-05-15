@@ -38,12 +38,17 @@
         <activity android:name=".BTZapActivity"></activity>
         <activity android:name=".StreamCaptureActivity"></activity>
         <activity android:name="AlarmLaunchActivity"></activity>
-        <receiver android:name="AlarmReceiver"></receiver>
         <activity android:name="WifiClientActivity"></activity>
         <activity android:name="WifiServerActivity"></activity>
         <activity android:name="JoystickActivity"></activity>
         <activity android:name="WalkablePathActivity"></activity>
         <activity android:name="DriveTheBotActivity"></activity>
+        <activity android:name="CalibrationActivity"></activity>
+
+        <receiver android:name="AlarmReceiver"></receiver>
+        <receiver android:name="AlarmStopMovingReceiver"></receiver>
+        
+        <service android:name="ArduinoService"></service>service
     </application>
 
 </manifest>

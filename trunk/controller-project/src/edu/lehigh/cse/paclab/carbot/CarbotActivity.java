@@ -82,5 +82,8 @@ public class CarbotActivity extends Activity
         else if (v == findViewById(R.id.btnDriveTheBot)) {
             startActivity(new Intent(this, DriveTheBotActivity.class));
         }
+        else if (v == findViewById(R.id.btnCalibrate)) {
+            startActivity(new Intent(this, CalibrationActivity.class));
+        }
     }
 }
