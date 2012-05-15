@@ -141,7 +141,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="DriveTheBotActivity" />
-        </LinearLayout>
+            <Button
+                android:id="@+id/btnCalibrate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="CalibrationActivity" />
+            </LinearLayout>
     </ScrollView>
 
 </LinearLayout>
