@@ -19,50 +19,51 @@
         android:label="@string/app_name" >
         <activity
             android:name=".CarbotActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.FaceCaptureActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.FaceCaptureActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.TalkBackActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.TalkBackActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.VoiceRecognizerActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.VoiceRecognizerActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.BTFindDeviceActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.BTFindDeviceActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.BlueToothActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.BlueToothActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.TouchDrawActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.TouchDrawActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.OnOffControllerActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.OnOffControllerActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.CameraPreviewActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.CameraPreviewActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.RCReceiverActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.RCReceiverActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.RCSenderActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.RCSenderActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.BTZapActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.BTZapActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.StreamCaptureActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.StreamCaptureActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.AlarmLaunchActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.AlarmLaunchActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.WifiClientActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.WifiClientActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.WifiServerActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.WifiServerActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.JoystickActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.JoystickActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.WalkablePathActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.WalkablePathActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.DriveTheBotActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.DriveTheBotActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.CalibrationActivity" >
+        <activity android:name="edu.lehigh.cse.paclab.prelims.CalibrationActivity" android:screenOrientation="portrait">
         </activity>
 
         <receiver android:name="edu.lehigh.cse.paclab.prelims.AlarmReceiver" >
