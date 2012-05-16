@@ -31,59 +31,8 @@ public class CarbotActivity extends Activity
      */
     public void launchActivity(View v)
     {
-        if (v == findViewById(R.id.btnFaceCapture)) {
-            startActivity(new Intent(this, FaceCaptureActivity.class));
-        }
-        else if (v == findViewById(R.id.btnTalkBack)) {
-            startActivity(new Intent(this, TalkBackActivity.class));
-        }
-        else if (v == findViewById(R.id.btnVoiceRecognizer)) {
-            startActivity(new Intent(this, VoiceRecognizerActivity.class));
-        }
-        else if (v == findViewById(R.id.btnBTChat)) {
-            startActivity(new Intent(this, BlueToothActivity.class));
-        }
-        else if (v == findViewById(R.id.btnTouchDraw)) {
-            startActivity(new Intent(this, TouchDrawActivity.class));
-        }
-        else if (v == findViewById(R.id.btnOnOffControl)) {
-            startActivity(new Intent(this, OnOffControllerActivity.class));
-        }
-        else if (v == findViewById(R.id.btnCameraPreview)) {
-            startActivity(new Intent(this, CameraPreviewActivity.class));
-        }
-        else if (v == findViewById(R.id.btnRCSender)) {
-            startActivity(new Intent(this, RCSenderActivity.class));
-        }
-        else if (v == findViewById(R.id.btnRCReceiver)) {
-            startActivity(new Intent(this, RCReceiverActivity.class));
-        }
-        else if (v == findViewById(R.id.btnBTZap)) {
-            startActivity(new Intent(this, BTZapActivity.class));
-        }
-        else if (v == findViewById(R.id.btnStreamCapture)) {
-            startActivity(new Intent(this, StreamCaptureActivity.class));
-        }
-        else if (v == findViewById(R.id.btnAlarmActivityLaunch)) {
-            startActivity(new Intent(this, AlarmLaunchActivity.class));
-        }
-        else if (v == findViewById(R.id.btnLaunchWifiServer)) {
-            startActivity(new Intent(this, WifiServerActivity.class));
-        }
-        else if (v == findViewById(R.id.btnLaunchWifiClient)) {
-            startActivity(new Intent(this, WifiClientActivity.class));
-        }
-        else if (v == findViewById(R.id.btnLaunchJoystick)) {
-            startActivity(new Intent(this, JoystickActivity.class));
-        }
-        else if (v == findViewById(R.id.btnLaunchWalkablePath)) {
-            startActivity(new Intent(this, WalkablePathActivity.class));
-        }
-        else if (v == findViewById(R.id.btnDriveTheBot)) {
-            startActivity(new Intent(this, DriveTheBotActivity.class));
-        }
-        else if (v == findViewById(R.id.btnCalibrate)) {
-            startActivity(new Intent(this, CalibrationActivity.class));
+        if (v == findViewById(R.id.btnLaunchDemos)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
         }
     }
 }

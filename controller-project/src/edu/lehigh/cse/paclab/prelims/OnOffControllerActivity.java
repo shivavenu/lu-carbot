@@ -1,10 +1,11 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * Our plan is for the arduino to expose 6 primitives: TurnLeft, TurnRight,

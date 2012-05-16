@@ -1,5 +1,6 @@
-package edu.lehigh.cse.paclab.carbot;
+// stolen from http://www.vogella.com/articles/AndroidServices/article.html
 
+package edu.lehigh.cse.paclab.prelims;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,38 +17,29 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
+import android.os.StrictMode;
 import android.util.Log;
-import android.view.View;
-import android.widget.ToggleButton;
 
-public class DriveTheBotActivity extends Activity 
+public class ArduinoService extends Service
 {
-	public static final String TAG = "Carbot";
-	
-	// Following code block is setting up the android to arduino communication. 
+	// Following code block is setting up the android to arduino communication.
+	//
+	// [mfs] I don't think it is entirely right
 	private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
 	private UsbManager mUsbManager;
 	private PendingIntent mPermissionIntent;
 	private boolean mPermissionRequestPending;
+
 	UsbAccessory mAccessory;
 	ParcelFileDescriptor mFileDescriptor;
 	FileInputStream mInputStream;
 	FileOutputStream mOutputStream;
-	
-	ToggleButton forward;
-	ToggleButton reverse;
-	ToggleButton clockwise;
-	ToggleButton counterClockwise;
-	ToggleButton pTurnLeft;
-	ToggleButton pTurnRight;
-	
-	/**
-	 * BroadcastReceiver is the object responsible for establishing communication with any sort of entity sending 
-	 * information to the application, in this case, the application is receiving information from an arduino. 
-	 * The BroadcastReceiver sees if the entity sending information is a supported usb accessory, in which case
-	 * opens full communication with the device beyond the handshake which is initiated upon application launch.
-	 */
+
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -58,7 +51,7 @@ public class DriveTheBotActivity extends Activity
 							UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 						openAccessory(accessory);
 					} else {
-						Log.d(TAG, "permission denied for accessory "
+						Log.d("CARBOT", "permission denied for accessory "
 								+ accessory);
 					}
 					mPermissionRequestPending = false;
@@ -72,32 +65,83 @@ public class DriveTheBotActivity extends Activity
 		}
 	};
 	
+	// Used to receive messages from the Activity
+	final Messenger inMessenger = new Messenger(new IncomingHandler());
+
+	// Use to send message to the Activity
+	//
+	// [mfs] currently unused
+	public static final String RETURNVAL = "urlPath";
+	private int result = Activity.RESULT_CANCELED;
+	private Messenger outMessenger;
+
+	public ArduinoService() {
+		super();
+		// Don't do this
+		// Network Stuff will run in the main thread
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+				.permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		
+		
+	}
+	
+	class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle data = msg.getData();
+			String CMD = data.getString("CMD");
+			if (CMD.equals("INIT"))
+				createConnection();
+			if (CMD.equals("FWD"))
+				cmdForward();
+			if (CMD.equals("REV"))
+				cmdReverse();
+			if (CMD.equals("STOP"))
+				cmdStop();
+			/*
+			Log.e("MESSAGE", "Got message");
+			Bundle data = msg.getData();
+			String urlPath = data.getString(ArduinoService.URLPATH);
+			String fileName = data.getString(ArduinoService.FILENAME);
+			String outputPath = download(urlPath, fileName);
+
+			Message backMsg = Message.obtain();
+			backMsg.arg1 = result;
+			Bundle bundle = new Bundle();
+			bundle.putString(RESULTPATH, outputPath);
+			backMsg.setData(bundle);
+			try {
+				outMessenger.send(backMsg);
+			} catch (android.os.RemoteException e1) {
+				Log.w(getClass().getName(), "Exception sending message", e1);
+			}
+			*/
+		}
+	}
+
 	@Override
-    public void onCreate(Bundle savedInstanceState) 
+	public IBinder onBind(Intent intent) {
+		Bundle extras = intent.getExtras();
+		// Get messager from the Activity
+		if (extras != null) {
+			outMessenger = (Messenger) extras.get("MESSENGER");
+		}
+		// Return our messenger to the Activity to get commands
+		return inMessenger.getBinder();
+	}
+
+    public void createConnection() 
 	{
-        super.onCreate(savedInstanceState);
-        
         //Looks for input
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
-				ACTION_USB_PERMISSION), 0);
+		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+		
 		//Creates new IntentFilter to indicate future communication with a particular entity
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
 		registerReceiver(mUsbReceiver, filter);
-
-		if (getLastNonConfigurationInstance() != null) {
-			mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
-			openAccessory(mAccessory);
-		}
-		setContentView(R.layout.drivethebotlayout);
-		
-		forward = (ToggleButton) findViewById(R.id.button1);
-		reverse = (ToggleButton) findViewById(R.id.button2);
-		clockwise = (ToggleButton) findViewById(R.id.button3);
-		counterClockwise = (ToggleButton) findViewById(R.id.button4);
-		pTurnRight = (ToggleButton) findViewById(R.id.button5);
-		pTurnLeft = (ToggleButton) findViewById(R.id.button6);
+		onResumeDoesntHappen();
     }
 	
 	/**
@@ -105,12 +149,11 @@ public class DriveTheBotActivity extends Activity
 	 * will check to see if the input and output stream of data is still active then checks to see if
 	 * an accessory is present, if so, opens communication; if not, the application will request permission
 	 * for communication.
+	 * 
+	 * [mfs] It seems that we need this to run after we get a reply from the intent...
 	 */
-	@Override
-	public void onResume() 
+	public void onResumeDoesntHappen() 
 	{
-		super.onResume();
-		
 		if (mInputStream != null && mOutputStream != null) {
 			return;
 		}
@@ -129,22 +172,15 @@ public class DriveTheBotActivity extends Activity
 				}
 			}
 		} else {
-			Log.d(TAG, "mAccessory is null");
+			Log.d("CARBOT", "mAccessory is null");
 		}
-	}
-	/**
-	 * If the application is paused, the accessory is closed.
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-		closeAccessory();
 	}
 	/**
 	 * More watchdogs...
 	 */
 	@Override
 	public void onDestroy() {
+		closeAccessory();
 		unregisterReceiver(mUsbReceiver);
 		super.onDestroy();
 	}
@@ -177,7 +213,7 @@ public class DriveTheBotActivity extends Activity
 			mInputStream = new FileInputStream(fd);
 			mOutputStream = new FileOutputStream(fd);
 		} else {
-			Log.d(TAG, "accessory open fail");
+			Log.d("CARBOT", "accessory open fail");
 		}
 	}
 	
@@ -192,47 +228,46 @@ public class DriveTheBotActivity extends Activity
 		byte[] buffer = new byte[1];
 		buffer[0] = target;
 		
-		Log.e(TAG, "Message sent" + buffer[0]);
+		Log.e("CARBOT", "Message sent" + buffer[0]);
 		if (mOutputStream != null) {
 			try {
 				mOutputStream.write(buffer);
 			} catch (IOException e) {
-				Log.e(TAG, "write failed", e);
+				Log.e("CARBOT", "write failed", e);
 			}
 		}
 	}
 	
 	/**
-	 * The last few methods dictate what command will be sent based on what button is activated by the user
+	 * The last few methods dictate what command will be sent based on what
+	 * button is activated by the user
 	 */
-	public void forward (View V){
-		if(!forward.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)1);
+	public void cmdStop() {
+		sendCommand((byte) 0);
 	}
-	public void reverse (View V){
-		if(!reverse.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)2);
+
+	public void cmdForward() {
+		sendCommand((byte) 1);
 	}
-	public void clockwise (View V){
-		if(!clockwise.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)3);
+
+	public void cmdReverse() {
+		sendCommand((byte) 2);
 	}
-	public void cclockwise (View V){
-		if(!counterClockwise.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)4);
+
+	public void cmdClockwise() {
+		sendCommand((byte) 3);
 	}
-	public void pointTurnR (View V){
-		if(!pTurnRight.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)5);
+
+	public void cmdCclockwise() {
+		sendCommand((byte) 4);
 	}
-	public void pointTurnL (View V){
-		if(!pTurnLeft.isChecked())
-			sendCommand((byte)0);
-		else sendCommand((byte)6);
+
+	public void cmdPointTurnR() {
+		sendCommand((byte) 5);
 	}
+
+	public void cmdPointTurnL() {
+		sendCommand((byte) 6);
+	}
+
 }

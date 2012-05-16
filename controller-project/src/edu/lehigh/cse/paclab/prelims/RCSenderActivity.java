@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -10,13 +10,16 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
-public class RCReceiverActivity extends Activity
+public class RCSenderActivity extends Activity
 {
     // this is how we interact with the Bluetooth device
     private BluetoothAdapter btAdapter = null;
@@ -29,7 +32,7 @@ public class RCReceiverActivity extends Activity
         // declare desire for a custom title
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         // inflate the layout
-        setContentView(R.layout.rcreceiverlayout);
+        setContentView(R.layout.rcsenderlayout);
         // attach the custom title to our "title" layout
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         // set the text for the RHS
@@ -81,16 +84,19 @@ public class RCReceiverActivity extends Activity
         }
     }
 
-    // this is a member so we can access it easily
-    private ArrayAdapter<String> mConversationArrayAdapter;
-    
     /** initialize the adapters for chatting */
     private void setupChat() 
     {
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView mConversationView = (ListView) findViewById(R.id.lstRCReceive);
-        mConversationView.setAdapter(mConversationArrayAdapter);
+        // Initialize the send button with a listener that for click events
+        Button mSendButton = (Button) findViewById(R.id.btnRCSend);
+        mSendButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                // Send a message using content of the edit text widget
+                EditText et = (EditText) findViewById(R.id.etRCSend);
+                String message = et.getText().toString();
+                sendMessage(message);
+            }
+        });
 
         // Initialize the BluetoothChatService to perform bluetooth connections
         btService = new BTService(this, mHandler);
@@ -132,6 +138,28 @@ public class RCReceiverActivity extends Activity
         }
     }
     
+    /**
+     * Sends a message.
+     */
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (btService.getState() != BTService.STATE_CONNECTED) {
+            Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            btService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            EditText et = (EditText) findViewById(R.id.etRCSend);
+            et.setText("");
+        }
+    }
+
     /** name of the remote device */
     private String devName = null;
     
@@ -147,7 +175,6 @@ public class RCReceiverActivity extends Activity
                 switch (msg.arg1) {
                 case BTService.STATE_CONNECTED:
                     tv.setText("connected to " + devName);
-                    mConversationArrayAdapter.clear();
                     break;
                 case BTService.STATE_CONNECTING:
                     tv.setText("Connecting...");
@@ -159,16 +186,8 @@ public class RCReceiverActivity extends Activity
                 }
                 break;
             case BTService.MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;
-                // construct a string from the buffer
-                String writeMessage = new String(writeBuf);
-                mConversationArrayAdapter.add("Me:  " + writeMessage);
                 break;
             case BTService.MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                mConversationArrayAdapter.add(devName+":  " + readMessage);
                 break;
             case BTService.MESSAGE_DEVICE_NAME:
                 // save the connected device's name

@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * A simple example of how to launch alarms. Note that this goes hand-in-hand

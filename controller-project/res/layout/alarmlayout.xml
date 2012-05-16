@@ -24,7 +24,7 @@
         android:id="@+id/btnLaunchAlarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Launch an Alarm" 
-        android:onClick="onLaunchAlarm"/>
+        android:onClick="onLaunchAlarm"
+        android:text="Launch an Alarm" />
 
 </LinearLayout>

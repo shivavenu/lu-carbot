@@ -24,8 +24,8 @@
         android:id="@+id/btnCalibrateFWD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Calibrate FWD" 
-        android:onClick="onCalibrateFWD" />
+        android:onClick="onCalibrateFWD"
+        android:text="Calibrate FWD" />
 
     <TextView
         android:id="@+id/tvCCWTime"
@@ -44,34 +44,35 @@
         android:id="@+id/btnCalibrateCCW"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Calibrate CCW" 
-        android:onClick="onCalibrateCCW" />
+        android:onClick="onCalibrateCCW"
+        android:text="Calibrate CCW" />
 
     <Button
         android:id="@+id/btnHackConfig"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CONFIG" 
-        android:onClick="onClickHack" />
-    
+        android:onClick="onClickHack"
+        android:text="CONFIG" />
+
     <Button
         android:id="@+id/btnHackFwd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FORWARD" 
-        android:onClick="onClickHack" />
-    
+        android:onClick="onClickHack"
+        android:text="FORWARD" />
+
     <Button
         android:id="@+id/btnHackRev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="REVERSE" 
-        android:onClick="onClickHack" />
-    
+        android:onClick="onClickHack"
+        android:text="REVERSE" />
+
     <Button
         android:id="@+id/btnHackStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="STOP" 
-        android:onClick="onClickHack" />
+        android:onClick="onClickHack"
+        android:text="STOP" />
+
 </LinearLayout>
