@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.TextView;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * Simple demo to show how we can listen the the user and translate their words

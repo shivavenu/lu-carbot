@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import java.util.Locale;
 
@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 public class TalkBackActivity extends Activity implements OnInitListener
 {

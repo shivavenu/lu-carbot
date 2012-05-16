@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 public class WifiServerActivity extends Activity
 {

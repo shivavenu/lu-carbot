@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * from http://www.edumobile.org/android/android-development/socket-programming/

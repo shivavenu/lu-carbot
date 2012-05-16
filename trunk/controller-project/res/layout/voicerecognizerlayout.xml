@@ -8,8 +8,8 @@
         android:id="@+id/btnListen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Listening" 
-        android:onClick="listen"/>
+        android:onClick="listen"
+        android:text="Start Listening" />
 
     <TextView
         android:id="@+id/tvRecognizerOutput"

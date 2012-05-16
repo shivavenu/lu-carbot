@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.prelims;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * Our goal with this activity is to send an image over bluetooth from one phone
