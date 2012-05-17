@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <edu.lehigh.cse.paclab.carbot.JoystickSurfaceView
+    <edu.lehigh.cse.paclab.prelims.JoystickSurfaceView
         android:id="@+id/jssv1"
         android:layout_width="280dp"
         android:layout_height="280dp" />
