@@ -65,8 +65,10 @@
         </activity>
         <activity android:name="edu.lehigh.cse.paclab.prelims.CalibrationActivity" android:screenOrientation="portrait">
         </activity>
+		<activity android:name="edu.lehigh.cse.paclab.prelims.VisionActivity" android:screenOrientation="portrait">
+		</activity>
 
-        <receiver android:name="edu.lehigh.cse.paclab.prelims.AlarmReceiver" >
+		<receiver android:name="edu.lehigh.cse.paclab.prelims.AlarmReceiver" >
         </receiver>
         <receiver android:name="edu.lehigh.cse.paclab.prelims.AlarmStopMovingReceiver" >
         </receiver>
@@ -76,6 +78,7 @@
 
         <activity android:name="edu.lehigh.cse.paclab.prelims.DemosActivity" >
         </activity>
+        
     </application>
 
 </manifest>

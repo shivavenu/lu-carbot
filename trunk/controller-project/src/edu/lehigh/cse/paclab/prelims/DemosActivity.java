@@ -86,5 +86,8 @@ public class DemosActivity extends Activity
         else if (v == findViewById(R.id.btnCalibrate)) {
             startActivity(new Intent(this, CalibrationActivity.class));
         }
+        else if (v == findViewById(R.id.btnVision)) {
+            startActivity(new Intent(this, VisionActivity.class));
+        }
     }
 }

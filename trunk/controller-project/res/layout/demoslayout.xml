@@ -148,6 +148,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="CalibrationActivity" />
+
+            <Button
+                android:id="@+id/btnVision"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="VisionActivity" />
         </LinearLayout>
     </ScrollView>
 
