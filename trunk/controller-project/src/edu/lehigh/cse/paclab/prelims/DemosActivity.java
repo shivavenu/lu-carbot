@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.carbot.services.TTSService;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other
@@ -20,6 +21,10 @@ public class DemosActivity extends Activity
 
         // draw the screen
         setContentView(R.layout.demoslayout);
+
+        // show how we can use Services from multiple activities... note that
+        // this will cancel any previous TTS
+        TTSService.sayIt("This is the Demo Activity");
     }
 
     /**
