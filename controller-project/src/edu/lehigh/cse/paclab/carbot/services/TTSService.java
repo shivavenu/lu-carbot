@@ -2,8 +2,8 @@ package edu.lehigh.cse.paclab.carbot.services;
 
 import java.util.Locale;
 
-import edu.lehigh.cse.paclab.carbot.State;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -15,6 +15,33 @@ import android.widget.Toast;
  */
 public class TTSService
 {
+    /**
+     * Reference to the application, useful for Toast, making Intents, and
+     * starting Activities
+     */
+    private static Application cachedApplicationContext;
+
+    /**
+     * Getter for the application context
+     * 
+     * @return the application context of this State object
+     */
+    public static Application getCachedApplicationContext()
+    {
+        return cachedApplicationContext;
+    }
+
+    /**
+     * Configure the State singleton by setting the application context
+     * 
+     * @param appContext
+     *            A reference to the Application
+     */
+    public static void initialize(Application appContext)
+    {
+        cachedApplicationContext = appContext;
+    }
+
     /**
      * Constant to indicate interactions between the Application and the
      * text-to-speech service
@@ -34,7 +61,10 @@ public class TTSService
     private static boolean ttsConfigured = false;
 
     /**
-     * This callback runs when we configure the TTS
+     * This callback runs when we configure the TTS, to indicate that we are
+     * initialized
+     * 
+     * [TODO] We should actually look at the status!
      */
     private static OnInitListener ttsListener = new OnInitListener()
     {
@@ -54,7 +84,7 @@ public class TTSService
      *            The activity that configured the TTS. It will catch TTS
      *            intents and feed them back to State.
      */
-    public static void configTTS(Activity callingActivity)
+    public static void configure(Activity callingActivity)
     {
         // check if text-to-speech is supported, via an intent:
         Intent checkIntent = new Intent();
@@ -82,19 +112,19 @@ public class TTSService
      * @return True if the Intent was handled by this code, False if it should
      *         be handled by the caller
      */
-    public static boolean handleStateIntent(int requestCode, int resultCode, Intent data)
+    public static boolean handleIntent(int requestCode, int resultCode, Intent data)
     {
         // check if this is a TTS Intent
         if (requestCode == CHECK_TTS) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
-                mTTS = new TextToSpeech(State.cachedApplicationContext, ttsListener);
+                mTTS = new TextToSpeech(getCachedApplicationContext(), ttsListener);
             }
             else {
                 // missing data, install it
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                State.cachedApplicationContext.startActivity(installIntent);
+                getCachedApplicationContext().startActivity(installIntent);
             }
             // set the locale
             if (mTTS.isLanguageAvailable(Locale.US) == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
@@ -110,8 +140,7 @@ public class TTSService
     /**
      * Shut down TTS.
      * 
-     * [TODO] Not called yet, should be called from a single State.shutdown()
-     * routine
+     * [TODO] Not called yet, should be called when the application terminates
      */
     public static void shutdownTTS()
     {
@@ -134,7 +163,7 @@ public class TTSService
         if (ttsConfigured)
             mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
         else
-            Toast.makeText(State.cachedApplicationContext, "TTS Not Available: " + text, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getCachedApplicationContext(), "TTS Not Available: " + text, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -147,12 +176,5 @@ public class TTSService
     public static boolean isTtsConfigured()
     {
         return ttsConfigured;
-    }
-
-    /**
-     * Private constructor to enforce Singleton pattern:
-     */
-    private TTSService()
-    {
     }
 }

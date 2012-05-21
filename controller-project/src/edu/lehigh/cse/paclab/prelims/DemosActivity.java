@@ -21,10 +21,6 @@ public class DemosActivity extends Activity
 
         // draw the screen
         setContentView(R.layout.demoslayout);
-
-        // show how we can use Services from multiple activities... note that
-        // this will cancel any previous TTS
-        TTSService.sayIt("This is the Demo Activity");
     }
 
     /**
@@ -37,6 +33,10 @@ public class DemosActivity extends Activity
      */
     public void launchActivity(View v)
     {
+        // show how we can use Services from multiple activities... note that
+        // this will cancel any previous TTS
+        TTSService.sayIt("You clicked a button in DemoActivity");
+
         if (v == findViewById(R.id.btnFaceCapture)) {
             startActivity(new Intent(this, FaceCaptureActivity.class));
         }
