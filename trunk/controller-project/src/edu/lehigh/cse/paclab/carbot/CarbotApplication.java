@@ -1,6 +1,7 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Application;
+import edu.lehigh.cse.paclab.carbot.services.TTSService;
 
 /**
  * Override the Application class, so that we can be sure that our State
@@ -24,15 +25,15 @@ public class CarbotApplication extends Application
     /**
      * Initialize the application
      * 
-     * We override the method to provide a hook for initializing the State singleton
+     * We override the method to provide a hook for initializing the singleton
+     * initialization
      */
     @Override
     public void onCreate()
     {
         super.onCreate();
-        
-        // initialize the State singleton
-        State.initialize(this);
+
+        // initialize the TTS singleton
+        TTSService.initialize(this);
     }
-    
 }

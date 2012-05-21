@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.services.TTSService;
 
 /**
@@ -29,8 +28,8 @@ public class CarbotActivity extends Activity
         // draw the screen
         setContentView(R.layout.mainlayout);
         
-        // configure more of the State
-        TTSService.configTTS(this);
+        // configure the TTS Service
+        TTSService.configure(this);
     }
 
     /**
@@ -42,7 +41,6 @@ public class CarbotActivity extends Activity
      */
     public void launchActivity(View v)
     {
-        Toast.makeText(this, "configured = " + State.isConfigured(), Toast.LENGTH_SHORT).show();
         if (v == findViewById(R.id.btnLaunchDemos)) {
             TTSService.sayIt("I can talk!"); // just to show how we can use the service from this Activity...
             startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
@@ -54,10 +52,8 @@ public class CarbotActivity extends Activity
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        // first step is to see if the intent is actually to one of the app-wide
-        // services. If so, this call will handle the intent, and then we should
-        // just return
-        if (State.handleStateIntent(requestCode, resultCode, data)) 
+        // filter TTS events
+        if (TTSService.handleIntent(requestCode, resultCode, data)) 
             return;
         
         // otherwise handle the intent according to the behaviors of this
