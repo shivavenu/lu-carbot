@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.services.TTSService;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other
@@ -23,9 +25,12 @@ public class CarbotActivity extends Activity
     {
         // start by calling parent method
         super.onCreate(savedInstanceState);
-
+        
         // draw the screen
         setContentView(R.layout.mainlayout);
+        
+        // configure more of the State
+        TTSService.configTTS(this);
     }
 
     /**
@@ -37,11 +42,39 @@ public class CarbotActivity extends Activity
      */
     public void launchActivity(View v)
     {
+        Toast.makeText(this, "configured = " + State.isConfigured(), Toast.LENGTH_SHORT).show();
         if (v == findViewById(R.id.btnLaunchDemos)) {
+            TTSService.sayIt("I can talk!"); // just to show how we can use the service from this Activity...
             startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
         }
     }
 
+    /**
+     * Whenever an intent comes to this Activity, it is handled in this code 
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        // first step is to see if the intent is actually to one of the app-wide
+        // services. If so, this call will handle the intent, and then we should
+        // just return
+        if (State.handleStateIntent(requestCode, resultCode, data)) 
+            return;
+        
+        // otherwise handle the intent according to the behaviors of this
+        // specific Activity:
+        
+        // ...
+    }
+
+    /**
+     * Not called yet, but when we explicitly close the app, we should shut down
+     * any services that we started...
+     */
+    public void onExplicitCloseApp()
+    {
+        TTSService.shutdownTTS();
+    }
+    
     /*
      * Plan from here:
      * 

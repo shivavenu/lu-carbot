@@ -19,6 +19,8 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 import static com.googlecode.javacv.cpp.opencv_legacy.cvQueryHistValue_1D;
+import static com.googlecode.javacv.cpp.opencv_core.cvAvg;
+import static com.googlecode.javacv.cpp.opencv_core.cvAvgSdv;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -50,6 +52,10 @@ public class VisionShowView extends View
     public byte[] mYUVData;
     public int[] mRGBData;
 
+    // holders for average and stdev
+    CvScalar avg;
+    CvScalar stdev;
+
     /**
      * Indicate whether View has been configured.
      * 
@@ -80,6 +86,9 @@ public class VisionShowView extends View
         mBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight, Bitmap.Config.ARGB_8888);
         mRGBData = new int[mImageWidth * mImageHeight];
         mYUVData = new byte[datalength];
+        avg = new CvScalar(2);
+        stdev = new CvScalar(2);
+
     }
 
     // this tells us the center of the red point.
@@ -278,6 +287,10 @@ public class VisionShowView extends View
     /**
      * Compute histograms on an image. I think we can use this to have the phone
      * figure out which ball it is looking at
+     * 
+     * [mfs] based on suggestion from John Spletzer, I changed this to compute
+     * avg/stdev. We should switch to HSV, but then we should be able to do
+     * color analysis quite easily.
      */
     void dumpHistograms(IplImage img)
     {
@@ -298,23 +311,36 @@ public class VisionShowView extends View
         // NB: BGR... is that right?
         cvSplit(bgrImage, imgBlue, imgGreen, imgRed, null);
 
-        // do red:
-        IplImage[] send = { imgRed };
-        cvCalcHist(send, hist, 0, null);
-        dumpHist(hist, "Red");
-        cvClearHist(hist);
+        // do red histogram:
+        // IplImage[] send = { imgRed };
+        // cvCalcHist(send, hist, 0, null);
+        // dumpHist(hist, "Red");
+        // cvClearHist(hist);
+        // compute avg and stdev
+        
+        // do red avg/stdev
+        cvAvgSdv(imgRed, avg, stdev, null);
+        tvInfo.setText(tvInfo.getText() + "red: avg = "+avg.getVal(0)+", stdev = " + stdev.getVal(0) + "\n");
+        
+        // do green histogram:
+        // send[0] = imgGreen;
+        // cvCalcHist(send, hist, 0, null);
+        // dumpHist(hist, "Green");
+        // cvClearHist(hist);
+        
+        // do green avg/stdev
+        cvAvgSdv(imgGreen, avg, stdev, null);
+        tvInfo.setText(tvInfo.getText() + "green: avg = "+avg.getVal(0)+", stdev = " + stdev.getVal(0) + "\n");
 
-        // do green:
-        send[0] = imgGreen;
-        cvCalcHist(send, hist, 0, null);
-        dumpHist(hist, "Green");
-        cvClearHist(hist);
+        // do blue histogram:
+        // send[0] = imgBlue;
+        // cvCalcHist(send, hist, 0, null);
+        // dumpHist(hist, "Blue");
+        // cvClearHist(hist);
 
-        // do blue:
-        send[0] = imgBlue;
-        cvCalcHist(send, hist, 0, null);
-        dumpHist(hist, "Blue");
-        cvClearHist(hist);
+        // do blue avg/stdev
+        cvAvgSdv(imgBlue, avg, stdev, null);
+        tvInfo.setText(tvInfo.getText() + "blue: avg = "+avg.getVal(0)+", stdev = " + stdev.getVal(0) + "\n");
     }
 
     void dumpHist(CvHistogram hist, String tag)

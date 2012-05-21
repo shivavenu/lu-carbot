@@ -28,7 +28,6 @@ public class TalkBackActivity extends Activity implements OnInitListener
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, CHECK_TTS);
-
     }
 
     private TextToSpeech mTts;
