@@ -45,6 +45,12 @@ public class CarbotActivity extends Activity
             TTSService.sayIt("I can talk!"); // just to show how we can use the service from this Activity...
             startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
         }
+        if (v == findViewById(R.id.btnLaunchBallLearn)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BallLearnActivity.class));
+        }
+        if (v == findViewById(R.id.btnLaunchBallFind)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BallFindActivity.class));
+        }
     }
 
     /**
