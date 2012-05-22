@@ -1,9 +1,7 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
-import static com.googlecode.javacv.cpp.opencv_core.cvRect;
 import static com.googlecode.javacv.cpp.opencv_core.cvReleaseImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,9 +12,10 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
@@ -91,28 +90,48 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         }
     }
 
-    // this tells us the center of the red point.
-    private CvPoint mPointRed = new CvPoint(0, 0);
+    // this tells us the center of the point that we found
+    private CvPoint foundObjectCenter = new CvPoint(0, 0);
 
-    // this tells us the center of the yellow point
-    private CvPoint mPointYellow = new CvPoint(0, 0);
+    // the thresholds for finding a point
+    private CvScalar loThresh;
+    private CvScalar hiThresh;
 
-    // the threshold for finding a red point
-    private CvScalar startColorRedHSV = new CvScalar(160, 100, 100, 0);
-    private CvScalar endColorRedHSV = new CvScalar(180, 255, 255, 0);
+    private static double saturatingAdd(double x, double y, double lower, double upper)
+    {
+        double ans = x + y;
+        if (ans > upper)
+            ans = upper;
+        if (ans < lower)
+            ans = lower;
+        return ans;
+    }
+    
+    private void configFields(int width, int height)
+    {
+        // set up a scratch image and a buffer for holding RGB ints
+        scratchImage = IplImage.create(width, height, IPL_DEPTH_8U, 4);
+        rgb = new int[width * height];
 
-    // the threshold for finding a yellow point
-    private CvScalar startColorYellowHSV = new CvScalar(20, 100, 100, 0);
-    private CvScalar endColorYellowHSV = new CvScalar(30, 255, 255, 0);
+        // compute the thresholds
+        double avghue = VisualMemoryService.avgHue.getVal(0);
+        double stdhue = VisualMemoryService.stdHue.getVal(0);
+        double avgsat = VisualMemoryService.avgSat.getVal(0);
+        double stdsat = VisualMemoryService.stdSat.getVal(0);
+        double avgval = VisualMemoryService.avgVal.getVal(0);
+        double stdval = VisualMemoryService.stdVal.getVal(0);
+        
+        double lohue = saturatingAdd(avghue, -3 * stdhue, 0, 179);
+        double hihue = saturatingAdd(avghue, +3 * stdhue, 0, 179);
+        double losat = saturatingAdd(avgsat, -3 * stdsat, 0, 255);
+        double hisat = saturatingAdd(avgsat, +3 * stdsat, 0, 255);
+        double loval = saturatingAdd(avgval, -3 * stdval, 0, 255);
+        double hival = saturatingAdd(avgval, +3 * stdval, 0, 255);
 
-    // holders for average and stdev
-    CvScalar avRed;
-    CvScalar sdRed;
-    CvScalar avGreen;
-    CvScalar sdGreen;
-    CvScalar avBlue;
-    CvScalar sdBlue;
-
+        loThresh = new CvScalar(lohue, losat, loval, 0);
+        hiThresh = new CvScalar(hihue, hisat, hival, 0);
+    }
+    
     /**
      * This is where we actually process the image
      * 
@@ -127,22 +146,9 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
     {
         // it would be good to downsample the image...
 
-        // Create an image for the output
-        // IplImage* out = cvCreateImage( cvSize(img->width/2,img->height/2),
-        // img->depth, img->nChannels );
-        // Reduce the image by 2
-        // cvPyrDown( img, out );
-
         // make sure our temp fields are configured
         if (scratchImage == null) {
-            scratchImage = IplImage.create(width, height, IPL_DEPTH_8U, 4);
-            rgb = new int[width * height];
-            avRed = new CvScalar(2);
-            sdRed = new CvScalar(2);
-            avGreen = new CvScalar(2);
-            sdGreen = new CvScalar(2);
-            avBlue = new CvScalar(2);
-            sdBlue = new CvScalar(2);
+            configFields(width, height);
         }
 
         ImageUtils.decodeYUV420SP(rgb, yuvData, width, height);
@@ -150,18 +156,11 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         // dump the image data into our overlay image
         scratchImage.getIntBuffer().put(rgb);
 
-        // try doing ROI
-        cvSetImageROI(scratchImage, cvRect(30, 30, 130, 130));
-
-        // copy the image to the processing scratchpad, then threshold it
-        // for RED, get coordinates of red blob, threshold it for YELLOW,
-        // get coordinates of yellow blob. Be sure to release the buffer
+        // copy the image to the processing scratchpad, then threshold it,
+        // get coordinates of the blob, and then be sure to release the buffer
         // each time, so we can reclaim the memory
-        IplImage thresholdBuffer = ImageUtils.getThresholdedImageHSV(scratchImage, startColorRedHSV, endColorRedHSV);
-        mPointRed = ImageUtils.getCoordinates(thresholdBuffer);
-        cvReleaseImage(thresholdBuffer);
-        thresholdBuffer = ImageUtils.getThresholdedImageHSV(scratchImage, startColorYellowHSV, endColorYellowHSV);
-        mPointYellow = ImageUtils.getCoordinates(thresholdBuffer);
+        IplImage thresholdBuffer = ImageUtils.getThresholdedImageHSV(scratchImage, loThresh, hiThresh);
+        foundObjectCenter = ImageUtils.getCoordinates(thresholdBuffer);
         cvReleaseImage(thresholdBuffer);
 
         // if we have red and yellow, then put their circle coordinates on
@@ -172,7 +171,6 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         // + "), mpr = (" + mPointRed.x()
         // + "," + mPointRed.y() + ")");
         // }
-
         postInvalidate();
     }
 
@@ -192,47 +190,20 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         float scaleY = (float) getHeight() / scratchImage.height();
 
         // draw a circle at the red center
-        if (mPointRed.x() > 0 && mPointRed.y() > 0) {
+        if (foundObjectCenter.x() > 0 && foundObjectCenter.y() > 0) {
             Paint paint = new Paint();
             paint.setColor(Color.RED);
-            canvas.drawCircle(mPointRed.x() * scaleX, mPointRed.y() * scaleY, 30, paint);
+            canvas.drawCircle(foundObjectCenter.x() * scaleX, foundObjectCenter.y() * scaleY, 30, paint);
         }
 
-        // draw a circle at the yellow center
-        if (mPointYellow.x() > 0 && mPointYellow.y() > 0) {
-            Paint paint = new Paint();
-            paint.setColor(Color.YELLOW);
-            canvas.drawCircle(mPointYellow.x() * scaleX, mPointYellow.y() * scaleY, 30, paint);
-        }
-
+        // dump HSV info
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setTextSize(20);
-
-        String s = "FacePreview - This side up.";
-        float textWidth = paint.measureText(s);
-        canvas.drawText(s, (getWidth() - textWidth) / 2, 20, paint);
-
-        // dump point information
-        if (mPointYellow.x() > 0 && mPointYellow.y() > 0 && mPointRed.x() > 0 && mPointRed.y() > 0) {
-            s = "mpy = (" + mPointYellow.x() + "," + mPointYellow.y() + "), mpr = (" + mPointRed.x() + ","
-                    + mPointRed.y() + ")";
-            canvas.drawText(s, 10, 60, paint);
-        }
-
-        // dump avg/stdev info
-        s = "red: avg = " + avRed.getVal(0) + ", stdev = " + sdRed.getVal(0) + "\n";
+        String s;
+        s = "lo = ("+loThresh.getVal(0)+", "+loThresh.getVal(1)+", "+loThresh.getVal(2)+")";
         canvas.drawText(s, 10, 120, paint);
-        s = "green: avg = " + avGreen.getVal(0) + ", stdev = " + sdGreen.getVal(0) + "\n";
+        s = "hi = ("+hiThresh.getVal(0)+", "+hiThresh.getVal(1)+", "+hiThresh.getVal(2)+")";
         canvas.drawText(s, 10, 150, paint);
-        s = "blue: avg = " + avBlue.getVal(0) + ", stdev = " + sdBlue.getVal(0) + "\n";
-        canvas.drawText(s, 10, 180, paint);
-
-        paint.setStrokeWidth(2);
-        paint.setStyle(Paint.Style.STROKE);
-
-        CvRect r = new CvRect(30, 30, 130, 130);
-        int x = r.x(), y = r.y(), w = r.width(), h = r.height();
-        canvas.drawRect(x * scaleX, y * scaleY, (x + w) * scaleX, (y + h) * scaleY, paint);
     }
 }
