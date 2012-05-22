@@ -28,6 +28,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+     	<activity android:name=".BallLearnActivity" android:screenOrientation="landscape">
+     	</activity>
+     	<activity android:name=".BallFindActivity" android:screenOrientation="landscape">
+     	</activity>
+        
+        
         <activity android:name="edu.lehigh.cse.paclab.prelims.FaceCaptureActivity" android:screenOrientation="portrait">
         </activity>
         <activity android:name="edu.lehigh.cse.paclab.prelims.TalkBackActivity" android:screenOrientation="portrait">

@@ -2,6 +2,7 @@ package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Application;
 import edu.lehigh.cse.paclab.carbot.services.TTSService;
+import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
 
 /**
  * Override the Application class, so that we can be sure that our State
@@ -35,5 +36,8 @@ public class CarbotApplication extends Application
 
         // initialize the TTS singleton
         TTSService.initialize(this);
+        
+        // initialize the VisualMemory singleton
+        VisualMemoryService.initialize(this);
     }
 }
