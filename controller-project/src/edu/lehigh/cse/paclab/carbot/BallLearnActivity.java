@@ -194,7 +194,7 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
             scratchImg.getIntBuffer().put(rgb);
 
             // try doing ROI
-            cvSetImageROI(scratchImg, cvRect(30, 30, 130, 130));
+            cvSetImageROI(scratchImg, cvRect(vpLeft, vpTop, vpWidth, vpHeight));
 
             // now dump histograms
             computeAvgStd(scratchImg);
@@ -208,10 +208,22 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
 
     private boolean hasCaptureData = false;
 
+    private int vpTop;
+    private int vpLeft;
+    private int vpHeight;
+    private int vpWidth;
+    
+
     private void configFields(int width, int height)
     {
         scratchImg = IplImage.create(width, height, IPL_DEPTH_8U, 4);
         rgb = new int[width * height];
+        
+        // configure the viewport
+        vpHeight = height / 3;
+        vpWidth = width / 4;
+        vpTop = height / 2 - vpHeight / 2;
+        vpLeft = width / 2 - vpWidth / 2;
     }
 
     /**
@@ -273,7 +285,7 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         paint.setStrokeWidth(2);
         paint.setColor(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
-        CvRect r = new CvRect(30, 30, 130, 130);
+        CvRect r = new CvRect(vpLeft, vpTop, vpWidth, vpHeight);
         int x = r.x(), y = r.y(), w = r.width(), h = r.height();
         canvas.drawRect(x * scaleX, y * scaleY, (x + w) * scaleX, (y + h) * scaleY, paint);
 
