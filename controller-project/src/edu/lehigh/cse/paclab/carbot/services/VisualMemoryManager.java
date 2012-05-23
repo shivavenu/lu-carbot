@@ -9,7 +9,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
  * images that we have encountered during a particular execution. For now, it
  * just holds the most recent image
  */
-public class VisualMemoryService
+public class VisualMemoryManager
 {
     // we represent the image as six values: the average and stdev in each of
     // the Hue, Saturation, and Value dimensions
