@@ -146,10 +146,10 @@ public class BTZapActivity extends Activity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
-            case R.id.item1:
+            case R.id.menuBTDiscoverable:
                 setDiscoverable();
                 return true;
-            case R.id.item2:
+            case R.id.menuBTFindDevice:
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(this, BTFindDeviceActivity.class);
                 startActivityForResult(serverIntent, INTENT_CONNECT);
@@ -310,7 +310,7 @@ public class BTZapActivity extends Activity
                 sendIter = -1;
                 
                 // create a file and dump the byte stream into it
-                File fSDCard = new File("/sdcard");
+                File fSDCard = new File("/mnt/sdcard");
                 File fImage = new File(fSDCard.toString() + "/image.jpg");
 
                 FileOutputStream fos;
