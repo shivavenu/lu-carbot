@@ -37,6 +37,20 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="BallFindActivity" />
+
+            <Button
+                android:id="@+id/btnLaunchBTRemoteControl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="BTRemoteControl" />
+            
+            <Button
+                android:id="@+id/btnLaunchBTBotDriver"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="BTBotDriver" />
         </LinearLayout>
     </ScrollView>
 

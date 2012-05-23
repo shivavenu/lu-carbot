@@ -116,10 +116,10 @@ public class RCSenderActivity extends Activity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
-            case R.id.item1:
+            case R.id.menuBTDiscoverable:
                 setDiscoverable();
                 return true;
-            case R.id.item2:
+            case R.id.menuBTFindDevice:
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(this, BTFindDeviceActivity.class);
                 startActivityForResult(serverIntent, INTENT_CONNECT);

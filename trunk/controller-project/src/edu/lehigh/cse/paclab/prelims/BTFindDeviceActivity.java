@@ -21,6 +21,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.lehigh.cse.paclab.carbot.R;
 
+/**
+ * This is more-or-less a copy of the BluetoothChat example code, showing how to
+ * enumerate devices found during Bluetooth enumeration
+ */
 public class BTFindDeviceActivity extends Activity
 {
     private BluetoothAdapter btAdapter;

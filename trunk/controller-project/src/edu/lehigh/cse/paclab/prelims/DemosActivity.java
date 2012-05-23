@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.carbot.services.TTSService;
+import edu.lehigh.cse.paclab.carbot.services.TTSManager;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other
@@ -35,7 +35,7 @@ public class DemosActivity extends Activity
     {
         // show how we can use Services from multiple activities... note that
         // this will cancel any previous TTS
-        TTSService.sayIt("You clicked a button in DemoActivity");
+        TTSManager.sayIt("You clicked a button in DemoActivity");
 
         if (v == findViewById(R.id.btnFaceCapture)) {
             startActivity(new Intent(this, FaceCaptureActivity.class));
