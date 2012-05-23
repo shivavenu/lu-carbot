@@ -1,8 +1,9 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Application;
-import edu.lehigh.cse.paclab.carbot.services.TTSService;
-import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
+import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
+import edu.lehigh.cse.paclab.carbot.services.TTSManager;
+import edu.lehigh.cse.paclab.carbot.services.VisualMemoryManager;
 
 /**
  * Override the Application class, so that we can be sure that our State
@@ -24,6 +25,14 @@ import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
 public class CarbotApplication extends Application
 {
     /**
+     * Constant to indicate interactions between the Application and the
+     * text-to-speech service
+     */
+    public static final int INTENT_TTS_CHECK = 99873;
+    public static final int INTENT_BT_TURNON = 72418;
+    public static final int INTENT_BT_CONNECT = 445452;
+
+    /**
      * Initialize the application
      * 
      * We override the method to provide a hook for initializing the singleton
@@ -35,9 +44,12 @@ public class CarbotApplication extends Application
         super.onCreate();
 
         // initialize the TTS singleton
-        TTSService.initialize(this);
+        TTSManager.initialize(this);
         
         // initialize the VisualMemory singleton
-        VisualMemoryService.initialize(this);
+        VisualMemoryManager.initialize(this);
+        
+        // initialize the Bluetooth singleton
+        BluetoothManager.initialize(this);
     }
 }

@@ -15,7 +15,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
+import edu.lehigh.cse.paclab.carbot.services.VisualMemoryManager;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
@@ -114,12 +114,12 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         rgb = new int[width * height];
 
         // compute the thresholds
-        double avghue = VisualMemoryService.avgHue.getVal(0);
-        double stdhue = VisualMemoryService.stdHue.getVal(0);
-        double avgsat = VisualMemoryService.avgSat.getVal(0);
-        double stdsat = VisualMemoryService.stdSat.getVal(0);
-        double avgval = VisualMemoryService.avgVal.getVal(0);
-        double stdval = VisualMemoryService.stdVal.getVal(0);
+        double avghue = VisualMemoryManager.avgHue.getVal(0);
+        double stdhue = VisualMemoryManager.stdHue.getVal(0);
+        double avgsat = VisualMemoryManager.avgSat.getVal(0);
+        double stdsat = VisualMemoryManager.stdSat.getVal(0);
+        double avgval = VisualMemoryManager.avgVal.getVal(0);
+        double stdval = VisualMemoryManager.stdVal.getVal(0);
         
         double lohue = saturatingAdd(avghue, -3 * stdhue, 0, 179);
         double hihue = saturatingAdd(avghue, +3 * stdhue, 0, 179);

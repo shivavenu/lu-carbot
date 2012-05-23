@@ -24,7 +24,7 @@ import android.widget.RelativeLayout;
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-import edu.lehigh.cse.paclab.carbot.services.VisualMemoryService;
+import edu.lehigh.cse.paclab.carbot.services.VisualMemoryManager;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
@@ -248,13 +248,13 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         cvSplit(hsvImage, imgHue, imgSat, imgVal, null);
 
         // do red avg/stdev
-        cvAvgSdv(imgHue, VisualMemoryService.avgHue, VisualMemoryService.stdHue, null);
+        cvAvgSdv(imgHue, VisualMemoryManager.avgHue, VisualMemoryManager.stdHue, null);
 
         // do green avg/stdev
-        cvAvgSdv(imgSat, VisualMemoryService.avgSat, VisualMemoryService.stdSat, null);
+        cvAvgSdv(imgSat, VisualMemoryManager.avgSat, VisualMemoryManager.stdSat, null);
 
         // do blue avg/stdev
-        cvAvgSdv(imgVal, VisualMemoryService.avgVal, VisualMemoryService.stdVal, null);
+        cvAvgSdv(imgVal, VisualMemoryManager.avgVal, VisualMemoryManager.stdVal, null);
 
         // Free memory
         cvReleaseImage(imgHue);
@@ -297,11 +297,11 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         paint.setColor(Color.BLACK);
         paint.setTextSize(20);
         String s;
-        s = "red: avg = " + VisualMemoryService.avgHue.getVal(0) + ", sd = " + VisualMemoryService.stdHue.getVal(0);
+        s = "red: avg = " + VisualMemoryManager.avgHue.getVal(0) + ", sd = " + VisualMemoryManager.stdHue.getVal(0);
         canvas.drawText(s, 10, 120, paint);
-        s = "green: avg = " + VisualMemoryService.avgSat.getVal(0) + ", sd = " + VisualMemoryService.stdSat.getVal(0);
+        s = "green: avg = " + VisualMemoryManager.avgSat.getVal(0) + ", sd = " + VisualMemoryManager.stdSat.getVal(0);
         canvas.drawText(s, 10, 150, paint);
-        s = "blue: avg = " + VisualMemoryService.avgVal.getVal(0) + ", sd = " + VisualMemoryService.stdVal.getVal(0);
+        s = "blue: avg = " + VisualMemoryManager.avgVal.getVal(0) + ", sd = " + VisualMemoryManager.stdVal.getVal(0);
         canvas.drawText(s, 10, 180, paint);
     }
 }

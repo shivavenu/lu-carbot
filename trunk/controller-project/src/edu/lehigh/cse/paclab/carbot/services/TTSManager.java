@@ -8,12 +8,13 @@ import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.CarbotApplication;
 
 /**
- * TTSService is a Singleton class for managing the Text-To-Speech service
+ * TTSManager is a Singleton class for managing the Text-To-Speech service
  * 
  */
-public class TTSService
+public class TTSManager
 {
     /**
      * Reference to the application, useful for Toast, making Intents, and
@@ -43,12 +44,6 @@ public class TTSService
     }
 
     /**
-     * Constant to indicate interactions between the Application and the
-     * text-to-speech service
-     */
-    private static final int CHECK_TTS = 99873;
-
-    /**
      * The Text To Speech service.
      * 
      * Use this object to talk
@@ -71,7 +66,7 @@ public class TTSService
         @Override
         public void onInit(int status)
         {
-            mTTS.speak("Hello, I am car-bot", TextToSpeech.QUEUE_FLUSH, null);
+            // mTTS.speak("Hello, I am car-bot", TextToSpeech.QUEUE_FLUSH, null);
             ttsConfigured = true;
         }
     };
@@ -89,7 +84,7 @@ public class TTSService
         // check if text-to-speech is supported, via an intent:
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        callingActivity.startActivityForResult(checkIntent, CHECK_TTS);
+        callingActivity.startActivityForResult(checkIntent, CarbotApplication.INTENT_TTS_CHECK);
         // NB: the intent will be sent to callingActivity, which should use the
         // below handleStateIntent method to allow State to filter out TTS
         // intents
@@ -115,7 +110,7 @@ public class TTSService
     public static boolean handleIntent(int requestCode, int resultCode, Intent data)
     {
         // check if this is a TTS Intent
-        if (requestCode == CHECK_TTS) {
+        if (requestCode == CarbotApplication.INTENT_TTS_CHECK) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
                 mTTS = new TextToSpeech(getCachedApplicationContext(), ttsListener);
@@ -142,7 +137,7 @@ public class TTSService
      * 
      * [TODO] Not called yet, should be called when the application terminates
      */
-    public static void shutdownTTS()
+    public static void shutdown()
     {
         if (mTTS != null) {
             mTTS.speak("Goodbye", TextToSpeech.QUEUE_FLUSH, null);
