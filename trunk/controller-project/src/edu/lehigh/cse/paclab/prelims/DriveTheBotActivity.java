@@ -64,7 +64,8 @@ public class DriveTheBotActivity extends Activity
 					}
 					mPermissionRequestPending = false;
 				}
-			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+			} 
+			else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
 				UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
 				if (accessory != null && accessory.equals(mAccessory)) {
 					closeAccessory();

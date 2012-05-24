@@ -1,6 +1,7 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Application;
+import edu.lehigh.cse.paclab.carbot.services.ArduinoManager;
 import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
 import edu.lehigh.cse.paclab.carbot.services.TTSManager;
 import edu.lehigh.cse.paclab.carbot.services.VisualMemoryManager;
@@ -31,6 +32,7 @@ public class CarbotApplication extends Application
     public static final int INTENT_TTS_CHECK = 99873;
     public static final int INTENT_BT_TURNON = 72418;
     public static final int INTENT_BT_CONNECT = 445452;
+    public static final int INTENT_SNAP_PHOTO = 943557;
 
     /**
      * Initialize the application
@@ -45,11 +47,14 @@ public class CarbotApplication extends Application
 
         // initialize the TTS singleton
         TTSManager.initialize(this);
-        
+
         // initialize the VisualMemory singleton
         VisualMemoryManager.initialize(this);
-        
+
         // initialize the Bluetooth singleton
         BluetoothManager.initialize(this);
+
+        // initialize the Arduino singleton
+        ArduinoManager.initialize(this);
     }
 }

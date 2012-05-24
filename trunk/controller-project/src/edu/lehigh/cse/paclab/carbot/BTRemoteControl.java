@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +29,15 @@ import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
  * BTRemoteControl has a simple interface, which is then used to send messages
  * to the BTBotDriver. BTBotDriver receives messages and appropriate messages to
  * the Arduino to move or stop the robot.
+ * 
+ * Eventually I'd like to split this into the BTBotDriver and BTRemoteControl
+ * classes... that can wait.
+ * 
+ * - auto snap a picture
+ * 
+ * - connect to arduino
+ * 
+ * - better interface
  */
 public class BTRemoteControl extends BTActivity
 {
@@ -64,16 +75,21 @@ public class BTRemoteControl extends BTActivity
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
         onStateNone();
+    }
 
-        // initialize buttons
-        Button mSendButton = (Button) findViewById(R.id.btnBTRCSendPic);
-        mSendButton.setOnClickListener(new OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                sendBigMessage();
-            }
-        });
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Log.i("CARBOT", "in OAR");
+        switch (requestCode) {
+            case CarbotApplication.INTENT_SNAP_PHOTO:
+                Log.i("CARBOT", "in OAR-2");
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.i("CARBOT", "in OAR-3");
+                    sendBigMessage();
+                }
+                return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onBTRCClick(View v)
@@ -84,8 +100,10 @@ public class BTRemoteControl extends BTActivity
             sendCMD("REV");
         if (v == findViewById(R.id.btnBTRCSendSTOP))
             sendCMD("STOP");
-        if (v == findViewById(R.id.btnBTRCSendPic))
-            sendBigMessage();
+        if (v == findViewById(R.id.btnBTRCSendPic)) {
+            Log.i("CARBOT", "sending command SNAP");
+            sendCMD("SNAP");
+        }
     }
 
     // now we shall try to set up a 2-stage communication
@@ -142,8 +160,7 @@ public class BTRemoteControl extends BTActivity
 
         // get the data to send (NB: this will change)
         // 1 - find the file
-        File fSDCard = new File("/sdcard");
-        File fImage = new File(fSDCard.toString() + "/image.jpg");
+        File fImage = SnapPhoto.getOutputMediaFile();
         // 2 - get its length, make a buffer
         sendSize = (int) fImage.length();
         Log.i("CARBOT", "File Size is " + sendSize);
@@ -271,6 +288,15 @@ public class BTRemoteControl extends BTActivity
                 sendDone();
                 return;
             }
+            if (msg.equals("SNAP")) {
+                ack();
+                sendDone();
+                // time to take a photo...
+                Log.i("CARBOT", "Starting intent to take picture");
+                Intent i = new Intent(this, SnapPhoto.class);
+                startActivityForResult(i, CarbotApplication.INTENT_SNAP_PHOTO);
+                return;
+            }
             // other known messages would be handled here, or better yet, have a
             // function handle them!
 
@@ -319,8 +345,7 @@ public class BTRemoteControl extends BTActivity
 
             // create a file and dump the byte stream into it (hard-code for
             // Droid I)
-            File fSDCard = new File("/mnt/sdcard");
-            File fImage = new File(fSDCard.toString() + "/image.jpg");
+            File fImage = SnapPhoto.getOutputMediaFile();
 
             FileOutputStream fos;
             try {

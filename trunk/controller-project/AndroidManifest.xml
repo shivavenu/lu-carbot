@@ -85,9 +85,13 @@
 
         <service android:name="edu.lehigh.cse.paclab.prelims.ArduinoService" >
         </service>
+        <service android:name="edu.lehigh.cse.paclab.carbot.services.ArduinoService" >
+        </service>
         <activity android:name="BTBotDriver"></activity>
+        <activity android:name="SnapPhoto"></activity>
         <activity android:name="BTRemoteControl"></activity>
         <activity android:name="BTFindDeviceActivity"></activity>
+        <activity android:name="DriveTheBotActivity"></activity>
 
     </application>
 
