@@ -30,8 +30,8 @@ import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
  */
 public class BTRemoteControl extends BTActivity
 {
-	TextView tvStatus;
-	
+    TextView tvStatus;
+
     // implement abstract message to handle when BT connects
     void onStateConnected()
     {
@@ -76,18 +76,18 @@ public class BTRemoteControl extends BTActivity
         });
     }
 
-    public void onBTRCClick(View v) 
+    public void onBTRCClick(View v)
     {
-    	if (v == findViewById(R.id.btnBTRCSendFWD))
-    		sendCMD("FWD");
-    	if (v == findViewById(R.id.btnBTRCSendREV))
-    		sendCMD("REV");
-    	if (v == findViewById(R.id.btnBTRCSendSTOP))
-    		sendCMD("STOP");
-    	if (v == findViewById(R.id.btnBTRCSendPic))
-    		sendBigMessage();
+        if (v == findViewById(R.id.btnBTRCSendFWD))
+            sendCMD("FWD");
+        if (v == findViewById(R.id.btnBTRCSendREV))
+            sendCMD("REV");
+        if (v == findViewById(R.id.btnBTRCSendSTOP))
+            sendCMD("STOP");
+        if (v == findViewById(R.id.btnBTRCSendPic))
+            sendBigMessage();
     }
-    
+
     // now we shall try to set up a 2-stage communication
     // snd -1: size
     // rcv -1: send ack
@@ -197,21 +197,22 @@ public class BTRemoteControl extends BTActivity
         }
     }
 
-    void ack() 
+    void ack()
     {
-    	// Send an ack
+        // Send an ack
         Log.i("CARBOT", "sending ack");
         BluetoothManager.getBtService().write("ACK".getBytes());
     }
-    
+
     void sendDone()
     {
-    	sendIter = -1;
-    	shortmessage = "";
-    	sendSize = -1;
-    	data = null;
+        sending = false;
+        sendIter = -1;
+        shortmessage = "";
+        sendSize = -1;
+        data = null;
     }
-    
+
     /**
      * Receive a message
      */
@@ -220,7 +221,7 @@ public class BTRemoteControl extends BTActivity
         // case 1: we are the sender of a non-data message... this is an ACK
         if (sending == true && data == null) {
             // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "case 1 received " + readBuf);
+            Log.i("CARBOT", "case 1 received " + new String(readBuf, 0, bytes));
             // the communication is done
             sendDone();
             return;
@@ -228,8 +229,8 @@ public class BTRemoteControl extends BTActivity
         // case 2: we are the sender of a data message... this is an ACK
         if (sending == true && data != null) {
             // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "case 2 received " + readBuf);
-            
+            Log.i("CARBOT", "case 2 received " + new String(readBuf, 0, bytes));
+
             // do we need to send more data?
             if (sendIter * 512 >= sendSize) {
                 sendDone();
@@ -249,6 +250,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                sendDone();
                 return;
             }
             // check for known non-int messages
@@ -257,6 +259,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                sendDone();
                 return;
             }
             // check for known non-int messages
@@ -265,6 +268,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                sendDone();
                 return;
             }
             // other known messages would be handled here, or better yet, have a
@@ -290,21 +294,21 @@ public class BTRemoteControl extends BTActivity
             return;
         }
         // case 4: we are receiving the 'sendIter'th packet of data
-        
+
         // figure out how much data is in this packet
         int remain = sendSize - 512 * sendIter;
         int min = remain > 512 ? 512 : remain;
-        
+
         // figure out offset where data will go
         int start = 512 * sendIter;
 
         // copy data into buffer
         for (int i = 0; i < min; ++i)
             data[start + i] = readBuf[i];
-        
+
         // advance to next state
         sendIter++;
-        
+
         // ack the message
         ack();
 
@@ -313,7 +317,8 @@ public class BTRemoteControl extends BTActivity
             // clear the counter
             sendIter = -1;
 
-            // create a file and dump the byte stream into it (hard-code for Droid I)
+            // create a file and dump the byte stream into it (hard-code for
+            // Droid I)
             File fSDCard = new File("/mnt/sdcard");
             File fImage = new File(fSDCard.toString() + "/image.jpg");
 

@@ -158,7 +158,7 @@ public abstract class BTActivity extends Activity
                 break;
             case CarbotApplication.INTENT_BT_CONNECT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Connected to" + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "Connected to " + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT)
                             .show();
                     // Get the device MAC address
                     String address = data.getExtras().getString("MAC_ADDRESS");
