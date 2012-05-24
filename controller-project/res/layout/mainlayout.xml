@@ -51,7 +51,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="BTBotDriver" />
-        </LinearLayout>
+            <Button
+                android:id="@+id/btnDrive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="Drive The Bot" />
+            </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

@@ -10,7 +10,12 @@ package edu.lehigh.cse.paclab.carbot;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.services.ArduinoManager;
 import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
 import edu.lehigh.cse.paclab.carbot.services.TTSManager;
 
@@ -34,6 +39,8 @@ public class CarbotActivity extends Activity
 
         // configure Bluetooth
         BluetoothManager.configure(this);
+        
+        ArduinoManager.configure(this);
     }
 
     /**
@@ -62,6 +69,9 @@ public class CarbotActivity extends Activity
         if (v == findViewById(R.id.btnLaunchBTBotDriver)) {
             startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BTBotDriver.class));
         }
+        if (v == findViewById(R.id.btnDrive)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.DriveTheBotActivity.class));
+        }
     }
 
     /**
@@ -89,9 +99,35 @@ public class CarbotActivity extends Activity
     {
         TTSManager.shutdown();
         BluetoothManager.shutdown();
+        ArduinoManager.shutdown();
         super.onStop();
     }
 
+    /** Draw our menu */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.carbotmenu, menu);
+        return true;
+    }
+
+    /** This runs when a menu item is clicked */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case R.id.menuConnectArduino1:
+                ArduinoManager.config();
+                return true;
+            case R.id.menuConnectArduino2:
+                ArduinoManager.sendCommand("INIT");
+                return true;
+        }
+        return false;
+    }
+
+    
     /*
      * Plan from here:
      * 

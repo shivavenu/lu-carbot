@@ -129,6 +129,7 @@ public class CalibrationActivity extends Activity
             }
         }
     };
+
     private ServiceConnection conn = new ServiceConnection()
     {
 
