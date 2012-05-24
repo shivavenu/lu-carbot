@@ -31,7 +31,7 @@ public class CarbotActivity extends Activity
 
         // configure the TTS Service
         TTSManager.configure(this);
-        
+
         // configure Bluetooth
         BluetoothManager.configure(this);
     }
@@ -81,14 +81,15 @@ public class CarbotActivity extends Activity
     }
 
     /**
-     * Not called yet, but when we explicitly close the app, we should shut down
-     * any services that we started...
+     * We explicitly close the app, we should shut down any services that we
+     * started...
      */
-    public void onExplicitCloseApp()
+    @Override
+    public void onStop()
     {
         TTSManager.shutdown();
         BluetoothManager.shutdown();
-        finish();
+        super.onStop();
     }
 
     /*
