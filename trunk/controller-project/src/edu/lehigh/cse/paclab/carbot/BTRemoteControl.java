@@ -30,25 +30,24 @@ import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
  */
 public class BTRemoteControl extends BTActivity
 {
+	TextView tvStatus;
+	
     // implement abstract message to handle when BT connects
     void onStateConnected()
     {
-        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
-        tv.setText("connected to " + BluetoothManager.getDevName());
+        tvStatus.setText("connected to " + BluetoothManager.getDevName());
     }
 
     // implement abstract message to handle when BT tries to connect
     void onStateConnecting()
     {
-        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
-        tv.setText("Connecting...");
+        tvStatus.setText("Connecting...");
     }
 
     // implement abstract message to handle when BT is not connected
     void onStateNone()
     {
-        TextView tv = (TextView) findViewById(R.id.tvBtTitleRight);
-        tv.setText("not connected");
+        tvStatus.setText("not connected");
     }
 
     /** Called when the activity is first created. */
@@ -61,7 +60,9 @@ public class BTRemoteControl extends BTActivity
         // message
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.btremotecontrollayout);
+        // save the status field so we can update it easily
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
+        tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
         onStateNone();
 
         // initialize buttons
@@ -73,18 +74,20 @@ public class BTRemoteControl extends BTActivity
                 sendBigMessage();
             }
         });
-
-        Button mCmdButton = (Button) findViewById(R.id.btnBTRCSendFWD);
-        mCmdButton.setOnClickListener(new OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                sendFwd();
-            }
-        });
-
     }
 
+    public void onBTRCClick(View v) 
+    {
+    	if (v == findViewById(R.id.btnBTRCSendFWD))
+    		sendCMD("FWD");
+    	if (v == findViewById(R.id.btnBTRCSendREV))
+    		sendCMD("REV");
+    	if (v == findViewById(R.id.btnBTRCSendSTOP))
+    		sendCMD("STOP");
+    	if (v == findViewById(R.id.btnBTRCSendPic))
+    		sendBigMessage();
+    }
+    
     // now we shall try to set up a 2-stage communication
     // snd -1: size
     // rcv -1: send ack
@@ -107,7 +110,7 @@ public class BTRemoteControl extends BTActivity
     String shortmessage = "";
 
     // send a simple message
-    void sendFwd()
+    void sendCMD(String msg)
     {
         // Check that we're actually connected before trying anything
         if (BluetoothManager.getBtService().getState() != BTService.STATE_CONNECTED) {
@@ -117,7 +120,7 @@ public class BTRemoteControl extends BTActivity
 
         sending = true;
         sendIter = -1;
-        shortmessage = "FWD";
+        shortmessage = msg;
         sendSize = -1;
         data = null;
         sendMessage();
@@ -192,11 +195,23 @@ public class BTRemoteControl extends BTActivity
             sendIter++;
             return;
         }
-        // case 4: we are in receiving mode, so send an ACK
+    }
+
+    void ack() 
+    {
+    	// Send an ack
         Log.i("CARBOT", "sending ack");
         BluetoothManager.getBtService().write("ACK".getBytes());
     }
-
+    
+    void sendDone()
+    {
+    	sendIter = -1;
+    	shortmessage = "";
+    	sendSize = -1;
+    	data = null;
+    }
+    
     /**
      * Receive a message
      */
@@ -205,19 +220,19 @@ public class BTRemoteControl extends BTActivity
         // case 1: we are the sender of a non-data message... this is an ACK
         if (sending == true && data == null) {
             // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "received " + readBuf);
+            Log.i("CARBOT", "case 1 received " + readBuf);
             // the communication is done
-            sending = false;
+            sendDone();
             return;
         }
         // case 2: we are the sender of a data message... this is an ACK
-        if (sending == true) {
+        if (sending == true && data != null) {
             // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "received " + readBuf);
+            Log.i("CARBOT", "case 2 received " + readBuf);
             
             // do we need to send more data?
             if (sendIter * 512 >= sendSize) {
-                sending = false;
+                sendDone();
             }
             else {
                 sendMessage();
@@ -233,7 +248,23 @@ public class BTRemoteControl extends BTActivity
                 // it's forward: update the TV, send an ACK
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
-                sendMessage();
+                ack();
+                return;
+            }
+            // check for known non-int messages
+            if (msg.equals("REV")) {
+                // it's forward: update the TV, send an ACK
+                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                tv.setText(msg);
+                ack();
+                return;
+            }
+            // check for known non-int messages
+            if (msg.equals("STOP")) {
+                // it's forward: update the TV, send an ACK
+                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                tv.setText(msg);
+                ack();
                 return;
             }
             // other known messages would be handled here, or better yet, have a
@@ -247,8 +278,9 @@ public class BTRemoteControl extends BTActivity
                 // total size can be determined by the payload of this
                 // message
                 sendSize = Integer.parseInt(new String(readBuf, 0, bytes));
-                // get room for the data
+                // get room for the data, send an ack
                 data = new byte[sendSize];
+                ack();
                 // advance to next state
                 sendIter++;
             }
@@ -274,7 +306,7 @@ public class BTRemoteControl extends BTActivity
         sendIter++;
         
         // ack the message
-        sendMessage();
+        ack();
 
         // are we all done?
         if (sendIter * 512 >= sendSize) {

@@ -8,19 +8,35 @@
         android:id="@+id/btnBTRCSendFWD"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Forward!" />
+        android:text="Forward!" 
+        android:onClick="onBTRCClick" />
 
+    <Button
+        android:id="@+id/btnBTRCSendREV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reverse" 
+        android:onClick="onBTRCClick" />
+
+        <Button
+        android:id="@+id/btnBTRCSendSTOP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop" 
+        android:onClick="onBTRCClick" />
+    
     <Button
         android:id="@+id/btnBTRCSendPic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send Picture!" />
+        android:text="Send Picture!" 
+        android:onClick="onBTRCClick"/>
 
     <TextView
         android:id="@+id/tvBTRCLastMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="" />
 
     <ImageView
         android:id="@+id/ivBTRCImage"
