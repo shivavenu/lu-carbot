@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot.support;
+package edu.lehigh.cse.paclab.kinderbot;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,7 +7,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.kinderbot.support.WalkablePathView;
 
+/**
+ * This is for drawing a path, and then the robot connected to the phone will perform that movement
+ * @author spear
+ *
+ */
 public class WalkablePathActivity extends Activity
 {
     private WalkablePathView wpView;
