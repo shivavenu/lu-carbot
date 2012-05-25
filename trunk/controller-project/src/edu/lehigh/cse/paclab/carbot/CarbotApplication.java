@@ -50,11 +50,5 @@ public class CarbotApplication extends Application
 
         // initialize the VisualMemory singleton
         VisualMemoryManager.initialize(this);
-
-        // initialize the Bluetooth singleton
-        BluetoothManager.initialize(this);
-
-        // initialize the Arduino singleton
-        ArduinoManager.initialize(this);
     }
 }

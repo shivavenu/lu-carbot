@@ -18,19 +18,38 @@
             android:scrollbars="vertical" >
 
             <Button
-                android:id="@+id/btnLaunchDemos"
+                android:id="@+id/btnLaunchBallLearn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
-                android:text="DemosActivity" />
+                android:text="BallLearnActivity" />
 
-                        <Button
-                android:id="@+id/btnLaunchR2Demos"
+            <Button
+                android:id="@+id/btnLaunchBallFind"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
-                android:text="RoundTwoDemosActivity" />
+                android:text="BallFindActivity" />
+
+            <Button
+                android:id="@+id/btnLaunchBTRemoteControl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="BTRemoteControl" />
             
+            <Button
+                android:id="@+id/btnLaunchBTBotDriver"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="BTBotDriver" />
+            <Button
+                android:id="@+id/btnDrive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="Drive The Bot" />
             </LinearLayout>
     </ScrollView>
 

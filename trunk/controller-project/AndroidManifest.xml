@@ -92,6 +92,7 @@
         <activity android:name="BTRemoteControl"></activity>
         <activity android:name="BTFindDeviceActivity"></activity>
         <activity android:name="DriveTheBotActivity"></activity>
+        <activity android:name="RoundTwoDemos"></activity>
 
     </application>
 
