@@ -24,14 +24,27 @@
                 android:onClick="launchActivity"
                 android:text="DemosActivity" />
 
-                        <Button
+            <Button
                 android:id="@+id/btnLaunchR2Demos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="RoundTwoDemosActivity" />
-            
-            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLaunchKinderDrive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="Drive The Bot!" />
+
+            <Button
+                android:id="@+id/btnLaunchKinderRC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="launchActivity"
+                android:text="Remote Control (bot)" />
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

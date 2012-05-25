@@ -16,8 +16,7 @@
     <application
         android:allowClearUserData="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" 
-        android:name="edu.lehigh.cse.paclab.carbot.CarbotApplication" >
+        android:label="@string/app_name" >
         <activity
             android:name=".CarbotActivity"
             android:label="@string/app_name" 
@@ -93,6 +92,9 @@
         <activity android:name="BTFindDeviceActivity"></activity>
         <activity android:name="DriveTheBotActivity"></activity>
         <activity android:name="RoundTwoDemos"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.SnapPhoto"></activity>
 
     </application>
 
