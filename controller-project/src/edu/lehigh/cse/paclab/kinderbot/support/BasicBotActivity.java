@@ -20,14 +20,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
+import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.R;
@@ -55,12 +54,17 @@ import edu.lehigh.cse.paclab.prelims.BTService;
  */
 public abstract class BasicBotActivity extends Activity implements OnInitListener
 {
+    // constants for preference tags
+    final public String PREF_TAG_NAME = "KB_CONFIG_NAME";
+    final public String PREF_TAG_METER = "KB_CONFIG_METER";
+    final public String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
+    final public String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
+    final public String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
+
     public static final int INTENT_SNAP_PHOTO = 943557;
     final static private int INTENT_TURNITON = 7213;
     final static private int INTENT_CONNECT = 59847;
     private final int CHECK_TTS = 99873;
-
-
 
     public static final String TAG = "Carbot";
 
@@ -77,6 +81,10 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     // this is how we interact with the Bluetooth device
     private BluetoothAdapter btAdapter = null;
 
+    private boolean isUSBReceiverRegistered = false;
+
+    PowerManager.WakeLock wl;
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -92,6 +100,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
         registerReceiver(mUsbReceiver, filter);
+        isUSBReceiverRegistered = true;
 
         if (getLastNonConfigurationInstance() != null) {
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
@@ -108,6 +117,11 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
             Toast.makeText(this, "Error: no Bluetooth support", Toast.LENGTH_SHORT).show();
             finish();
         }
+        
+        // grab a wake lock
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE); 
+        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG); 
+        wl.acquire(); 
     }
 
     /**
@@ -207,7 +221,8 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     public void onDestroy()
     {
         // Arduino
-        unregisterReceiver(mUsbReceiver);
+        if (isUSBReceiverRegistered)
+            unregisterReceiver(mUsbReceiver);
 
         // TTS
         if (mTts != null) {
@@ -219,6 +234,8 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
         if (btService != null)
             btService.stop();
 
+        // give up the wakelock
+        wl.release();
         super.onDestroy();
     }
 
@@ -250,7 +267,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
                     finish();
                 }
                 break;
-          
+
             case INTENT_CONNECT:
                 if (resultCode == Activity.RESULT_OK) {
                     Toast.makeText(this, "Connected to" + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT)
@@ -333,14 +350,41 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
         }
     }
 
-    public void robotStop(){sendCommand((byte)0);}
-    public void robotForward(){sendCommand((byte)1);}
-    public void robotReverse(){sendCommand((byte)2);}
-    public void robotClockwise(){sendCommand((byte)3);}
-    public void robotCounterclockwise(){sendCommand((byte)4);}
-    public void robotPointTurnRight(){sendCommand((byte)5);}
-    public void robotPointTurnLeft(){sendCommand((byte)6);}
-    
+    public void robotStop()
+    {
+        sendCommand((byte) 0);
+    }
+
+    public void robotForward()
+    {
+        sendCommand((byte) 1);
+    }
+
+    public void robotReverse()
+    {
+        sendCommand((byte) 2);
+    }
+
+    public void robotClockwise()
+    {
+        sendCommand((byte) 3);
+    }
+
+    public void robotCounterclockwise()
+    {
+        sendCommand((byte) 4);
+    }
+
+    public void robotPointTurnRight()
+    {
+        sendCommand((byte) 5);
+    }
+
+    public void robotPointTurnLeft()
+    {
+        sendCommand((byte) 6);
+    }
+
     private TextToSpeech mTts;
 
     @Override
@@ -431,14 +475,17 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
                 case BTService.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BTService.STATE_CONNECTED:
-                            if (tv != null) tv.setText("connected to " + devName);
+                            if (tv != null)
+                                tv.setText("connected to " + devName);
                             break;
                         case BTService.STATE_CONNECTING:
-                            if (tv != null) tv.setText("Connecting...");
+                            if (tv != null)
+                                tv.setText("Connecting...");
                             break;
                         case BTService.STATE_LISTEN:
                         case BTService.STATE_NONE:
-                            if (tv != null) tv.setText("not connected");
+                            if (tv != null)
+                                tv.setText("not connected");
                             break;
                     }
                     break;

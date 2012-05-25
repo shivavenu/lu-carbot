@@ -20,8 +20,6 @@ public class DriveTheBotActivity extends BasicBotActivity
     ToggleButton pTurnLeft;
     ToggleButton pTurnRight;
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
