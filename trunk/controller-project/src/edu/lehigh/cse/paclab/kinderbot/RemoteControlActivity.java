@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.kinderbot;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,54 +12,32 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.services.BTService;
-import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
+import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.kinderbot.support.BTService;
+import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.kinderbot.support.SnapPhoto;
 
 /**
  * An activity for controlling a robot remotely
  * 
- * The BTRemoteControl activity runs on one phone, and BTBotDriver runs on
- * another. The phone running BTBotDriver also uses the ArduinoService.
- * BTRemoteControl has a simple interface, which is then used to send messages
- * to the BTBotDriver. BTBotDriver receives messages and appropriate messages to
- * the Arduino to move or stop the robot.
+ * This is almost there. Remaining tasks:
  * 
- * Eventually I'd like to split this into the BTBotDriver and BTRemoteControl
- * classes... that can wait.
+ * 1 - hardening: you need to not rotate the phone, and connect bluetooth before
+ * connecting usb
  * 
- * - auto snap a picture
+ * 2 - auto-snap picture: right now, the robot phone must be touched a few times
  * 
- * - connect to arduino
+ * 3 - Orthogonality: right now both sides of the system use this activity,
+ * instead of the botphone using something simpler
  * 
- * - better interface
  */
-public class BTRemoteControl extends BTActivity
+public class RemoteControlActivity extends BasicBotActivity
 {
     TextView tvStatus;
-
-    // implement abstract message to handle when BT connects
-    protected void onStateConnected()
-    {
-        tvStatus.setText("connected to " + BluetoothManager.getDevName());
-    }
-
-    // implement abstract message to handle when BT tries to connect
-    protected void onStateConnecting()
-    {
-        tvStatus.setText("Connecting...");
-    }
-
-    // implement abstract message to handle when BT is not connected
-    protected void onStateNone()
-    {
-        tvStatus.setText("not connected");
-    }
 
     /** Called when the activity is first created. */
     @Override
@@ -70,18 +48,21 @@ public class BTRemoteControl extends BTActivity
         // set up custom title, inflate layout, create title, set default
         // message
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+
         setContentView(R.layout.btremotecontrollayout);
+
         // save the status field so we can update it easily
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
-        onStateNone();
+        tvStatus.setText("not connected");
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         Log.i("CARBOT", "in OAR");
         switch (requestCode) {
-            case CarbotApplication.INTENT_SNAP_PHOTO:
+            case INTENT_SNAP_PHOTO:
                 Log.i("CARBOT", "in OAR-2");
                 if (resultCode == Activity.RESULT_OK) {
                     Log.i("CARBOT", "in OAR-3");
@@ -131,7 +112,7 @@ public class BTRemoteControl extends BTActivity
     void sendCMD(String msg)
     {
         // Check that we're actually connected before trying anything
-        if (BluetoothManager.getBtService().getState() != BTService.STATE_CONNECTED) {
+        if (btService.getState() != BTService.STATE_CONNECTED) {
             Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -148,7 +129,7 @@ public class BTRemoteControl extends BTActivity
     {
         Log.i("CARBOT", "Sending big message");
         // Check that we're actually connected before trying anything
-        if (BluetoothManager.getBtService().getState() != BTService.STATE_CONNECTED) {
+        if (btService.getState() != BTService.STATE_CONNECTED) {
             Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -189,14 +170,14 @@ public class BTRemoteControl extends BTActivity
         if (sending == true && data == null) {
             Log.i("CARBOT", "sending " + shortmessage);
             // send the actual message as a string
-            BluetoothManager.getBtService().write(shortmessage.getBytes());
+            btService.write(shortmessage.getBytes());
             return;
         }
         // case 2: we are sending the first chunk of a data message
         if (sending == true && sendIter == -1) {
             Log.i("CARBOT", "sending startbig size = " + sendSize);
             // send the size of the message as a string, advance to next
-            BluetoothManager.getBtService().write(("" + sendSize).getBytes());
+            btService.write(("" + sendSize).getBytes());
             sendIter++;
             return;
         }
@@ -208,7 +189,7 @@ public class BTRemoteControl extends BTActivity
             // send bytes via offset/size variant of write command, advance to
             // next
             Log.i("CARBOT", "sending " + min + " bytes");
-            BluetoothManager.getBtService().write(data, 512 * sendIter, min);
+            btService.write(data, 512 * sendIter, min);
             sendIter++;
             return;
         }
@@ -218,7 +199,7 @@ public class BTRemoteControl extends BTActivity
     {
         // Send an ack
         Log.i("CARBOT", "sending ack");
-        BluetoothManager.getBtService().write("ACK".getBytes());
+        btService.write("ACK".getBytes());
     }
 
     void sendDone()
@@ -267,6 +248,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                robotForward();
                 sendDone();
                 return;
             }
@@ -276,6 +258,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                robotReverse();
                 sendDone();
                 return;
             }
@@ -285,6 +268,7 @@ public class BTRemoteControl extends BTActivity
                 TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
                 tv.setText(msg);
                 ack();
+                robotStop();
                 sendDone();
                 return;
             }
@@ -294,7 +278,7 @@ public class BTRemoteControl extends BTActivity
                 // time to take a photo...
                 Log.i("CARBOT", "Starting intent to take picture");
                 Intent i = new Intent(this, SnapPhoto.class);
-                startActivityForResult(i, CarbotApplication.INTENT_SNAP_PHOTO);
+                startActivityForResult(i, INTENT_SNAP_PHOTO);
                 return;
             }
             // other known messages would be handled here, or better yet, have a
@@ -363,7 +347,10 @@ public class BTRemoteControl extends BTActivity
             }
             // if that worked, then update the imageView
             ImageView iv = (ImageView) findViewById(R.id.ivBTRCImage);
+            iv.setImageURI(null);
+            iv.invalidate();
             iv.setImageURI(Uri.fromFile(fImage));
+            iv.invalidate();
         }
     }
 

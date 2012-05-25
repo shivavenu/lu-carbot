@@ -29,48 +29,21 @@ public class CarbotActivity extends Activity
         // draw the screen
         setContentView(R.layout.mainlayout);
 
-        // configure the TTS Service
-        TTSManager.configure(this);
-    }
-
-    /**
-     * Whenever an intent comes to this Activity, it is handled in this code
-     */
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        // filter TTS events.. TTS events only occur during TTS configuration,
-        // and TTS configuration should *only* happen from this code
-        if (TTSManager.handleIntent(requestCode, resultCode, data))
-            return;
-
-        // otherwise handle the intent according to the behaviors of this
-        // specific Activity:
-
-        // ...
-    }
-
-    /**
-     * We explicitly close the app, we should shut down any services that we
-     * started...
-     */
-    @Override
-    public void onStop()
-    {
-        TTSManager.shutdown();
-        super.onStop();
     }
 
     public void launchActivity(View v)
     {
         if (v == findViewById(R.id.btnLaunchDemos)) {
-            TTSManager.sayIt("I can talk!"); // just to show how we can use the
-                                             // service from this Activity...
             startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchR2Demos)) {
-            TTSManager.sayIt("I can talk!"); // just to show how we can use the
-                                             // service from this Activity...
             startActivity(new Intent(this, RoundTwoDemos.class));
+        }
+        if (v == findViewById(R.id.btnLaunchKinderDrive)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity.class));
+        }
+        if (v == findViewById(R.id.btnLaunchKinderRC)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity.class));
         }
     }
 

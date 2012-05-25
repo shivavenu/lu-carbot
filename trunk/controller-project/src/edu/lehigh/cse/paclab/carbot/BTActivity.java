@@ -85,13 +85,13 @@ public abstract class BTActivity extends Activity
         return false;
     }
 
-    abstract void onStateConnected();
+    abstract protected void onStateConnected();
 
-    abstract void onStateConnecting();
+    abstract protected void onStateConnecting();
 
-    abstract void onStateNone();
+    abstract protected void onStateNone();
 
-    abstract void receiveMessage(byte[] readBuf, int bytes);
+    abstract protected void receiveMessage(byte[] readBuf, int bytes);
 
     /** the service uses this to communicate with the activity */
     private final Handler mHandler = new Handler()
