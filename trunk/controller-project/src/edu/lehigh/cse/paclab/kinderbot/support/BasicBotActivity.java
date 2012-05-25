@@ -61,10 +61,11 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     final public String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
     final public String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
 
+    // intent constants
     public static final int INTENT_SNAP_PHOTO = 943557;
     final static private int INTENT_TURNITON = 7213;
     final static private int INTENT_CONNECT = 59847;
-    private final int CHECK_TTS = 99873;
+    private static final int CHECK_TTS = 99873;
 
     public static final String TAG = "Carbot";
 
@@ -513,5 +514,4 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
             }
         }
     };
-
 }
