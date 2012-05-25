@@ -10,13 +10,7 @@ package edu.lehigh.cse.paclab.carbot;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.services.ArduinoManager;
-import edu.lehigh.cse.paclab.carbot.services.BluetoothManager;
 import edu.lehigh.cse.paclab.carbot.services.TTSManager;
 
 /**
@@ -25,6 +19,7 @@ import edu.lehigh.cse.paclab.carbot.services.TTSManager;
  */
 public class CarbotActivity extends Activity
 {
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -36,42 +31,6 @@ public class CarbotActivity extends Activity
 
         // configure the TTS Service
         TTSManager.configure(this);
-
-        // configure Bluetooth
-        BluetoothManager.configure(this);
-        
-        ArduinoManager.configure(this);
-    }
-
-    /**
-     * For now, all we do is launch the demos, but soon we'll do real things
-     * instead...
-     * 
-     * @param v
-     *            The button that was pressed
-     */
-    public void launchActivity(View v)
-    {
-        if (v == findViewById(R.id.btnLaunchDemos)) {
-            TTSManager.sayIt("I can talk!"); // just to show how we can use the
-                                             // service from this Activity...
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
-        }
-        if (v == findViewById(R.id.btnLaunchBallLearn)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BallLearnActivity.class));
-        }
-        if (v == findViewById(R.id.btnLaunchBallFind)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BallFindActivity.class));
-        }
-        if (v == findViewById(R.id.btnLaunchBTRemoteControl)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BTRemoteControl.class));
-        }
-        if (v == findViewById(R.id.btnLaunchBTBotDriver)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.BTBotDriver.class));
-        }
-        if (v == findViewById(R.id.btnDrive)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.carbot.DriveTheBotActivity.class));
-        }
     }
 
     /**
@@ -98,36 +57,23 @@ public class CarbotActivity extends Activity
     public void onStop()
     {
         TTSManager.shutdown();
-        BluetoothManager.shutdown();
-        ArduinoManager.shutdown();
         super.onStop();
     }
 
-    /** Draw our menu */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+    public void launchActivity(View v)
     {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.carbotmenu, menu);
-        return true;
-    }
-
-    /** This runs when a menu item is clicked */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId()) {
-            case R.id.menuConnectArduino1:
-                ArduinoManager.config();
-                return true;
-            case R.id.menuConnectArduino2:
-                ArduinoManager.sendCommand("INIT");
-                return true;
+        if (v == findViewById(R.id.btnLaunchDemos)) {
+            TTSManager.sayIt("I can talk!"); // just to show how we can use the
+                                             // service from this Activity...
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
         }
-        return false;
+        if (v == findViewById(R.id.btnLaunchR2Demos)) {
+            TTSManager.sayIt("I can talk!"); // just to show how we can use the
+                                             // service from this Activity...
+            startActivity(new Intent(this, RoundTwoDemos.class));
+        }
     }
 
-    
     /*
      * Plan from here:
      * 
