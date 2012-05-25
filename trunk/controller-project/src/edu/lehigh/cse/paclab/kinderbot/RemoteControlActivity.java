@@ -55,7 +55,6 @@ public class RemoteControlActivity extends BasicBotActivity
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
         tvStatus.setText("not connected");
-
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)

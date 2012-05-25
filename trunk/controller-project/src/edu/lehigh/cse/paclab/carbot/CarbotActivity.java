@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.services.TTSManager;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other
@@ -45,6 +44,14 @@ public class CarbotActivity extends Activity
         if (v == findViewById(R.id.btnLaunchKinderRC)) {
             startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity.class));
         }
+        if (v == findViewById(R.id.btnLaunchKinderConfig)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.ConfigurationActivity.class));
+        }
+        if (v == findViewById(R.id.btnLaunchKinderWalk)) {
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.WalkablePathActivity.class));
+        }
+
+    
     }
 
     /*

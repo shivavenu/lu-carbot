@@ -1,39 +1,56 @@
 package edu.lehigh.cse.paclab.kinderbot;
 
-import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
 import edu.lehigh.cse.paclab.kinderbot.support.WalkablePathView;
 
 /**
- * This is for drawing a path, and then the robot connected to the phone will perform that movement
+ * This is for drawing a path, and then the robot connected to the phone will
+ * perform that movement
+ * 
+ * [TODO] configure so that we can do remote picture taking and other cool stuff
+ * 
+ * [TODO] this is a bit buggy right now... I think it's partly due to the use of
+ * threads, but I'm not sure.
+ * 
  * @author spear
- *
+ * 
  */
-public class WalkablePathActivity extends Activity
+public class WalkablePathActivity extends BasicBotActivity
 {
+    @Override
+    protected void receiveMessage(byte[] readBuf, int bytes)
+    {
+        // empty for now, but we need to do this if we are going to draw on a
+        // remote phone
+    }
+
     private WalkablePathView wpView;
     private int index = 1;
     private float current_x;
     private float current_y;
     private double current_orientation = 0;
-    
+
     // [mfs] should try to use magnitude scaling eventually...
     // private double current_mag = 1;
     public boolean moving = false;
 
+    int rotatemillis;
+
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.walkablepathlayout);
-        
-        wpView = (WalkablePathView)findViewById(R.id.wpv1);
+        setContentView(R.layout.kinderwalklayout);
 
-        Button b = (Button)findViewById(R.id.btnWPLGo);
+        wpView = (WalkablePathView) findViewById(R.id.wpv1);
+
+        Button b = (Button) findViewById(R.id.btnWPLGo);
         b.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
@@ -46,7 +63,7 @@ public class WalkablePathActivity extends Activity
             }
         });
 
-        Button clear = (Button)findViewById(R.id.btnWPLClear);
+        Button clear = (Button) findViewById(R.id.btnWPLClear);
         clear.setOnClickListener(new OnClickListener()
         {
             public void onClick(View v)
@@ -56,6 +73,9 @@ public class WalkablePathActivity extends Activity
                 current_orientation = 0;
             }
         });
+
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        rotatemillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
     }
 
     public void moveToPoint(int i)
@@ -81,7 +101,8 @@ public class WalkablePathActivity extends Activity
             current_x = x;
             current_y = y;
 
-            // [mfs] using threads like this is going to create a lot of system pressure... we could use an alarm instead...
+            // [mfs] using threads like this is going to create a lot of system
+            // pressure... we could use an alarm instead...
             Thread delayThread = new Thread(new Thread()
             {
                 public void run()
@@ -115,6 +136,7 @@ public class WalkablePathActivity extends Activity
         {
             public void run()
             {
+                robotForward();
                 Log.i("PathActivity", "send command .1, 0");
                 while (System.currentTimeMillis() < stop) {
                     if (System.currentTimeMillis() % 100 == 0) {
@@ -132,6 +154,7 @@ public class WalkablePathActivity extends Activity
                         wpView.postInvalidate();
                     }
                 }
+                robotStop();
                 Log.i("WalkablePath", "0,0");
                 moving = false;
             }
@@ -142,7 +165,8 @@ public class WalkablePathActivity extends Activity
 
     public void angle(double ang)
     {
-        double full_circle = 3800;
+        // I think this is how long we need to wait...
+        double full_circle = rotatemillis;
 
         long start = System.currentTimeMillis();
         long stop = start + (long) (full_circle * (Math.abs(ang) / 360));
@@ -154,8 +178,10 @@ public class WalkablePathActivity extends Activity
                 Log.i("WalkablePath", "0, Math.PI / 2");
         }
 
+        robotClockwise();
         while (System.currentTimeMillis() < stop) {
         }
+        robotStop();
         current_orientation -= ang;
         Log.i("WalkablePath", "0, 0");
     }

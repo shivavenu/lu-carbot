@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowClearUserData="true"
@@ -92,10 +93,15 @@
         <activity android:name="BTFindDeviceActivity"></activity>
         <activity android:name="DriveTheBotActivity"></activity>
         <activity android:name="RoundTwoDemos"></activity>
-        <activity android:name="edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity"></activity>
-        <activity android:name="edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.WalkablePathActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.ConfigurationActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.SnapPhoto"></activity>
 
+        <receiver android:name="edu.lehigh.cse.paclab.kinderbot.support.AlarmStopMovingReceiver" >
+        </receiver>
+        
     </application>
 
 </manifest>
