@@ -85,11 +85,12 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     private boolean isUSBReceiverRegistered = false;
 
     PowerManager.WakeLock wl;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.e(TAG, "Call to BasicBotActivity::onCreate");
 
         // Arduino Support
 
@@ -118,48 +119,26 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
             Toast.makeText(this, "Error: no Bluetooth support", Toast.LENGTH_SHORT).show();
             finish();
         }
-        
+
         // grab a wake lock
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE); 
-        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG); 
-        wl.acquire(); 
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+        wl.acquire();
     }
 
-    /**
-     * BroadcastReceiver is the object responsible for establishing
-     * communication with any sort of entity sending information to the
-     * application, in this case, the application is receiving information from
-     * an arduino. The BroadcastReceiver sees if the entity sending information
-     * is a supported usb accessory, in which case opens full communication with
-     * the device beyond the handshake which is initiated upon application
-     * launch.
-     */
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver()
+    @Override
+    public void onStart()
     {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        openAccessory(accessory);
-                    }
-                    else {
-                        Log.d(TAG, "permission denied for accessory " + accessory);
-                    }
-                    mPermissionRequestPending = false;
-                }
-            }
-            else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-                UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                if (accessory != null && accessory.equals(mAccessory)) {
-                    closeAccessory();
-                }
-            }
+        super.onStart();
+        if (!btAdapter.isEnabled()) {
+            Intent turniton = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turniton, INTENT_TURNITON);
         }
-    };
+        else {
+            if (btService == null)
+                setupChat();
+        }
+    }
 
     /**
      * If the application has stopped and then has resumed, the application will
@@ -206,22 +185,13 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     }
 
     /**
-     * If the application is paused, the accessory is closed.
-     */
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        closeAccessory();
-    }
-
-    /**
      * More watchdogs...
      */
     @Override
-    public void onDestroy()
+    public void onBackPressed()
     {
         // Arduino
+        closeAccessory();
         if (isUSBReceiverRegistered)
             unregisterReceiver(mUsbReceiver);
 
@@ -237,8 +207,55 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
         // give up the wakelock
         wl.release();
-        super.onDestroy();
+        
+        // finish the activity
+        finish();
     }
+
+    /**
+     * Required for TextToSpeech.OnInitListener
+     */
+    @Override
+    public void onInit(int status)
+    {
+    }
+
+
+    /**
+     * BroadcastReceiver is the object responsible for establishing
+     * communication with any sort of entity sending information to the
+     * application, in this case, the application is receiving information from
+     * an arduino. The BroadcastReceiver sees if the entity sending information
+     * is a supported usb accessory, in which case opens full communication with
+     * the device beyond the handshake which is initiated upon application
+     * launch.
+     */
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        openAccessory(accessory);
+                    }
+                    else {
+                        Log.d(TAG, "permission denied for accessory " + accessory);
+                    }
+                    mPermissionRequestPending = false;
+                }
+            }
+            else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+                UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                if (accessory != null && accessory.equals(mAccessory)) {
+                    closeAccessory();
+                }
+            }
+        }
+    };
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -388,32 +405,12 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
     private TextToSpeech mTts;
 
-    @Override
-    public void onInit(int status)
-    {
-        // mTts.speak("I Am KIN-DER-Bot", TextToSpeech.QUEUE_FLUSH, null);
-    }
-
     public void Speak(String s)
     {
         mTts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     protected BTService btService = null;
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        if (!btAdapter.isEnabled()) {
-            Intent turniton = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turniton, INTENT_TURNITON);
-        }
-        else {
-            if (btService == null)
-                setupChat();
-        }
-    }
 
     /** initialize the adapters for chatting */
     private void setupChat()
