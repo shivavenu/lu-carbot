@@ -98,8 +98,12 @@
         <activity android:name="edu.lehigh.cse.paclab.kinderbot.WalkablePathActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.ConfigurationActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.SnapPhoto"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.BallLearnActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.support.BallFindActivity" android:screenOrientation="landscape"></activity>
 
         <receiver android:name="edu.lehigh.cse.paclab.kinderbot.support.AlarmStopMovingReceiver" >
+        </receiver>
+        <receiver android:name="edu.lehigh.cse.paclab.kinderbot.support.AlarmSnapPhotoReceiver" >
         </receiver>
         
     </application>

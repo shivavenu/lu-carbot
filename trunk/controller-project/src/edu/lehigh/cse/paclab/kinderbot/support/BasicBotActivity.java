@@ -41,31 +41,32 @@ import edu.lehigh.cse.paclab.prelims.BTService;
  * for talking to the Arduino, and also that it has the capability to easily be
  * configured for Bluetooth.
  * 
- * [mfs] We could move the TTS and VisualMemory into here, but I don't think
- * that's actually necessary.
- * 
- * [mfs] We might want to tuck some of the fields into the parent Application so
- * that we don't have to worry about lifecycle and losing the objects
- * 
- * [mfs] We might just want to replace VisualMemory with preferences.
- * 
  * @author spear
  * 
  */
 public abstract class BasicBotActivity extends Activity implements OnInitListener
 {
     // constants for preference tags
-    final public String PREF_TAG_NAME = "KB_CONFIG_NAME";
-    final public String PREF_TAG_METER = "KB_CONFIG_METER";
-    final public String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
-    final public String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
-    final public String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
+    final public static String PREF_TAG_NAME = "KB_CONFIG_NAME";
+    final public static String PREF_TAG_METER = "KB_CONFIG_METER";
+    final public static String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
+    final public static String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
+    final public static String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
 
+    final public static String PREF_HUE_AVG = "PREF_HUE_AVG";
+    final public static String PREF_HUE_STD = "PREF_HUE_STD";
+    final public static String PREF_SAT_AVG = "PREF_SAT_AVG";
+    final public static String PREF_SAT_STD = "PREF_SAT_STD";
+    final public static String PREF_VAL_AVG = "PREF_VAL_AVG";
+    final public static String PREF_VAL_STD = "PREF_VAL_STD";
+    
     // intent constants
     public static final int INTENT_SNAP_PHOTO = 943557;
     final static private int INTENT_TURNITON = 7213;
     final static private int INTENT_CONNECT = 59847;
     private static final int CHECK_TTS = 99873;
+    public static final int INTENT_PHOTO_DONE = 66711324;
+
 
     public static final String TAG = "Carbot";
 

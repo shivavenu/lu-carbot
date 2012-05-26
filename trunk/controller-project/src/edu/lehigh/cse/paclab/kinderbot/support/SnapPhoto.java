@@ -9,9 +9,9 @@ import java.io.IOException;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -26,31 +26,17 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.prelims.AlarmStopMovingReceiver;
 
 /**
- * A pretty gritty camera. We need to integrate some alarms so that we can
- * replace the two clicks with something automatic. That's going to require us
- * to have some Preference for the camera lag
+ * A pretty gritty camera. When opened, it looks at the prefs, finds the
+ * appropriate times, and sets timers to cause an automatic picture and
+ * automatic return
  * 
  * TODO: it's quite ugly to implement OnClickListener and
- * SurfaceHolder.Callback. We should use anonymous classes
+ * SurfaceHolder.Callback. We should use anonymous classes... oh well
  */
 public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolder.Callback
 {
-    /**
-     * For disambiguation of intent replies. When we snap a picture and then use
-     * a callback to save it, this is the UID the callback uses to notify us of
-     * completion
-     */
-    static final int INTENT_PHOTO_DONE = 66711324;
-
-    /**
-     * Standard Android practice is to give a TAG that can be used in logcat
-     * messages
-     */
-    private static final String TAG = "CameraTest";
-
     /**
      * A reference to the camera that we are using
      */
@@ -70,6 +56,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
      * The SurfaceHolder lets us control the SurfaceView
      */
     private SurfaceHolder mSurfaceHolder;
+    SharedPreferences prefs;
 
     /**
      * Called when the activity is first created. This draws the screen and
@@ -80,6 +67,8 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
     {
         // start by calling parent method
         super.onCreate(savedInstanceState);
+
+        self = this;
 
         // turn off window title
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -97,31 +86,38 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
         mSurfaceView.setOnClickListener(this);
         mSurfaceHolder.addCallback(this);
 
-        // registerReceiver(alarmreply, new IntentFilter("ALARM_TRIGGER"));
-
         // default...
         setResult(Activity.RESULT_CANCELED);
+
+        // set an alarm to go off after the camera has started
+        prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        setAlarm(Integer.parseInt(prefs.getString(BasicBotActivity.PREF_TAG_CAMSTART, "5000")));
     }
 
     int alarmNum = 0;
 
-    void setAlarm(Float time)
+    public static SnapPhoto self;
+
+    public void onAlarm()
+    {
+        if (alarmNum == 1) {
+            onClick(null);
+            setAlarm(Integer.parseInt(prefs.getString(BasicBotActivity.PREF_TAG_CAMLAG, "5000")));
+        }
+        else {
+            onClick(null);
+        }
+    }
+
+    private void setAlarm(int time)
     {
         // set a timer for when to stop
-        Intent intent = new Intent(this, AlarmStopMovingReceiver.class);
+        Intent intent = new Intent(this, AlarmSnapPhotoReceiver.class);
         intent.putExtra("AlarmID", alarmNum);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (time * 1000), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (time), pendingIntent);
     }
-
-    private BroadcastReceiver alarmreply = new BroadcastReceiver()
-    {
-        public void onReceive(Context c, Intent i)
-        {
-            onClick(null);
-        }
-    };
 
     /**
      * Callback to run when the picture is taken
@@ -134,7 +130,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
                 Intent mIntent = new Intent();
                 StoreByteImage(SnapPhoto.this, imageData, 50, "ImageName");
                 mCamera.startPreview();
-                setResult(INTENT_PHOTO_DONE, mIntent);
+                setResult(BasicBotActivity.INTENT_PHOTO_DONE, mIntent);
             }
         }
     };

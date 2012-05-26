@@ -12,16 +12,20 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGBA2BGR;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -211,6 +215,12 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
     private int vpHeight;
     private int vpWidth;
     
+    CvScalar avgHue = new CvScalar(1);
+    CvScalar stdHue = new CvScalar(1);
+    CvScalar avgSat = new CvScalar(1);
+    CvScalar stdSat = new CvScalar(1);
+    CvScalar avgVal = new CvScalar(1);
+    CvScalar stdVal = new CvScalar(1);
 
     private void configFields(int width, int height)
     {
@@ -245,15 +255,28 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         // split image
         cvSplit(hsvImage, imgHue, imgSat, imgVal, null);
 
+        
         // do red avg/stdev
-        cvAvgSdv(imgHue, VisualMemoryManager.avgHue, VisualMemoryManager.stdHue, null);
+        cvAvgSdv(imgHue, avgHue, stdHue, null);
 
         // do green avg/stdev
-        cvAvgSdv(imgSat, VisualMemoryManager.avgSat, VisualMemoryManager.stdSat, null);
+        cvAvgSdv(imgSat, avgSat, stdSat, null);
 
         // do blue avg/stdev
-        cvAvgSdv(imgVal, VisualMemoryManager.avgVal, VisualMemoryManager.stdVal, null);
+        cvAvgSdv(imgVal, avgVal, stdVal, null);
 
+        // now save the values to Shared Preferences
+        SharedPreferences prefs = BallLearnActivity.self.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        Editor e = prefs.edit();
+        e.putString(BasicBotActivity.PREF_HUE_AVG, avgHue.getVal(0)+"");
+        Log.i(BasicBotActivity.PREF_HUE_AVG, avgHue.getVal(0)+"");
+        e.putString(BasicBotActivity.PREF_HUE_STD, stdHue.getVal(0)+"");
+        e.putString(BasicBotActivity.PREF_SAT_AVG, avgSat.getVal(0)+"");
+        e.putString(BasicBotActivity.PREF_SAT_STD, stdSat.getVal(0)+"");
+        e.putString(BasicBotActivity.PREF_VAL_AVG, avgVal.getVal(0)+"");
+        e.putString(BasicBotActivity.PREF_VAL_STD, stdVal.getVal(0)+"");
+        e.commit();
+        
         // Free memory
         cvReleaseImage(imgHue);
         cvReleaseImage(imgSat);
@@ -295,11 +318,11 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         paint.setColor(Color.BLACK);
         paint.setTextSize(20);
         String s;
-        s = "red: avg = " + VisualMemoryManager.avgHue.getVal(0) + ", sd = " + VisualMemoryManager.stdHue.getVal(0);
+        s = "hue: avg = " + avgHue.getVal(0) + ", sd = " + stdHue.getVal(0);
         canvas.drawText(s, 10, 120, paint);
-        s = "green: avg = " + VisualMemoryManager.avgSat.getVal(0) + ", sd = " + VisualMemoryManager.stdSat.getVal(0);
+        s = "sat: avg = " + avgSat.getVal(0) + ", sd = " + stdSat.getVal(0);
         canvas.drawText(s, 10, 150, paint);
-        s = "blue: avg = " + VisualMemoryManager.avgVal.getVal(0) + ", sd = " + VisualMemoryManager.stdVal.getVal(0);
+        s = "val: avg = " + avgVal.getVal(0) + ", sd = " + stdVal.getVal(0);
         canvas.drawText(s, 10, 180, paint);
     }
 }

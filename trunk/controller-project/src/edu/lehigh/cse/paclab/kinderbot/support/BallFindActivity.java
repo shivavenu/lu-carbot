@@ -3,11 +3,13 @@ package edu.lehigh.cse.paclab.kinderbot.support;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvReleaseImage;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -26,17 +28,21 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
  */
 public class BallFindActivity extends Activity
 {
+    public static BallFindActivity self;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        self = this;
 
         // Create a layout, then nest a View inside a SurfaceView inside the
         // layout
         RelativeLayout layout = new RelativeLayout(this);
         BallFindOverlayView overlay = new BallFindOverlayView(this);
         CameraPreviewSurfaceView camera = new CameraPreviewSurfaceView(this, overlay);
-        
+
         layout.addView(camera);
         layout.addView(overlay);
         setContentView(layout);
@@ -104,7 +110,14 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
             ans = lower;
         return ans;
     }
-    
+
+    CvScalar avgHue = new CvScalar(1);
+    CvScalar stdHue = new CvScalar(1);
+    CvScalar avgSat = new CvScalar(1);
+    CvScalar stdSat = new CvScalar(1);
+    CvScalar avgVal = new CvScalar(1);
+    CvScalar stdVal = new CvScalar(1);
+
     private void configFields(int width, int height)
     {
         // set up a scratch image and a buffer for holding RGB ints
@@ -112,13 +125,16 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         rgb = new int[width * height];
 
         // compute the thresholds
-        double avghue = VisualMemoryManager.avgHue.getVal(0);
-        double stdhue = VisualMemoryManager.stdHue.getVal(0);
-        double avgsat = VisualMemoryManager.avgSat.getVal(0);
-        double stdsat = VisualMemoryManager.stdSat.getVal(0);
-        double avgval = VisualMemoryManager.avgVal.getVal(0);
-        double stdval = VisualMemoryManager.stdVal.getVal(0);
+        SharedPreferences prefs = BallFindActivity.self.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        double avghue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
+        Log.e("CARBOT", "HUE = " + prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
         
+        double stdhue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_STD, "0"));
+        double avgsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_AVG, "0"));
+        double stdsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_STD, "0"));
+        double avgval = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_VAL_AVG, "0"));
+        double stdval = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_VAL_STD, "0"));
+
         double lohue = saturatingAdd(avghue, -3 * stdhue, 0, 179);
         double hihue = saturatingAdd(avghue, +3 * stdhue, 0, 179);
         double losat = saturatingAdd(avgsat, -3 * stdsat, 0, 255);
@@ -129,7 +145,7 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         loThresh = new CvScalar(lohue, losat, loval, 0);
         hiThresh = new CvScalar(hihue, hisat, hival, 0);
     }
-    
+
     /**
      * This is where we actually process the image
      * 
@@ -199,9 +215,9 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         paint.setColor(Color.BLACK);
         paint.setTextSize(20);
         String s;
-        s = "lo = ("+loThresh.getVal(0)+", "+loThresh.getVal(1)+", "+loThresh.getVal(2)+")";
+        s = "lo = (" + loThresh.getVal(0) + ", " + loThresh.getVal(1) + ", " + loThresh.getVal(2) + ")";
         canvas.drawText(s, 10, 120, paint);
-        s = "hi = ("+hiThresh.getVal(0)+", "+hiThresh.getVal(1)+", "+hiThresh.getVal(2)+")";
+        s = "hi = (" + hiThresh.getVal(0) + ", " + hiThresh.getVal(1) + ", " + hiThresh.getVal(2) + ")";
         canvas.drawText(s, 10, 150, paint);
     }
 }

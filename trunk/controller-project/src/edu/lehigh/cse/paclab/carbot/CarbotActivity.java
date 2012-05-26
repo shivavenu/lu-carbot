@@ -50,8 +50,15 @@ public class CarbotActivity extends Activity
         if (v == findViewById(R.id.btnLaunchKinderWalk)) {
             startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.WalkablePathActivity.class));
         }
+        if (v == findViewById(R.id.btnLaunchKinderVisualController)) {
+            // for now...
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.BallFindActivity.class));
+        }
+        if (v == findViewById(R.id.btnLaunchKinderVisualControlBot)) {
+            // for now...
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.BallLearnActivity.class));
+        }
 
-    
     }
 
     /*
