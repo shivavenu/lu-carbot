@@ -1,5 +1,6 @@
 package edu.lehigh.cse.paclab.kinderbot;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.kinderbot.support.BallFindActivity;
 import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
 import edu.lehigh.cse.paclab.kinderbot.support.WalkablePathView;
 
@@ -74,8 +76,11 @@ public class WalkablePathActivity extends BasicBotActivity
             }
         });
 
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
         rotatemillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
+        
+        Log.e("CARBOT", rotatemillis + " = rotatemillis");
+        
     }
 
     public void moveToPoint(int i)

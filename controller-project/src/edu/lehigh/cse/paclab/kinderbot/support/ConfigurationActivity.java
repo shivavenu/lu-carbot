@@ -1,5 +1,6 @@
 package edu.lehigh.cse.paclab.kinderbot.support;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -55,7 +56,7 @@ public class ConfigurationActivity extends BasicBotActivity
         self = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.configurationlayout);
-        prefs = getPreferences(MODE_PRIVATE);
+        prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
         EditText et;
 
         et = (EditText) findViewById(R.id.etKinderConfigName);
