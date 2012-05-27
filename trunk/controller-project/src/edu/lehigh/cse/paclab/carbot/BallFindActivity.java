@@ -3,6 +3,9 @@ package edu.lehigh.cse.paclab.carbot;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvReleaseImage;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,6 +33,8 @@ public class BallFindActivity extends BasicBotActivity
 {
     public static BallFindActivity self;
 
+    int rotationmillis = 0;
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -46,6 +51,10 @@ public class BallFindActivity extends BasicBotActivity
         layout.addView(camera);
         layout.addView(overlay);
         setContentView(layout);
+        
+        // how long to rotate 360 degrees?
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+        rotationmillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
     }
 
     @Override
@@ -56,6 +65,8 @@ public class BallFindActivity extends BasicBotActivity
 
     // track if we are moving or not
     boolean moving = false;
+    boolean turning = false;
+    int searchdegrees = 0;
 
     /**
      * When the camera decides that it sees the ball, it calls this to let the
@@ -63,10 +74,11 @@ public class BallFindActivity extends BasicBotActivity
      */
     public synchronized void shouldMove()
     {
-        if (moving)
+        if (moving || turning)
             return;
         robotForward();
         moving = true;
+        searchdegrees = 0;
     }
 
     /**
@@ -75,10 +87,40 @@ public class BallFindActivity extends BasicBotActivity
      */
     public synchronized void shouldStop()
     {
-        if (!moving)
+        if (turning)
             return;
+        if (moving) {
+            robotStop();
+            moving = false;           
+        }
+        shouldSearch();
+    }
+
+    // for alarms...
+    int alarmNum = 0;
+    
+    private synchronized void shouldSearch()
+    {
+        turning = true;
+        // if we've turned a ful circle, complain and keep trying
+        if (searchdegrees == 360)
+            Speak("I just can't see it anymore.  Oh no!");
+        searchdegrees += 15;
+        robotClockwise();
+
+        // set a timer for when to stop
+        Intent intent = new Intent(this, AlarmLookAgainReceiver.class);
+        intent.putExtra("AlarmID", alarmNum);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis/24), pendingIntent);
+    }
+
+    // this calls asynchronously after the timer
+    public synchronized void stopSearch()
+    {
+        turning = false;
         robotStop();
-        moving = false;
     }
 }
 

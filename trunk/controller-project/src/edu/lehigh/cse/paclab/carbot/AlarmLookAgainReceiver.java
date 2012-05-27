@@ -20,6 +20,6 @@ public class AlarmLookAgainReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         // [mfs] This is clearly not correct!
-        ConfigurationActivity.self.robotStop();
+        BallFindActivity.self.stopSearch();
     }
 }
