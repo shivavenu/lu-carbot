@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot.support;
+package edu.lehigh.cse.paclab.carbot;
 
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvReleaseImage;
@@ -26,12 +26,12 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
  * We start the activity, put a ball in the viewport, and then click a button
  * and the robot will remember the key image color parameters
  */
-public class BallFindActivity extends Activity
+public class BallFindActivity extends BasicBotActivity
 {
     public static BallFindActivity self;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
@@ -46,6 +46,12 @@ public class BallFindActivity extends Activity
         layout.addView(camera);
         layout.addView(overlay);
         setContentView(layout);
+    }
+
+    @Override
+    protected void receiveMessage(byte[] readBuf, int bytes)
+    {
+        // NOP for now...
     }
 }
 

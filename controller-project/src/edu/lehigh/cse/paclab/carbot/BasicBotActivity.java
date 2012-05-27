@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot.support;
+package edu.lehigh.cse.paclab.carbot;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -29,9 +29,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.prelims.BTFindDeviceActivity;
-import edu.lehigh.cse.paclab.prelims.BTService;
 
 /**
  * Any activity that runs on a phone that is plugged into an Arduino will

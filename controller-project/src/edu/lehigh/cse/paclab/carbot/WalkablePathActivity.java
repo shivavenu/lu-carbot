@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot;
+package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -7,10 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.kinderbot.support.BallFindActivity;
-import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.kinderbot.support.WalkablePathView;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will
