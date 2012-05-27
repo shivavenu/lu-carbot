@@ -32,12 +32,6 @@ public class CarbotActivity extends Activity
 
     public void launchActivity(View v)
     {
-        if (v == findViewById(R.id.btnLaunchDemos)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.prelims.DemosActivity.class));
-        }
-        if (v == findViewById(R.id.btnLaunchR2Demos)) {
-            startActivity(new Intent(this, RoundTwoDemos.class));
-        }
         if (v == findViewById(R.id.btnLaunchKinderDrive)) {
             startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity.class));
         }
@@ -57,6 +51,10 @@ public class CarbotActivity extends Activity
         if (v == findViewById(R.id.btnLaunchKinderVisualControlBot)) {
             // for now...
             startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.BallLearnActivity.class));
+        }
+        if (v == findViewById(R.id.btnLaunchKinderChatterbox)) {
+            // for now...
+            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.ChatterboxActivity.class));
         }
 
     }

@@ -73,19 +73,6 @@
                 android:onClick="launchActivity"
                 android:text="Configure" />
 
-            <Button
-                android:id="@+id/btnLaunchDemos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="launchActivity"
-                android:text="DemosActivity" />
-
-            <Button
-                android:id="@+id/btnLaunchR2Demos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="launchActivity"
-                android:text="RoundTwoDemosActivity" />
         </LinearLayout>
     </ScrollView>
 

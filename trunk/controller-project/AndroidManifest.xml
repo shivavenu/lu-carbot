@@ -41,7 +41,7 @@
         </activity>
         <activity android:name="edu.lehigh.cse.paclab.prelims.VoiceRecognizerActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="edu.lehigh.cse.paclab.prelims.BTFindDeviceActivity" android:screenOrientation="portrait">
+        <activity android:name="edu.lehigh.cse.paclab.prelims.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog">
         </activity>
         <activity android:name="edu.lehigh.cse.paclab.prelims.BlueToothActivity" android:screenOrientation="portrait">
         </activity>
@@ -105,6 +105,7 @@
         </receiver>
         <receiver android:name="edu.lehigh.cse.paclab.kinderbot.support.AlarmSnapPhotoReceiver" >
         </receiver>
+        <activity android:name="edu.lehigh.cse.paclab.kinderbot.ChatterboxActivity"></activity>
         
     </application>
 
