@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot.support;
+package edu.lehigh.cse.paclab.carbot;
 
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvAvgSdv;

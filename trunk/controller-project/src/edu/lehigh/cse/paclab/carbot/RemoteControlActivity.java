@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.kinderbot;
+package edu.lehigh.cse.paclab.carbot;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,10 +16,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.kinderbot.support.BTService;
-import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.kinderbot.support.SnapPhoto;
 
 /**
  * An activity for controlling a robot remotely

@@ -33,28 +33,28 @@ public class CarbotActivity extends Activity
     public void launchActivity(View v)
     {
         if (v == findViewById(R.id.btnLaunchKinderDrive)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.DriveTheBotActivity.class));
+            startActivity(new Intent(this, DriveTheBotActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderRC)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.RemoteControlActivity.class));
+            startActivity(new Intent(this, RemoteControlActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderConfig)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.ConfigurationActivity.class));
+            startActivity(new Intent(this, ConfigurationActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderWalk)) {
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.WalkablePathActivity.class));
+            startActivity(new Intent(this, WalkablePathActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderVisualController)) {
             // for now...
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.BallFindActivity.class));
+            startActivity(new Intent(this, BallFindActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderVisualControlBot)) {
             // for now...
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.support.BallLearnActivity.class));
+            startActivity(new Intent(this, BallLearnActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderChatterbox)) {
             // for now...
-            startActivity(new Intent(this, edu.lehigh.cse.paclab.kinderbot.ChatterboxActivity.class));
+            startActivity(new Intent(this, ChatterboxActivity.class));
         }
 
     }

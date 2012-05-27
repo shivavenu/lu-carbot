@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.prelims;
+package edu.lehigh.cse.paclab.carbot;
 
 /*
  * Copyright (C) 2009 The Android Open Source Project

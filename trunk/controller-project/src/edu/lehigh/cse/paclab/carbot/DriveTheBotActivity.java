@@ -1,10 +1,8 @@
-package edu.lehigh.cse.paclab.kinderbot;
+package edu.lehigh.cse.paclab.carbot;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ToggleButton;
-import edu.lehigh.cse.paclab.carbot.R;
-import edu.lehigh.cse.paclab.kinderbot.support.BasicBotActivity;
 
 /**
  * Simplest control mechanism: this phone is plugged into the Robot, and we
