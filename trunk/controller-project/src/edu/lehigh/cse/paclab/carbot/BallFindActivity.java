@@ -53,6 +53,33 @@ public class BallFindActivity extends BasicBotActivity
     {
         // NOP for now...
     }
+
+    // track if we are moving or not
+    boolean moving = false;
+
+    /**
+     * When the camera decides that it sees the ball, it calls this to let the
+     * robot know that it should move
+     */
+    public synchronized void shouldMove()
+    {
+        if (moving)
+            return;
+        robotForward();
+        moving = true;
+    }
+
+    /**
+     * When the camera decides that it doesn't see the ball, it calls this to
+     * let the robot know that it should stop
+     */
+    public synchronized void shouldStop()
+    {
+        if (!moving)
+            return;
+        robotStop();
+        moving = false;
+    }
 }
 
 /**
@@ -131,10 +158,11 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         rgb = new int[width * height];
 
         // compute the thresholds
-        SharedPreferences prefs = BallFindActivity.self.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        SharedPreferences prefs = BallFindActivity.self.getSharedPreferences(
+                "edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
         double avghue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
         Log.e("CARBOT", "HUE = " + prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
-        
+
         double stdhue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_STD, "0"));
         double avgsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_AVG, "0"));
         double stdsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_STD, "0"));
@@ -211,9 +239,13 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
 
         // draw a circle at the red center
         if (foundObjectCenter.x() > 0 && foundObjectCenter.y() > 0) {
+            BallFindActivity.self.shouldMove();
             Paint paint = new Paint();
             paint.setColor(Color.RED);
             canvas.drawCircle(foundObjectCenter.x() * scaleX, foundObjectCenter.y() * scaleY, 30, paint);
+        }
+        else {
+            BallFindActivity.self.shouldStop();
         }
 
         // dump HSV info
