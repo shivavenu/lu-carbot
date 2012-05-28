@@ -20,6 +20,11 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lehigh.cse.paclab.carbot.support.AlarmLookAgainReceiver;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.support.CameraPreviewSurfaceView;
+import edu.lehigh.cse.paclab.carbot.support.ImageUtils;
+
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
  * tell, Android requires two objects in the Layout to display a camera preview:
@@ -29,9 +34,9 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
  * We start the activity, put a ball in the viewport, and then click a button
  * and the robot will remember the key image color parameters
  */
-public class BallFindActivity extends BasicBotActivity
+public class FindBalloonBot extends BasicBotActivity
 {
-    public static BallFindActivity self;
+    public static FindBalloonBot self;
 
     int rotationmillis = 0;
     
@@ -200,7 +205,7 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         rgb = new int[width * height];
 
         // compute the thresholds
-        SharedPreferences prefs = BallFindActivity.self.getSharedPreferences(
+        SharedPreferences prefs = FindBalloonBot.self.getSharedPreferences(
                 "edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
         double avghue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
         Log.e("CARBOT", "HUE = " + prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
@@ -281,13 +286,13 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
 
         // draw a circle at the red center
         if (foundObjectCenter.x() > 0 && foundObjectCenter.y() > 0) {
-            BallFindActivity.self.shouldMove();
+            FindBalloonBot.self.shouldMove();
             Paint paint = new Paint();
             paint.setColor(Color.RED);
             canvas.drawCircle(foundObjectCenter.x() * scaleX, foundObjectCenter.y() * scaleY, 30, paint);
         }
         else {
-            BallFindActivity.self.shouldStop();
+            FindBalloonBot.self.shouldStop();
         }
 
         // dump HSV info

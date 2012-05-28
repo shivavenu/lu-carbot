@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.TextView;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
 /**
  * This is going to be a silly speech-to-text game. We're going to let the kids

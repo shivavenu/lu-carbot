@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * Any activity that runs on a phone that is plugged into an Arduino will
@@ -422,7 +423,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.remotecontrolmenu, menu);
+        inflater.inflate(R.menu.bluetooth, menu);
         return true;
     }
 

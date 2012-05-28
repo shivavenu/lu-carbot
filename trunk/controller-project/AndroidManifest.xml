@@ -19,7 +19,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".CarbotActivity"
+            android:name="Carbot"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
             <intent-filter>
@@ -29,19 +29,22 @@
             </intent-filter>
         </activity>
 
-     	<activity android:name=".BallLearnActivity" android:screenOrientation="landscape"></activity>
-     	<activity android:name=".BallFindActivity" android:screenOrientation="landscape"></activity>
-        <activity android:name=".BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
-        <activity android:name=".ChatterboxActivity"></activity>
-        <activity android:name=".DriveTheBotActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".RemoteControlActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".WalkablePathActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".ConfigurationActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".SnapPhoto"></activity>
+     	<activity android:name=".support.BallLearnActivity" android:screenOrientation="landscape"></activity>
+     	<activity android:name="FindBalloonBot" android:screenOrientation="landscape"></activity>
+        <activity android:name=".support.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
+        <activity android:name="ChatterboxActivity"></activity>
+        <activity android:name="TetheredBot" android:screenOrientation="portrait"></activity>
+        <activity android:name="RemoteControlBot" android:screenOrientation="portrait"></activity>
+        <activity android:name="DrawToControlBot" android:screenOrientation="portrait"></activity>
+        <activity android:name="ConfigurationActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".support.SnapPhoto"></activity>
         
-        <receiver android:name="edu.lehigh.cse.paclab.carbot.AlarmStopMovingReceiver"></receiver>
-        <receiver android:name="edu.lehigh.cse.paclab.carbot.AlarmLookAgainReceiver"></receiver>
-        <receiver android:name="edu.lehigh.cse.paclab.carbot.AlarmSnapPhotoReceiver"></receiver>
+        <receiver android:name=".support.AlarmStopMovingReceiver"></receiver>
+        <receiver android:name=".support.AlarmLookAgainReceiver"></receiver>
+        <receiver android:name=".support.AlarmSnapPhotoReceiver"></receiver>
+        <activity android:name="DrawToControlPhone"></activity>
+        <activity android:name="FindBalloonPhone"></activity>
+        <activity android:name="RemoteControlPhone"></activity>
         
     </application>
 </manifest>

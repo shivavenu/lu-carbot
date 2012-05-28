@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -74,7 +74,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         // draw the screen
-        setContentView(R.layout.facecapturelayout);
+        setContentView(R.layout.snapphoto);
 
         // wire up the surfaceview to the camera, connect the surfaceholder to
         // the surfaceview

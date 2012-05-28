@@ -3,12 +3,13 @@ package edu.lehigh.cse.paclab.carbot;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ToggleButton;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
 /**
  * Simplest control mechanism: this phone is plugged into the Robot, and we
  * control the robot via buttons on the phone
  */
-public class DriveTheBotActivity extends BasicBotActivity
+public class TetheredBot extends BasicBotActivity
 {
 
     ToggleButton forward;
@@ -23,7 +24,7 @@ public class DriveTheBotActivity extends BasicBotActivity
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.drivethebotlayout);
+        setContentView(R.layout.tetheredbot);
 
         forward = (ToggleButton) findViewById(R.id.button1);
         reverse = (ToggleButton) findViewById(R.id.button2);
