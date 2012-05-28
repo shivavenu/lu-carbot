@@ -1,8 +1,9 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import edu.lehigh.cse.paclab.carbot.FindBalloonBot;
 
 /**
  * A receiver that is used when searching for the Balloon to know when to stop
@@ -20,6 +21,6 @@ public class AlarmLookAgainReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         // [mfs] This is clearly not correct!
-        BallFindActivity.self.stopSearch();
+        FindBalloonBot.self.stopSearch();
     }
 }

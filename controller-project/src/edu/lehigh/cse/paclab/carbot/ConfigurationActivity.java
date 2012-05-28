@@ -3,19 +3,14 @@ package edu.lehigh.cse.paclab.carbot;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.RemoteException;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.R;
+import edu.lehigh.cse.paclab.carbot.support.AlarmStopMovingReceiver;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
 /**
  * For configuring the robot.
@@ -47,7 +42,7 @@ public class ConfigurationActivity extends BasicBotActivity
 
     }
 
-    static ConfigurationActivity self;
+    public static ConfigurationActivity self;
     
     /** Called when the activity is first created. */
     @Override

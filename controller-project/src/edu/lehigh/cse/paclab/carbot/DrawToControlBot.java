@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.support.WalkablePathView;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will
@@ -20,7 +22,7 @@ import android.widget.Button;
  * @author spear
  * 
  */
-public class WalkablePathActivity extends BasicBotActivity
+public class DrawToControlBot extends BasicBotActivity
 {
     @Override
     protected void receiveMessage(byte[] readBuf, int bytes)
@@ -44,7 +46,7 @@ public class WalkablePathActivity extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.kinderwalklayout);
+        setContentView(R.layout.drawtocontrolbot);
 
         wpView = (WalkablePathView) findViewById(R.id.wpv1);
 

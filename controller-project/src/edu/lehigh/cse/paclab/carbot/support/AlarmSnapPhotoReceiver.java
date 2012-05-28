@@ -1,24 +1,24 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
 /**
- * A receiver that is used during Configuration to stop the robot after an alarm
- * expires
+ * A receiver that is used after snapping a photo to ensure enough time has
+ * passed for the sdcard to be updated with the new image
  * 
  * [mfs] I know this is bad design, but we can eliminate the redundant receivers
  * later
  * 
- * @author mfs
+ * @author spear
  * 
  */
-public class AlarmStopMovingReceiver extends BroadcastReceiver
+public class AlarmSnapPhotoReceiver extends BroadcastReceiver
 {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        ConfigurationActivity.self.robotStop();
+        SnapPhoto.self.onAlarm();
     }
 }

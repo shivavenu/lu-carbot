@@ -16,6 +16,9 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.support.BTService;
+import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
 
 /**
  * An activity for controlling a robot remotely
@@ -31,7 +34,7 @@ import android.widget.Toast;
  * instead of the botphone using something simpler
  * 
  */
-public class RemoteControlActivity extends BasicBotActivity
+public class RemoteControlPhone extends BasicBotActivity
 {
     TextView tvStatus;
 
@@ -45,7 +48,7 @@ public class RemoteControlActivity extends BasicBotActivity
         // message
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 
-        setContentView(R.layout.btremotecontrollayout);
+        setContentView(R.layout.remotecontrolbot);
 
         // save the status field so we can update it easily
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
