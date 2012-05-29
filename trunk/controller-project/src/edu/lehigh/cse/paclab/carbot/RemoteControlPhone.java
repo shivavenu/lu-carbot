@@ -43,7 +43,7 @@ public class RemoteControlPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.remotecontrolphone);
+        setContentView(R.layout.remotecontrolbot);
         initBTStatus();
     }
 

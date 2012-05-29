@@ -148,10 +148,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
      */
     private Camera getBestCamera()
     {
-        // this code only works with a target of 2.3 or higher... since I am
-        // testing on 2.2. and 2.3 devices simultaneously, I've turned this off
-        // for now...
-
+        // this code only works with a target of 2.3 or higher... 
         Camera.CameraInfo info = new Camera.CameraInfo();
         int num = Camera.getNumberOfCameras();
         for (int i = 0; i < num; ++i) {
@@ -236,7 +233,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
         try {
             // TODO: need to understand what this is doing wrong...
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 5;
+            options.inSampleSize = 4;
             Bitmap myImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
             fileOutputStream = new FileOutputStream(getOutputMediaFile());
             BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);

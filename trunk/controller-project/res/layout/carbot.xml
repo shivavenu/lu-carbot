@@ -35,7 +35,7 @@
                     android:layout_weight="0.67"
                     android:onClick="launchActivity"
                     android:text="Robot" />
-
+
                 <Button
                     android:id="@+id/btnCarbotHelpBuildStation"
                     android:layout_width="wrap_content"
@@ -43,7 +43,6 @@
                     android:layout_weight="0.24"
                     android:onClick="onClickHelp"
                     android:text="Help" />
-
             </LinearLayout>
 
             <TextView
