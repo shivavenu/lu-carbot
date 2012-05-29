@@ -32,19 +32,19 @@
      	<activity android:name=".support.BallLearnActivity" android:screenOrientation="landscape"></activity>
      	<activity android:name="FindBalloonBot" android:screenOrientation="landscape"></activity>
         <activity android:name=".support.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
-        <activity android:name="ChatterboxActivity"></activity>
+        <activity android:name="ChatterboxActivity" android:screenOrientation="portrait" ></activity>
         <activity android:name="TetheredBot" android:screenOrientation="portrait"></activity>
         <activity android:name="RemoteControlBot" android:screenOrientation="portrait"></activity>
         <activity android:name="DrawToControlBot" android:screenOrientation="portrait"></activity>
         <activity android:name="ConfigurationActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".support.SnapPhoto"></activity>
+        <activity android:name=".support.SnapPhoto" android:screenOrientation="landscape" ></activity>
+        <activity android:name="DrawToControlPhone" android:screenOrientation="portrait" ></activity>
+        <activity android:name="FindBalloonPhone" android:screenOrientation="portrait" ></activity>
+        <activity android:name="RemoteControlPhone" android:screenOrientation="portrait" ></activity>
         
         <receiver android:name=".support.AlarmStopMovingReceiver"></receiver>
         <receiver android:name=".support.AlarmLookAgainReceiver"></receiver>
         <receiver android:name=".support.AlarmSnapPhotoReceiver"></receiver>
-        <activity android:name="DrawToControlPhone"></activity>
-        <activity android:name="FindBalloonPhone"></activity>
-        <activity android:name="RemoteControlPhone"></activity>
         
     </application>
 </manifest>

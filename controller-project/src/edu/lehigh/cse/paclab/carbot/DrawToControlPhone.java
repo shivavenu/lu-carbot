@@ -24,6 +24,9 @@ import edu.lehigh.cse.paclab.carbot.support.WalkablePathView;
  */
 public class DrawToControlPhone extends BasicBotActivity
 {
+    // the app is configured so that right is an angle of 0.  I prefer up is an angle of 0
+    private static final double DEFAULT_ORIENTATION = 0;
+    
     @Override
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
@@ -35,7 +38,7 @@ public class DrawToControlPhone extends BasicBotActivity
     private int index = 1;
     private float current_x;
     private float current_y;
-    private double current_orientation = 0;
+    private double current_orientation = DEFAULT_ORIENTATION;
 
     // [mfs] should try to use magnitude scaling eventually...
     // private double current_mag = 1;
@@ -70,13 +73,14 @@ public class DrawToControlPhone extends BasicBotActivity
             {
                 wpView.clearPoints();
                 index = 1;
-                current_orientation = 0;
+                current_orientation = DEFAULT_ORIENTATION;
             }
         });
 
-        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
+                Activity.MODE_WORLD_READABLE);
         rotatemillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
-        
+
         Log.e("CARBOT", rotatemillis + " = rotatemillis");
         initBTStatus();
     }
@@ -90,14 +94,17 @@ public class DrawToControlPhone extends BasicBotActivity
         float deltay = y - current_y;
         double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
 
+        
+        
         Log.v("CURRENT ORIENTATION BEFORE", new Double(current_orientation).toString());
-        Log.v("ANGLE", new Double(ang).toString());
+        Log.v("ANGLE", ""+ang);
         angle(current_orientation - ang);
         Log.v("CURRENT ORIENTATION AFTER", new Double(current_orientation).toString());
 
         double distance = Math.sqrt(((x - current_x) * (x - current_x)) + ((y - current_y) * (y - current_y)));
         long delay = move(distance, current_x, current_y, x, y);
         final long t_delay = delay - System.currentTimeMillis();
+        Log.v("DELAY TIME FOR MOVE", "" + delay);
 
         index++;
         if (index < wpView.getSize()) {
@@ -152,7 +159,7 @@ public class DrawToControlPhone extends BasicBotActivity
                         double percentTraveled = (double) ((System.currentTimeMillis() - start))
                                 / ((double) (stop - start));
                         wpView.currentX = (float) (x + (x_dis * percentTraveled));
-                        Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
+                        //Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
                         wpView.currentY = (float) (y + (y_dis * percentTraveled));
                         wpView.postInvalidate();
                     }
@@ -168,11 +175,15 @@ public class DrawToControlPhone extends BasicBotActivity
 
     public void angle(double ang)
     {
+        Log.v("Calling ANGLE", "ang = " + ang);
+        
         // I think this is how long we need to wait...
         double full_circle = rotatemillis;
 
         long start = System.currentTimeMillis();
-        long stop = start + (long) (full_circle * (Math.abs(ang) / 360));
+        long time = (long) (full_circle * (Math.abs(ang) / 360));
+        long stop = start + time;
+        Log.v("ROTATION TIME", ""+time);
 
         if (ang != 0) {
             if (ang < 0)

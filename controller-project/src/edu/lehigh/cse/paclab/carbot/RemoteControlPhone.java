@@ -207,7 +207,8 @@ public class RemoteControlPhone extends BasicBotActivity
     }
 
     /**
-     * Receive a message
+     * Receive a message. Note that this is more general than needed, as it can
+     * handle either being RemoteControlBot or RemoteControlPhone
      */
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
@@ -240,40 +241,11 @@ public class RemoteControlPhone extends BasicBotActivity
             // check for known non-int messages
             if (msg.equals("FWD")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
                 tv.setText(msg);
                 ack();
                 robotForward();
                 sendDone();
-                return;
-            }
-            // check for known non-int messages
-            if (msg.equals("REV")) {
-                // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
-                ack();
-                robotReverse();
-                sendDone();
-                return;
-            }
-            // check for known non-int messages
-            if (msg.equals("STOP")) {
-                // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
-                ack();
-                robotStop();
-                sendDone();
-                return;
-            }
-            if (msg.equals("SNAP")) {
-                ack();
-                sendDone();
-                // time to take a photo...
-                Log.i("CARBOT", "Starting intent to take picture");
-                Intent i = new Intent(this, SnapPhoto.class);
-                startActivityForResult(i, INTENT_SNAP_PHOTO);
                 return;
             }
             // other known messages would be handled here, or better yet, have a
