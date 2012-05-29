@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.R;
@@ -57,14 +58,13 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     final public static String PREF_SAT_STD = "PREF_SAT_STD";
     final public static String PREF_VAL_AVG = "PREF_VAL_AVG";
     final public static String PREF_VAL_STD = "PREF_VAL_STD";
-    
+
     // intent constants
     public static final int INTENT_SNAP_PHOTO = 943557;
     final static private int INTENT_TURNITON = 7213;
     final static private int INTENT_CONNECT = 59847;
     private static final int CHECK_TTS = 99873;
     public static final int INTENT_PHOTO_DONE = 66711324;
-
 
     public static final String TAG = "Carbot";
 
@@ -123,6 +123,19 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
         wl.acquire();
+
+        // set up custom window title
+        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+    }
+
+    protected TextView tvStatus;
+
+    protected void initBTStatus()
+    { 
+        // save the status field so we can update it easily
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
+        tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
+        tvStatus.setText("not connected");
     }
 
     @Override
@@ -206,7 +219,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
         // give up the wakelock
         wl.release();
-        
+
         // finish the activity
         finish();
     }
@@ -218,7 +231,6 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     public void onInit(int status)
     {
     }
-
 
     /**
      * BroadcastReceiver is the object responsible for establishing
@@ -394,12 +406,12 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
     public void robotPointTurnRight()
     {
-        sendCommand((byte) 5);
+        sendCommand((byte) 6);
     }
 
     public void robotPointTurnLeft()
     {
-        sendCommand((byte) 6);
+        sendCommand((byte) 5);
     }
 
     private TextToSpeech mTts;

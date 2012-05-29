@@ -32,7 +32,6 @@ public class Carbot extends Activity
 
         // draw the screen
         setContentView(R.layout.carbot);
-
     }
 
     /**
@@ -99,9 +98,18 @@ public class Carbot extends Activity
         if (v == findViewById(R.id.btnCarbotDirectControl)) {
             startActivity(new Intent(this, TetheredBot.class));
         }
-        if (v == findViewById(R.id.btnLaunchKinderRC)) {
+
+        if (v == findViewById(R.id.btnCarbotRemoteControlBot)) {
             startActivity(new Intent(this, RemoteControlBot.class));
         }
+        if (v == findViewById(R.id.btnCarbotRemoteControlPhone)) {
+            startActivity(new Intent(this, RemoteControlPhone.class));
+        }
+
+        
+        
+        
+        
         if (v == findViewById(R.id.btnLaunchKinderConfig)) {
             startActivity(new Intent(this, ConfigurationActivity.class));
         }

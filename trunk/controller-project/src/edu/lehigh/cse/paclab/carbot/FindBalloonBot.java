@@ -60,6 +60,8 @@ public class FindBalloonBot extends BasicBotActivity
         // how long to rotate 360 degrees?
         SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
         rotationmillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
+        
+        initBTStatus();
     }
 
     @Override

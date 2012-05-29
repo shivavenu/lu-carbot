@@ -2,88 +2,52 @@ package edu.lehigh.cse.paclab.carbot;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ToggleButton;
+import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
 /**
  * Simplest control mechanism: this phone is plugged into the Robot, and we
- * control the robot via buttons on the phone
+ * control the robot via buttons on the phone.
+ * 
+ * Note that in this case, we don't need any special Bluetooth stuff
  */
 public class TetheredBot extends BasicBotActivity
 {
-
-    ToggleButton forward;
-    ToggleButton reverse;
-    ToggleButton clockwise;
-    ToggleButton counterClockwise;
-    ToggleButton pTurnLeft;
-    ToggleButton pTurnRight;
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.tetheredbot);
-
-        forward = (ToggleButton) findViewById(R.id.button1);
-        reverse = (ToggleButton) findViewById(R.id.button2);
-        clockwise = (ToggleButton) findViewById(R.id.button3);
-        counterClockwise = (ToggleButton) findViewById(R.id.button4);
-        pTurnRight = (ToggleButton) findViewById(R.id.button5);
-        pTurnLeft = (ToggleButton) findViewById(R.id.button6);
+        initBTStatus();
     }
 
-    /**
-     * The last few methods dictate what command will be sent based on what
-     * button is activated by the user
-     */
-    public void forward(View V)
+    public void onClickImage(View v)
     {
-        if (!forward.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 1);
-    }
-
-    public void reverse(View V)
-    {
-        if (!reverse.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 2);
-    }
-
-    public void clockwise(View V)
-    {
-        if (!clockwise.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 3);
-    }
-
-    public void cclockwise(View V)
-    {
-        if (!counterClockwise.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 4);
-    }
-
-    public void pointTurnR(View V)
-    {
-        if (!pTurnRight.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 5);
-    }
-
-    public void pointTurnL(View V)
-    {
-        if (!pTurnLeft.isChecked())
-            sendCommand((byte) 0);
-        else
-            sendCommand((byte) 6);
+        if (v == findViewById(R.id.ivTetherForward)) {
+            robotForward();
+        }
+        if (v == findViewById(R.id.ivTetherReverse)) {
+            robotReverse();
+        }
+        // if we are going forward, a simple PTL doesn't suffice
+        if (v == findViewById(R.id.ivTetherLeft)) {
+            robotStop();
+            robotPointTurnLeft();
+        }
+        // if we are going forward, a simple PTR doesn't suffice
+        if (v == findViewById(R.id.ivTetherRight)) {
+            robotStop();
+            robotPointTurnRight();
+        }
+        if (v == findViewById(R.id.ivTetherRotPos)) {
+            robotClockwise();
+        }
+        if (v == findViewById(R.id.ivTetherRotNeg)) {
+            this.robotCounterclockwise();
+        }
+        if (v == findViewById(R.id.ivTetherStop)) {
+            robotStop();
+        }
     }
 
     /**
