@@ -109,8 +109,6 @@ public class Carbot extends Activity
         }
 
         // Draw To Control Station
-        if (v == findViewById(R.id.btnCarbotDrawToControlPhone))
-            startActivity(new Intent(this, DrawToControlPhone.class));
         if (v == findViewById(R.id.btnCarbotDrawToControlBot))
             startActivity(new Intent(this, DrawToControlBot.class));
 

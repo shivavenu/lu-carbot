@@ -131,20 +131,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal" >
-
-                <Button
-                    android:id="@+id/btnCarbotDrawToControlPhone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="launchActivity"
-                    android:text="Phone (X)" />
-
+
                 <Button
                     android:id="@+id/btnCarbotDrawToControlBot"
-                    android:layout_width="wrap_content"
+                    android:layout_width="218dp"
                     android:layout_height="wrap_content"
                     android:onClick="launchActivity"
-                    android:text="Robot (Z)" />
+                    android:text="Robot" />
 
                 <Button
                     android:id="@+id/btnCarbotHelpDrawToControlStation"
@@ -174,12 +167,4 @@
                 android:text="Configure" />
         </LinearLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="(X) = Not Implemented;
-(Z) = Functional But Incomplete" />
-
-</LinearLayout>
+</LinearLayout>
