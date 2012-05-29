@@ -217,33 +217,63 @@ public class RemoteControlBot extends BasicBotActivity
         if (sendIter == -1) {
             String msg = new String(readBuf, 0, bytes);
             Log.i("CARBOT", "RECEIVED:::" + msg);
+            TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
             // check for known non-int messages
             if (msg.equals("FWD")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
+                tv.setText("Forward");
                 ack();
                 robotForward();
                 sendDone();
                 return;
             }
-            // check for known non-int messages
             if (msg.equals("REV")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
+                tv.setText("Reverse");
                 ack();
                 robotReverse();
                 sendDone();
                 return;
             }
-            // check for known non-int messages
             if (msg.equals("STOP")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
+                tv.setText("Stop");
                 ack();
                 robotStop();
+                sendDone();
+                return;
+            }
+            if (msg.equals("PTR")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Right");
+                ack();
+                robotStop();
+                robotPointTurnRight();
+                sendDone();
+                return;
+            }
+            if (msg.equals("PTL")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Left");
+                ack();
+                robotStop();
+                robotPointTurnLeft();
+                sendDone();
+                return;
+            }
+            if (msg.equals("ROT+")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Clockwise");
+                ack();
+                robotClockwise();
+                sendDone();
+                return;
+            }
+            if (msg.equals("ROT-")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Counterclockwise");
+                ack();
+                robotCounterclockwise();
                 sendDone();
                 return;
             }

@@ -220,7 +220,7 @@ public class FindBalloonPhone extends BasicBotActivity
             // check for known non-int messages
             if (msg.equals("FWD")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
                 tv.setText(msg);
                 ack();
                 robotForward();
@@ -230,7 +230,7 @@ public class FindBalloonPhone extends BasicBotActivity
             // check for known non-int messages
             if (msg.equals("REV")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
                 tv.setText(msg);
                 ack();
                 robotReverse();
@@ -240,7 +240,7 @@ public class FindBalloonPhone extends BasicBotActivity
             // check for known non-int messages
             if (msg.equals("STOP")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
                 tv.setText(msg);
                 ack();
                 robotStop();

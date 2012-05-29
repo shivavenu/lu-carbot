@@ -95,7 +95,7 @@ public class WalkablePathView extends View
         paint.setColor(Color.GREEN);
         paint.setStrokeWidth(6);
         canvas.drawPoint(currentX, currentY, paint);
-        Log.v("X", new Float(currentX).toString());
+        //Log.v("X", new Float(currentX).toString());
     }
 
     public float getPointX(int index)

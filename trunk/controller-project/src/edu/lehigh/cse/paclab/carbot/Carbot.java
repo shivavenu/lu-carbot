@@ -106,16 +106,16 @@ public class Carbot extends Activity
             startActivity(new Intent(this, RemoteControlPhone.class));
         }
 
-        
-        
-        
-        
+        if (v == findViewById(R.id.btnCarbotDrawToControlPhone))
+            startActivity(new Intent(this, DrawToControlPhone.class));
+
+        if (v == findViewById(R.id.btnCarbotDrawToControlBot))
+            startActivity(new Intent(this, DrawToControlBot.class));
+
         if (v == findViewById(R.id.btnLaunchKinderConfig)) {
             startActivity(new Intent(this, ConfigurationActivity.class));
         }
-        if (v == findViewById(R.id.btnLaunchKinderWalk)) {
-            startActivity(new Intent(this, DrawToControlBot.class));
-        }
+
         if (v == findViewById(R.id.btnLaunchKinderVisualController)) {
             // for now...
             startActivity(new Intent(this, FindBalloonBot.class));
@@ -130,7 +130,6 @@ public class Carbot extends Activity
         }
 
     }
-
     /*
      * Plan from here:
      * 
