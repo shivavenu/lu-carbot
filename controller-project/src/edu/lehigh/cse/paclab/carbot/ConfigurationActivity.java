@@ -38,8 +38,6 @@ public class ConfigurationActivity extends BasicBotActivity
     @Override
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
-        // TODO Auto-generated method stub
-
     }
 
     public static ConfigurationActivity self;
