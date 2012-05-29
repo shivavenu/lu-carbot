@@ -31,6 +31,7 @@ public class ChatterboxActivity extends BasicBotActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.voicerecognizerlayout);
+        initBTStatus();
     }
 
     /**

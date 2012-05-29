@@ -43,17 +43,8 @@ public class FindBalloonPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        // set up custom title, inflate layout, create title, set default
-        // message
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-
         setContentView(R.layout.remotecontrolbot);
-
-        // save the status field so we can update it easily
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
-        tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
-        tvStatus.setText("not connected");
+        initBTStatus();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)

@@ -1,93 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ToggleButton
-        android:id="@+id/button1"
+    <ImageView
+        android:id="@+id/ivTetherForward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="forward"
-        android:text="Forward" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/up" />
 
-    <ToggleButton
-        android:id="@+id/button2"
+    <ImageView
+        android:id="@+id/ivTetherStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="reverse"
-        android:text="Reverse" />
+        android:layout_alignRight="@+id/ivTetherForward"
+        android:layout_centerVertical="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/stop" />
 
-    <ToggleButton
-        android:id="@+id/button3"
+    <ImageView
+        android:id="@+id/ivTetherRotNeg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="clockwise"
-        android:text="Clockwise" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ivTetherStop"
+        android:onClick="onClickImage"
+        android:src="@drawable/rotneg" />
 
-    <ToggleButton
-        android:id="@+id/button4"
+    <ImageView
+        android:id="@+id/ivTetherLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="cclockwise"
-        android:text="C-Clockwise" />
+        android:layout_above="@+id/ivTetherStop"
+        android:layout_alignParentLeft="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/turnleft" />
 
-    <ToggleButton
-        android:id="@+id/button5"
+    <ImageView
+        android:id="@+id/ivTetherRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="pointTurnR"
-        android:text="P-TR" />
+        android:layout_alignBottom="@+id/ivTetherLeft"
+        android:layout_alignParentRight="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/turnright" />
 
-    <ToggleButton
-        android:id="@+id/button6"
+    <ImageView
+        android:id="@+id/ivTetherRotPos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="pointTurnL"
-        android:text="P-TL" />
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivTetherStop"
+        android:onClick="onClickImage"
+        android:src="@drawable/rotpos" />
 
-    <TextView
-        android:id="@+id/editText1"
+    <ImageView
+        android:id="@+id/ivTetherReverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Forward" />
+        android:layout_alignLeft="@+id/ivTetherStop"
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/down" />
 
-    <TextView
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reverse" >
-
-        <requestFocus />
-    </TextView>
-
-    <TextView
-        android:id="@+id/editText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clockwise" />
-
-    <TextView
-        android:id="@+id/editText4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CClockwise" />
-
-    <TextView
-        android:id="@+id/editText5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PT-R" />
-
-    <TextView
-        android:id="@+id/editText6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PT-L" />
-
-</LinearLayout>
+</RelativeLayout>

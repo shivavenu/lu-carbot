@@ -1,355 +1,191 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.support.BTService;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
+import edu.lehigh.cse.paclab.carbot.support.WalkablePathView;
 
 /**
- * An activity for controlling a robot remotely
+ * This is for drawing a path, and then the robot connected to the phone will
+ * perform that movement
  * 
- * This is almost there. Remaining tasks:
+ * [TODO] configure so that we can do remote picture taking and other cool stuff
  * 
- * 1 - hardening: you need to not rotate the phone, and connect bluetooth before
- * connecting usb
+ * [TODO] this is a bit buggy right now... I think it's partly due to the use of
+ * threads, but I'm not sure.
  * 
- * 2 - auto-snap picture: right now, the robot phone must be touched a few times
- * 
- * 3 - Orthogonality: right now both sides of the system use this activity,
- * instead of the botphone using something simpler
+ * @author spear
  * 
  */
 public class DrawToControlPhone extends BasicBotActivity
 {
-    TextView tvStatus;
-
-    /** Called when the activity is first created. */
     @Override
+    protected void receiveMessage(byte[] readBuf, int bytes)
+    {
+        // empty for now, but we need to do this if we are going to draw on a
+        // remote phone
+    }
+
+    private WalkablePathView wpView;
+    private int index = 1;
+    private float current_x;
+    private float current_y;
+    private double current_orientation = 0;
+
+    // [mfs] should try to use magnitude scaling eventually...
+    // private double current_mag = 1;
+    public boolean moving = false;
+
+    int rotatemillis;
+
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.drawtocontrolbot);
 
-        // set up custom title, inflate layout, create title, set default
-        // message
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        wpView = (WalkablePathView) findViewById(R.id.wpv1);
 
-        setContentView(R.layout.remotecontrolbot);
-
-        // save the status field so we can update it easily
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
-        tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
-        tvStatus.setText("not connected");
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        Log.i("CARBOT", "in OAR");
-        switch (requestCode) {
-            case INTENT_SNAP_PHOTO:
-                Log.i("CARBOT", "in OAR-2");
-                if (resultCode == Activity.RESULT_OK) {
-                    Log.i("CARBOT", "in OAR-3");
-                    sendBigMessage();
+        Button b = (Button) findViewById(R.id.btnWPLGo);
+        b.setOnClickListener(new OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                if (index < wpView.getSize()) {
+                    current_x = wpView.getPointX(index - 1);
+                    current_y = wpView.getPointY(index - 1);
+                    moveToPoint(index);
                 }
-                return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void onBTRCClick(View v)
-    {
-        if (v == findViewById(R.id.btnBTRCSendFWD))
-            sendCMD("FWD");
-        if (v == findViewById(R.id.btnBTRCSendREV))
-            sendCMD("REV");
-        if (v == findViewById(R.id.btnBTRCSendSTOP))
-            sendCMD("STOP");
-        if (v == findViewById(R.id.btnBTRCSendPic)) {
-            Log.i("CARBOT", "sending command SNAP");
-            sendCMD("SNAP");
-        }
-    }
-
-    // now we shall try to set up a 2-stage communication
-    // snd -1: size
-    // rcv -1: send ack
-    // snd i: byte[512*i]...upto 512 more bytes
-    // rcv i: send ack
-
-    // the round that we are on
-    int sendIter = -1;
-
-    // are we sending or receiving?
-    boolean sending = false;
-
-    // the data
-    byte data[];
-
-    // the size of the data being sent
-    int sendSize;
-
-    // the message, if we are sending a short message
-    String shortmessage = "";
-
-    // send a simple message
-    void sendCMD(String msg)
-    {
-        // Check that we're actually connected before trying anything
-        if (btService.getState() != BTService.STATE_CONNECTED) {
-            Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        sending = true;
-        sendIter = -1;
-        shortmessage = msg;
-        sendSize = -1;
-        data = null;
-        sendMessage();
-    }
-
-    protected void sendBigMessage()
-    {
-        Log.i("CARBOT", "Sending big message");
-        // Check that we're actually connected before trying anything
-        if (btService.getState() != BTService.STATE_CONNECTED) {
-            Toast.makeText(this, "Error: No connection!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // move FSM to sending mode
-        sending = true;
-        sendIter = -1;
-        shortmessage = "";
-
-        // get the data to send (NB: this will change)
-        // 1 - find the file
-        File fImage = SnapPhoto.getOutputMediaFile();
-        // 2 - get its length, make a buffer
-        sendSize = (int) fImage.length();
-        Log.i("CARBOT", "File Size is " + sendSize);
-        data = new byte[sendSize];
-        // 3 - get the data
-        try {
-            FileInputStream fis = new FileInputStream(fImage);
-            fis.read(data);
-            fis.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            sending = false;
-            return;
-        }
-        // start the send/receive handshaking
-        sendMessage();
-    }
-
-    /**
-     * Sends a message.
-     */
-    protected void sendMessage()
-    {
-        // case 1: we are sending a non-data message
-        if (sending == true && data == null) {
-            Log.i("CARBOT", "sending " + shortmessage);
-            // send the actual message as a string
-            btService.write(shortmessage.getBytes());
-            return;
-        }
-        // case 2: we are sending the first chunk of a data message
-        if (sending == true && sendIter == -1) {
-            Log.i("CARBOT", "sending startbig size = " + sendSize);
-            // send the size of the message as a string, advance to next
-            btService.write(("" + sendSize).getBytes());
-            sendIter++;
-            return;
-        }
-        // case 3: we are sending the 'sendIter'th chunk of a data message
-        if (sending == true) {
-            // figure out which chunk to send (no more than 512 bytes!)
-            int remain = sendSize - 512 * sendIter;
-            int min = remain > 512 ? 512 : remain;
-            // send bytes via offset/size variant of write command, advance to
-            // next
-            Log.i("CARBOT", "sending " + min + " bytes");
-            btService.write(data, 512 * sendIter, min);
-            sendIter++;
-            return;
-        }
-    }
-
-    void ack()
-    {
-        // Send an ack
-        Log.i("CARBOT", "sending ack");
-        btService.write("ACK".getBytes());
-    }
-
-    void sendDone()
-    {
-        sending = false;
-        sendIter = -1;
-        shortmessage = "";
-        sendSize = -1;
-        data = null;
-    }
-
-    /**
-     * Receive a message
-     */
-    protected void receiveMessage(byte[] readBuf, int bytes)
-    {
-        // case 1: we are the sender of a non-data message... this is an ACK
-        if (sending == true && data == null) {
-            // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "case 1 received " + new String(readBuf, 0, bytes));
-            // the communication is done
-            sendDone();
-            return;
-        }
-        // case 2: we are the sender of a data message... this is an ACK
-        if (sending == true && data != null) {
-            // ignore the message, as it must be an ACK
-            Log.i("CARBOT", "case 2 received " + new String(readBuf, 0, bytes));
-
-            // do we need to send more data?
-            if (sendIter * 512 >= sendSize) {
-                sendDone();
             }
-            else {
-                sendMessage();
+        });
+
+        Button clear = (Button) findViewById(R.id.btnWPLClear);
+        clear.setOnClickListener(new OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                wpView.clearPoints();
+                index = 1;
+                current_orientation = 0;
             }
-            return;
+        });
+
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        rotatemillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
+        
+        Log.e("CARBOT", rotatemillis + " = rotatemillis");
+        initBTStatus();
+    }
+
+    public void moveToPoint(int i)
+    {
+        float x = wpView.getPointX(i);
+        float y = wpView.getPointY(i);
+
+        float deltax = x - current_x;
+        float deltay = y - current_y;
+        double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
+
+        Log.v("CURRENT ORIENTATION BEFORE", new Double(current_orientation).toString());
+        Log.v("ANGLE", new Double(ang).toString());
+        angle(current_orientation - ang);
+        Log.v("CURRENT ORIENTATION AFTER", new Double(current_orientation).toString());
+
+        double distance = Math.sqrt(((x - current_x) * (x - current_x)) + ((y - current_y) * (y - current_y)));
+        long delay = move(distance, current_x, current_y, x, y);
+        final long t_delay = delay - System.currentTimeMillis();
+
+        index++;
+        if (index < wpView.getSize()) {
+            current_x = x;
+            current_y = y;
+
+            // [mfs] using threads like this is going to create a lot of system
+            // pressure... we could use an alarm instead...
+            Thread delayThread = new Thread(new Thread()
+            {
+                public void run()
+                {
+                    try {
+                        sleep(t_delay);
+                    }
+                    catch (Exception e) {
+                    }
+                    moveToPoint(index);
+                }
+            });
+
+            delayThread.start();
         }
-        // case 3: we are the receiver of a new message
-        if (sendIter == -1) {
-            String msg = new String(readBuf, 0, bytes);
-            Log.i("CARBOT", "RECEIVED:::" + msg);
-            // check for known non-int messages
-            if (msg.equals("FWD")) {
-                // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
-                ack();
+
+    }
+
+    public long move(double _dis, float _old_x, float _old_y, float _new_x, float _new_y)
+    {
+        final double dis = _dis;
+        final float old_x = _old_x;
+        final float old_y = _old_y;
+        final float new_x = _new_x;
+        final float new_y = _new_y;
+        final long start = System.currentTimeMillis();
+        final long stop = start + (long) (dis * 50);
+        moving = true;
+
+        Thread updateThread = new Thread(new Runnable()
+        {
+            public void run()
+            {
                 robotForward();
-                sendDone();
-                return;
-            }
-            // check for known non-int messages
-            if (msg.equals("REV")) {
-                // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
-                ack();
-                robotReverse();
-                sendDone();
-                return;
-            }
-            // check for known non-int messages
-            if (msg.equals("STOP")) {
-                // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvBTRCLastMsg);
-                tv.setText(msg);
-                ack();
+                Log.i("PathActivity", "send command .1, 0");
+                while (System.currentTimeMillis() < stop) {
+                    if (System.currentTimeMillis() % 100 == 0) {
+                        float x = old_x;
+                        float y = old_y;
+
+                        float x_dis = new_x - old_x;
+                        float y_dis = new_y - old_y;
+
+                        double percentTraveled = (double) ((System.currentTimeMillis() - start))
+                                / ((double) (stop - start));
+                        wpView.currentX = (float) (x + (x_dis * percentTraveled));
+                        Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
+                        wpView.currentY = (float) (y + (y_dis * percentTraveled));
+                        wpView.postInvalidate();
+                    }
+                }
                 robotStop();
-                sendDone();
-                return;
+                Log.i("WalkablePath", "0,0");
+                moving = false;
             }
-            if (msg.equals("SNAP")) {
-                ack();
-                sendDone();
-                // time to take a photo...
-                Log.i("CARBOT", "Starting intent to take picture");
-                Intent i = new Intent(this, SnapPhoto.class);
-                startActivityForResult(i, INTENT_SNAP_PHOTO);
-                return;
-            }
-            // other known messages would be handled here, or better yet, have a
-            // function handle them!
-
-            // ...
-
-            // if we are here, then we think we've been sent an Integer, which
-            // means we are starting a new data communication
-            try {
-                // total size can be determined by the payload of this
-                // message
-                sendSize = Integer.parseInt(new String(readBuf, 0, bytes));
-                // get room for the data, send an ack
-                data = new byte[sendSize];
-                ack();
-                // advance to next state
-                sendIter++;
-            }
-            catch (NumberFormatException nfe) {
-                nfe.printStackTrace();
-            }
-            return;
-        }
-        // case 4: we are receiving the 'sendIter'th packet of data
-
-        // figure out how much data is in this packet
-        int remain = sendSize - 512 * sendIter;
-        int min = remain > 512 ? 512 : remain;
-
-        // figure out offset where data will go
-        int start = 512 * sendIter;
-
-        // copy data into buffer
-        for (int i = 0; i < min; ++i)
-            data[start + i] = readBuf[i];
-
-        // advance to next state
-        sendIter++;
-
-        // ack the message
-        ack();
-
-        // are we all done?
-        if (sendIter * 512 >= sendSize) {
-            // clear the counter
-            sendIter = -1;
-
-            // create a file and dump the byte stream into it (hard-code for
-            // Droid I)
-            File fImage = SnapPhoto.getOutputMediaFile();
-
-            FileOutputStream fos;
-            try {
-                fos = new FileOutputStream(fImage);
-                fos.write(data, 0, sendSize);
-                fos.close();
-            }
-            catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return;
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-            // if that worked, then update the imageView
-            ImageView iv = (ImageView) findViewById(R.id.ivBTRCImage);
-            iv.setImageURI(null);
-            iv.invalidate();
-            iv.setImageURI(Uri.fromFile(fImage));
-            iv.invalidate();
-        }
+        });
+        updateThread.start();
+        return stop;
     }
 
+    public void angle(double ang)
+    {
+        // I think this is how long we need to wait...
+        double full_circle = rotatemillis;
+
+        long start = System.currentTimeMillis();
+        long stop = start + (long) (full_circle * (Math.abs(ang) / 360));
+
+        if (ang != 0) {
+            if (ang < 0)
+                Log.i("WalkablePath", "0, -Math.PI / 2");
+            else
+                Log.i("WalkablePath", "0, Math.PI / 2");
+        }
+
+        robotClockwise();
+        while (System.currentTimeMillis() < stop) {
+        }
+        robotStop();
+        current_orientation -= ang;
+        Log.i("WalkablePath", "0, 0");
+    }
 }

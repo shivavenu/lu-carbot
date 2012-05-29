@@ -34,15 +34,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.67"
                     android:onClick="launchActivity"
-                    android:text="Robot (Z)" />
-
+                    android:text="Robot" />
+
                 <Button
                     android:id="@+id/btnCarbotHelpBuildStation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.14"
+                    android:layout_weight="0.24"
                     android:onClick="onClickHelp"
                     android:text="Help" />
+
             </LinearLayout>
 
             <TextView
@@ -57,7 +58,7 @@
                 android:orientation="horizontal" >
 
                 <Button
-                    android:id="@+id/btnLaunchKinderRC"
+                    android:id="@+id/btnCarbotRemoteControlPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.33"
@@ -65,7 +66,7 @@
                     android:text="Phone (Z)" />
 
                 <Button
-                    android:id="@+id/btnLaunchKinderRC"
+                    android:id="@+id/btnCarbotRemoteControlBot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.33"

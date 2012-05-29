@@ -4,43 +4,16 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btnBTRCSendFWD"
+    <TextView
+    
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onBTRCClick"
-        android:text="Forward!" />
-
-    <Button
-        android:id="@+id/btnBTRCSendREV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onBTRCClick"
-        android:text="Reverse" />
-
-    <Button
-        android:id="@+id/btnBTRCSendSTOP"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onBTRCClick"
-        android:text="Stop" />
-
-    <Button
-        android:id="@+id/btnBTRCSendPic"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onBTRCClick"
-        android:text="Send Picture!" />
-
+        android:text="Most Recent Command:" />
+    
     <TextView
         android:id="@+id/tvBTRCLastMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="" />
-
-    <ImageView
-        android:id="@+id/ivBTRCImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 </LinearLayout>
