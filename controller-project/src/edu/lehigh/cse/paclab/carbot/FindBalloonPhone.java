@@ -43,8 +43,13 @@ public class FindBalloonPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.remotecontrolbot);
+        setContentView(R.layout.findballoonphone);
         initBTStatus();
+    }
+
+    public void onClickToggle(View v)
+    {
+        sendCMD("TOGGLE");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)

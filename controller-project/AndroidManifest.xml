@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
 
-     	<activity android:name=".support.BallLearnActivity" android:screenOrientation="landscape"></activity>
+     	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
      	<activity android:name="FindBalloonBot" android:screenOrientation="landscape"></activity>
         <activity android:name=".support.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
         <activity android:name="ChatterboxActivity" android:screenOrientation="portrait" ></activity>

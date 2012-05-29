@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import edu.lehigh.cse.paclab.carbot.support.BallLearnActivity;
+import edu.lehigh.cse.paclab.carbot.support.LearnColor;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other
@@ -95,10 +95,12 @@ public class Carbot extends Activity
      */
     public void launchActivity(View v)
     {
+        // TetheredBot support
         if (v == findViewById(R.id.btnCarbotDirectControl)) {
             startActivity(new Intent(this, TetheredBot.class));
         }
 
+        // Remote Control Station
         if (v == findViewById(R.id.btnCarbotRemoteControlBot)) {
             startActivity(new Intent(this, RemoteControlBot.class));
         }
@@ -106,23 +108,29 @@ public class Carbot extends Activity
             startActivity(new Intent(this, RemoteControlPhone.class));
         }
 
+        // Draw To Control Station
         if (v == findViewById(R.id.btnCarbotDrawToControlPhone))
             startActivity(new Intent(this, DrawToControlPhone.class));
-
         if (v == findViewById(R.id.btnCarbotDrawToControlBot))
             startActivity(new Intent(this, DrawToControlBot.class));
 
-        if (v == findViewById(R.id.btnLaunchKinderConfig)) {
-            startActivity(new Intent(this, ConfigurationActivity.class));
-        }
-
-        if (v == findViewById(R.id.btnLaunchKinderVisualController)) {
+        // Chase Balloon Station
+        if (v == findViewById(R.id.btnCarbotFindBalloonBot)) {
             // for now...
             startActivity(new Intent(this, FindBalloonBot.class));
         }
-        if (v == findViewById(R.id.btnLaunchKinderVisualControlBot)) {
+        if (v == findViewById(R.id.btnCarbotFindBalloonPhone)) {
             // for now...
-            startActivity(new Intent(this, BallLearnActivity.class));
+            startActivity(new Intent(this, FindBalloonPhone.class));
+        }
+        if (v == findViewById(R.id.btnCarbotLearnColor)) {
+            // for now...
+            startActivity(new Intent(this, LearnColor.class));
+        }
+
+        // MISC
+        if (v == findViewById(R.id.btnLaunchKinderConfig)) {
+            startActivity(new Intent(this, ConfigurationActivity.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderChatterbox)) {
             // for now...
