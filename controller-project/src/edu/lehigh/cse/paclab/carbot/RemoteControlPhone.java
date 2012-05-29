@@ -43,7 +43,7 @@ public class RemoteControlPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.remotecontrolbot);
+        setContentView(R.layout.remotecontrolphone);
         initBTStatus();
     }
 
@@ -62,18 +62,24 @@ public class RemoteControlPhone extends BasicBotActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onBTRCClick(View v)
+    public void onClickImage(View v)
     {
-        if (v == findViewById(R.id.btnBTRCSendFWD))
+        if (v == findViewById(R.id.ivRemoteControlPhoneForward))
             sendCMD("FWD");
-        if (v == findViewById(R.id.btnBTRCSendREV))
+        if (v == findViewById(R.id.ivRemoteControlPhoneReverse))
             sendCMD("REV");
-        if (v == findViewById(R.id.btnBTRCSendSTOP))
+        if (v == findViewById(R.id.ivRemoteControlPhoneStop))
             sendCMD("STOP");
-        if (v == findViewById(R.id.btnBTRCSendPic)) {
-            Log.i("CARBOT", "sending command SNAP");
+        if (v == findViewById(R.id.ivRemoteControlPhonePhoto))
             sendCMD("SNAP");
-        }
+        if (v == findViewById(R.id.ivRemoteControlPhoneRight))
+            sendCMD("PTR");
+        if (v == findViewById(R.id.ivRemoteControlPhoneLeft))
+            sendCMD("PTL");
+        if (v == findViewById(R.id.ivRemoteControlPhoneRotPos))
+            sendCMD("ROT+");
+        if (v == findViewById(R.id.ivRemoteControlPhoneRotNeg))
+            sendCMD("ROT-");
     }
 
     // now we shall try to set up a 2-stage communication
@@ -335,7 +341,7 @@ public class RemoteControlPhone extends BasicBotActivity
                 return;
             }
             // if that worked, then update the imageView
-            ImageView iv = (ImageView) findViewById(R.id.ivBTRCImage);
+            ImageView iv = (ImageView) findViewById(R.id.ivRemoteControlPhoneImage);
             iv.setImageURI(null);
             iv.invalidate();
             iv.setImageURI(Uri.fromFile(fImage));

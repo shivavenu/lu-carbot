@@ -62,20 +62,6 @@ public class FindBalloonPhone extends BasicBotActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onBTRCClick(View v)
-    {
-        if (v == findViewById(R.id.btnBTRCSendFWD))
-            sendCMD("FWD");
-        if (v == findViewById(R.id.btnBTRCSendREV))
-            sendCMD("REV");
-        if (v == findViewById(R.id.btnBTRCSendSTOP))
-            sendCMD("STOP");
-        if (v == findViewById(R.id.btnBTRCSendPic)) {
-            Log.i("CARBOT", "sending command SNAP");
-            sendCMD("SNAP");
-        }
-    }
-
     // now we shall try to set up a 2-stage communication
     // snd -1: size
     // rcv -1: send ack
@@ -335,7 +321,7 @@ public class FindBalloonPhone extends BasicBotActivity
                 return;
             }
             // if that worked, then update the imageView
-            ImageView iv = (ImageView) findViewById(R.id.ivBTRCImage);
+            ImageView iv = null; // (ImageView) findViewById(R.id.ivBTRCImage);
             iv.setImageURI(null);
             iv.invalidate();
             iv.setImageURI(Uri.fromFile(fImage));
