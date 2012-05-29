@@ -14,7 +14,10 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -24,6 +27,7 @@ import edu.lehigh.cse.paclab.carbot.support.AlarmLookAgainReceiver;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 import edu.lehigh.cse.paclab.carbot.support.CameraPreviewSurfaceView;
 import edu.lehigh.cse.paclab.carbot.support.ImageUtils;
+import edu.lehigh.cse.paclab.carbot.support.LearnColor;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
@@ -39,7 +43,7 @@ public class FindBalloonBot extends BasicBotActivity
     public static FindBalloonBot self;
 
     int rotationmillis = 0;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -56,21 +60,43 @@ public class FindBalloonBot extends BasicBotActivity
         layout.addView(camera);
         layout.addView(overlay);
         setContentView(layout);
-        
+
         // how long to rotate 360 degrees?
-        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
+                Activity.MODE_WORLD_WRITEABLE);
         rotationmillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
-        
+
         initBTStatus();
+    }
+
+    private synchronized void onToggle()
+    {
+        allowedtorun = !allowedtorun;
+    }
+
+    void ack()
+    {
+        // Send an ack
+        Log.i("CARBOT", "sending ack");
+        btService.write("ACK".getBytes());
     }
 
     @Override
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
-        // NOP for now...
+        String msg = new String(readBuf, 0, bytes);
+        Log.i("CARBOT", "RECEIVED:::" + msg);
+        // check for known non-int messages
+        if (msg.equals("TOGGLE")) {
+            ack();
+            onToggle();
+            return;
+        }
+        Toast.makeText(this, "Unknown message: " + msg, Toast.LENGTH_SHORT).show();
     }
 
     // track if we are moving or not
+    boolean allowedtorun = false;
     boolean moving = false;
     boolean turning = false;
     int searchdegrees = 0;
@@ -81,6 +107,8 @@ public class FindBalloonBot extends BasicBotActivity
      */
     public synchronized void shouldMove()
     {
+        if (!allowedtorun)
+            return;
         if (moving || turning)
             return;
         robotForward();
@@ -94,20 +122,24 @@ public class FindBalloonBot extends BasicBotActivity
      */
     public synchronized void shouldStop()
     {
+        if (!allowedtorun)
+            return;
         if (turning)
             return;
         if (moving) {
             robotStop();
-            moving = false;           
+            moving = false;
         }
         shouldSearch();
     }
 
     // for alarms...
     int alarmNum = 0;
-    
+
     private synchronized void shouldSearch()
     {
+        if (!allowedtorun)
+            return;
         turning = true;
         // if we've turned a ful circle, complain and keep trying
         if (searchdegrees == 360)
@@ -120,7 +152,8 @@ public class FindBalloonBot extends BasicBotActivity
         intent.putExtra("AlarmID", alarmNum);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis/24), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 24),
+                pendingIntent);
     }
 
     // this calls asynchronously after the timer

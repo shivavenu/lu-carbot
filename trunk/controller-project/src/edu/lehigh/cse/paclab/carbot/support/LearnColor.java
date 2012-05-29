@@ -37,7 +37,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
  * We start the activity, put a ball in the viewport, and then click a button
  * and the robot will remember the key image color parameters
  */
-public class BallLearnActivity extends Activity
+public class LearnColor extends Activity
 {
     /**
      * The activity consists of a SurfaceView to show the camera preview, a view
@@ -56,12 +56,13 @@ public class BallLearnActivity extends Activity
         CameraPreviewSurfaceView camera = new CameraPreviewSurfaceView(this, overlay);
         layout.addView(camera);
         layout.addView(overlay);
+        
 
         // add a button that gets the data from the image and finishes the
         // activity
-        Button b = new Button(this);
-        b.setText("OK");
-        b.setOnClickListener(new Button.OnClickListener()
+        //Button b = new Button(this);
+        //b.setText("OK");
+        overlay.setOnClickListener(new Button.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -73,9 +74,9 @@ public class BallLearnActivity extends Activity
         // NB: need to stick button inside a LinearLayout, then shove that onto
         // the FrameLayout. For now, we just set the button size and wish it was
         // somewhere else...
-        b.setWidth(45);
-        b.setHeight(45);
-        layout.addView(b);
+        //b.setWidth(45);
+        //b.setHeight(45);
+        //layout.addView(b);
 
         // reset the flag for whether we want the thresholds saved
         requestThresholdCapture = false;
@@ -111,7 +112,7 @@ public class BallLearnActivity extends Activity
     /**
      * A reference to the activity, so that we can shut it down programatically
      */
-    public static BallLearnActivity self;
+    public static LearnColor self;
 }
 
 /**
@@ -179,7 +180,7 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
 
         // only compute the average and stdev if there is a pending request and
         // we haven't done it yet
-        if (BallLearnActivity.requestThresholdCapture && !hasCaptureData) {
+        if (LearnColor.requestThresholdCapture && !hasCaptureData) {
             // convert from YUV420S to RGB format...
             ImageUtils.decodeYUV420SP(rgb, yuvData, width, height);
 
@@ -266,7 +267,7 @@ class BallLearnOverlayView extends View implements Camera.PreviewCallback
         cvAvgSdv(imgVal, avgVal, stdVal, null);
 
         // now save the values to Shared Preferences
-        SharedPreferences prefs = BallLearnActivity.self.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        SharedPreferences prefs = LearnColor.self.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
         Editor e = prefs.edit();
         e.putString(BasicBotActivity.PREF_HUE_AVG, avgHue.getVal(0)+"");
         Log.i(BasicBotActivity.PREF_HUE_AVG, avgHue.getVal(0)+"");
