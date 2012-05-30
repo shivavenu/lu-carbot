@@ -8,12 +8,8 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.support.BTService;
@@ -350,12 +346,6 @@ public class RemoteControlBot extends BasicBotActivity
                 e.printStackTrace();
                 return;
             }
-            // if that worked, then update the imageView
-            ImageView iv = null; // (ImageView) findViewById(R.id.ivBTRCImage);
-            iv.setImageURI(null);
-            iv.invalidate();
-            iv.setImageURI(Uri.fromFile(fImage));
-            iv.invalidate();
         }
     }
 

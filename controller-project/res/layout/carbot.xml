@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal" >
-
+
                 <Button
                     android:id="@+id/btnCarbotDrawToControlBot"
                     android:layout_width="218dp"
@@ -150,21 +150,41 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Final Station" />
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btnCarbotChatterbox"
+                    android:layout_width="217dp"
+                    android:layout_height="wrap_content"
+                    android:onClick="launchActivity"
+                    android:text="Final Event" />
+
+                <Button
+                    android:id="@+id/btnCarbotHelpChatterbox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickHelp"
+                    android:text="Help" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Misc" />
 
             <Button
-                android:id="@+id/btnLaunchKinderChatterbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="launchActivity"
-                android:text="Chatterbox" />
-
-            <Button
-                android:id="@+id/btnLaunchKinderConfig"
-                android:layout_width="match_parent"
+                android:id="@+id/btnCarbotConfigure"
+                android:layout_width="131dp"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Configure" />
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+</LinearLayout>
