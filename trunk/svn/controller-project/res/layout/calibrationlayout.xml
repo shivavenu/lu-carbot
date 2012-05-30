@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tvFWDTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter an amount of time to move forward:" />
+
+    <EditText
+        android:id="@+id/etFWDTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btnCalibrateFWD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCalibrateFWD"
+        android:text="Calibrate FWD" />
+
+    <TextView
+        android:id="@+id/tvCCWTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter an amount of time to rotate CCW:" />
+
+    <EditText
+        android:id="@+id/etCCWTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/btnCalibrateCCW"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCalibrateCCW"
+        android:text="Calibrate CCW" />
+
+    <Button
+        android:id="@+id/btnHackConfig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickHack"
+        android:text="CONFIG" />
+
+    <Button
+        android:id="@+id/btnHackFwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickHack"
+        android:text="FORWARD" />
+
+    <Button
+        android:id="@+id/btnHackRev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickHack"
+        android:text="REVERSE" />
+
+    <Button
+        android:id="@+id/btnHackStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickHack"
+        android:text="STOP" />
+
+</LinearLayout>
