@@ -10,6 +10,7 @@ package edu.lehigh.cse.paclab.carbot;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -114,25 +115,22 @@ public class Carbot extends Activity
 
         // Chase Balloon Station
         if (v == findViewById(R.id.btnCarbotFindBalloonBot)) {
-            // for now...
             startActivity(new Intent(this, FindBalloonBot.class));
         }
         if (v == findViewById(R.id.btnCarbotFindBalloonPhone)) {
-            // for now...
             startActivity(new Intent(this, FindBalloonPhone.class));
         }
         if (v == findViewById(R.id.btnCarbotLearnColor)) {
-            // for now...
             startActivity(new Intent(this, LearnColor.class));
         }
 
         // MISC
         if (v == findViewById(R.id.btnLaunchKinderConfig)) {
-            startActivity(new Intent(this, ConfigurationActivity.class));
+            startActivity(new Intent(this, Configure.class));
         }
         if (v == findViewById(R.id.btnLaunchKinderChatterbox)) {
             // for now...
-            startActivity(new Intent(this, ChatterboxActivity.class));
+            startActivity(new Intent(this, Chatterbox.class));
         }
 
     }

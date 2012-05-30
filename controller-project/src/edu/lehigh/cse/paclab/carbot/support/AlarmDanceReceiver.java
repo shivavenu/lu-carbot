@@ -3,11 +3,11 @@ package edu.lehigh.cse.paclab.carbot.support;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import edu.lehigh.cse.paclab.carbot.Configure;
+import edu.lehigh.cse.paclab.carbot.Chatterbox;
 
 /**
- * A receiver that is used during Configuration to stop the robot after an alarm
- * expires
+ * A receiver that is used when searching for the Balloon to know when to stop
+ * rotating and to start looking again
  * 
  * [mfs] I know this is bad design, but we can eliminate the redundant receivers
  * later
@@ -15,11 +15,12 @@ import edu.lehigh.cse.paclab.carbot.Configure;
  * @author mfs
  * 
  */
-public class AlarmStopMovingReceiver extends BroadcastReceiver
+public class AlarmDanceReceiver extends BroadcastReceiver
 {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Configure.self.robotStop();
+        // [mfs] This is clearly not correct!
+        Chatterbox.self.nextDance();
     }
 }
