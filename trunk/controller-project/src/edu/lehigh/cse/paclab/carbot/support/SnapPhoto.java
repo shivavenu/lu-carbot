@@ -146,7 +146,7 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
     /**
      * Open a camera... favor the front-facing one...
      */
-    private Camera getBestCamera()
+    public static Camera getBestCamera()
     {
         // this code only works with a target of 2.3 or higher... 
         Camera.CameraInfo info = new Camera.CameraInfo();
@@ -231,7 +231,6 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
     {
         FileOutputStream fileOutputStream = null;
         try {
-            // TODO: need to understand what this is doing wrong...
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
             Bitmap myImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);

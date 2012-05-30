@@ -51,7 +51,7 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
     {
         // The Surface has been created, acquire the camera and tell it where
         // to draw.
-        camera = Camera.open();
+        camera = SnapPhoto.getBestCamera();
         try {
             camera.setPreviewDisplay(holder);
         }

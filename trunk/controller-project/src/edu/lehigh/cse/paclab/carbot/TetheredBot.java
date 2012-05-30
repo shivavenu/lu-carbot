@@ -2,7 +2,6 @@ package edu.lehigh.cse.paclab.carbot;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
 /**

@@ -14,9 +14,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
@@ -27,7 +25,6 @@ import edu.lehigh.cse.paclab.carbot.support.AlarmLookAgainReceiver;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 import edu.lehigh.cse.paclab.carbot.support.CameraPreviewSurfaceView;
 import edu.lehigh.cse.paclab.carbot.support.ImageUtils;
-import edu.lehigh.cse.paclab.carbot.support.LearnColor;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can
