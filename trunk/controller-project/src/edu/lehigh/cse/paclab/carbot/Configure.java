@@ -30,7 +30,7 @@ import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
  * @author spear
  * 
  */
-public class ConfigurationActivity extends BasicBotActivity
+public class Configure extends BasicBotActivity
 {
     SharedPreferences prefs;
     int alarmNum = 0;
@@ -40,7 +40,7 @@ public class ConfigurationActivity extends BasicBotActivity
     {
     }
 
-    public static ConfigurationActivity self;
+    public static Configure self;
     
     /** Called when the activity is first created. */
     @Override
@@ -48,7 +48,7 @@ public class ConfigurationActivity extends BasicBotActivity
     {
         self = this;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.configurationlayout);
+        setContentView(R.layout.configuration);
         prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
         EditText et;
 
