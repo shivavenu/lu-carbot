@@ -70,6 +70,9 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
     public static final String TAG = "Carbot";
 
+    // nasty that we're hacking it like this, but it's OK for now since we have one menu for all activities.
+    protected boolean chatterboxOverride = false;
+    
     // Following code block is setting up the android to arduino communication.
     private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
     private UsbManager mUsbManager;
@@ -453,6 +456,9 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(this, BTFindDeviceActivity.class);
                 startActivityForResult(serverIntent, INTENT_CONNECT);
+                return true;
+            case R.id.menuChatterboxOverride:
+                chatterboxOverride = ! chatterboxOverride;
                 return true;
         }
         return false;

@@ -92,7 +92,7 @@ public class Chatterbox extends BasicBotActivity
             // go through the results, dump them all to a TextView
             ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String res = matches.get(0);
-            if (res.contains("dance")) {
+            if (res.contains("dance") || chatterboxOverride) {
                 Speak("Did you say dance?  I love to dance!");
                 nextDance();
             }

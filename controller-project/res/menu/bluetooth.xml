@@ -11,5 +11,10 @@
         android:icon="@android:drawable/ic_menu_search"
         android:title="Find Device">
     </item>
+    <item
+        android:id="@+id/menuChatterboxOverride"
+        android:icon="@android:drawable/ic_menu_directions"
+        android:title="Toggle Chatterbox Override">
+    </item>
 
 </menu>
