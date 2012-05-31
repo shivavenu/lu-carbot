@@ -34,14 +34,14 @@ public class Configure extends BasicBotActivity
 {
     SharedPreferences prefs;
     int alarmNum = 0;
-    
+
     @Override
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
     }
 
     public static Configure self;
-    
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -122,6 +122,15 @@ public class Configure extends BasicBotActivity
             e.putString(PREF_TAG_CAMSTART, et.getText().toString());
             e.commit();
         }
+        if (v == findViewById(R.id.btnKinderConfigFrontCamera)) {
+            Editor e = prefs.edit();
+            e.putString(PREF_TAG_CAMFACE, "FRONT");
+            e.commit();
+        }
+        if (v == findViewById(R.id.btnKinderConfigRearCamera)) {
+            Editor e = prefs.edit();
+            e.putString(PREF_TAG_CAMFACE, "REAR");
+            e.commit();
+        }
     }
 }
-

@@ -26,6 +26,8 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
     Camera camera;
     Camera.PreviewCallback pc;
 
+    Context cachedContext;
+    
     /**
      * Standard SurfaceHolder constructor
      * 
@@ -35,6 +37,7 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
     public CameraPreviewSurfaceView(Context context, Camera.PreviewCallback previewCallback)
     {
         super(context);
+        cachedContext = context;
         pc = previewCallback;
 
         // Install a SurfaceHolder.Callback so we get notified when the
@@ -51,7 +54,7 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
     {
         // The Surface has been created, acquire the camera and tell it where
         // to draw.
-        camera = SnapPhoto.getBestCamera();
+        camera = SnapPhoto.getBestCamera(cachedContext);
         try {
             camera.setPreviewDisplay(holder);
         }

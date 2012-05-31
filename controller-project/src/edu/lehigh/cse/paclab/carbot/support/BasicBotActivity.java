@@ -51,6 +51,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     final public static String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
     final public static String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
     final public static String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
+    final public static String PREF_TAG_CAMFACE = "KB_CONFIG_CAMFACE";
 
     final public static String PREF_HUE_AVG = "PREF_HUE_AVG";
     final public static String PREF_HUE_STD = "PREF_HUE_STD";
