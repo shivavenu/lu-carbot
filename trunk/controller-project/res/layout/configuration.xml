@@ -4,180 +4,222 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/tvKinderConfigName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter this phone&apos;s name:" />
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent" >
 
-        <EditText
-            android:id="@+id/etKinderConfigName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10" />
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btnKinderConfigNameTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Test" />
+            <TextView
+                android:id="@+id/tvConfigureName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter this phone&apos;s name:" />
 
-        <Button
-            android:id="@+id/btnKinderConfigNameSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Save" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/tvKinderConfigMeter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter an amount of time to travel 1 meter:" />
+                <EditText
+                    android:id="@+id/etConfigureName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/btnConfigureNameTest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Test" />
 
-        <EditText
-            android:id="@+id/etKinderConfigMeter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number" >
+                <Button
+                    android:id="@+id/btnConfigureNameSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
 
-            <requestFocus />
-        </EditText>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter the farewell message:" />
 
-        <Button
-            android:id="@+id/btnKinderConfigMeterTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Test" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/btnKinderConfigMeterSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Save" />
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/etConfigureFarewell"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10" />
 
-    <TextView
-        android:id="@+id/tvKinderConfigRotate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter an amount of time to rotate 360 degrees:" />
+                <Button
+                    android:id="@+id/btnConfigureFarewellTest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Test" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/btnConfigureFarewellSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/etKinderConfigRotate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number" >
+            <TextView
+                android:id="@+id/tvConfigureMeter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter an amount of time to travel 1 meter:" />
 
-            <requestFocus />
-        </EditText>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/btnKinderConfigRotateTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Test" />
+                <EditText
+                    android:id="@+id/etConfigureMeter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" >
 
-        <Button
-            android:id="@+id/btnKinderConfigRotateSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Save" />
-    </LinearLayout>
+                    <requestFocus />
+                </EditText>
 
-    <TextView
-        android:id="@+id/tvKinderConfigCameraLag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter an amount of time for the camera lag:" />
+                <Button
+                    android:id="@+id/btnConfigureMeterTest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Test" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/btnConfigureMeterSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/etKinderConfigCameraLag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number" >
+            <TextView
+                android:id="@+id/tvConfigureRotate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter an amount of time to rotate 360 degrees:" />
 
-            <requestFocus />
-        </EditText>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/btnKinderConfigCameraLagSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Save" />
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/etConfigureRotate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" >
 
-    <TextView
-        android:id="@+id/tvKinderConfigCameraStartup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter an amount of time for camera startup:" />
+                    <requestFocus />
+                </EditText>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/btnConfigureRotateTest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Test" />
 
-        <EditText
-            android:id="@+id/etKinderConfigCameraStartup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number" >
+                <Button
+                    android:id="@+id/btnConfigureRotateSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
 
-            <requestFocus />
-        </EditText>
+            <TextView
+                android:id="@+id/tvConfigureCameraLag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter an amount of time for the camera lag:" />
 
-        <Button
-            android:id="@+id/btnKinderConfigCameraStartupSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Save" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <EditText
+                    android:id="@+id/etConfigureCameraLag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" >
 
-        <Button
-            android:id="@+id/btnKinderConfigFrontCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Use Front Camera" />
+                    <requestFocus />
+                </EditText>
 
-        <Button
-            android:id="@+id/btnKinderConfigRearCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onKinderConfigClick"
-            android:text="Use Rear Camera" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnConfigureCameraLagSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvConfigureCameraStartup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter an amount of time for camera startup:" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/etConfigureCameraStartup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" >
+
+                    <requestFocus />
+                </EditText>
+
+                <Button
+                    android:id="@+id/btnConfigureCameraStartupSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Save" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/btnConfigureFrontCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Use Front Camera" />
+
+                <Button
+                    android:id="@+id/btnConfigureRearCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onConfigureClick"
+                    android:text="Use Rear Camera" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
