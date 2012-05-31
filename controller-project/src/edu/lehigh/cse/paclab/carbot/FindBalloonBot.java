@@ -14,6 +14,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -56,6 +57,16 @@ public class FindBalloonBot extends BasicBotActivity
 
         layout.addView(camera);
         layout.addView(overlay);
+
+        overlay.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onToggle();
+            }
+        });
+
         setContentView(layout);
 
         // how long to rotate 360 degrees?
@@ -64,6 +75,7 @@ public class FindBalloonBot extends BasicBotActivity
         rotationmillis = Integer.parseInt(prefs.getString(PREF_TAG_ROTATE, "5000"));
 
         initBTStatus();
+        allowedtorun = false;
     }
 
     private synchronized void onToggle()
@@ -96,14 +108,16 @@ public class FindBalloonBot extends BasicBotActivity
     boolean allowedtorun = false;
     boolean moving = false;
     boolean turning = false;
-    int searchdegrees = 0;
 
     /**
      * When the camera decides that it sees the ball, it calls this to let the
      * robot know that it should move
-     * @param  
-     * @param x 
-     * @param width 
+     * 
+     * NB: this is a bit confusing since the camera is mounted sideways... we
+     * pass in y and height, but use them as x and width
+     * 
+     * @param x
+     * @param width
      */
     public synchronized void shouldMove(int x, int width)
     {
@@ -111,14 +125,38 @@ public class FindBalloonBot extends BasicBotActivity
             return;
         if (moving || turning)
             return;
-        if(x > width/2)
-        	robotPointTurnRight();
-        else if (x < width/2)
-        	robotPointTurnLeft();
-        else
-        	robotForward();
-        moving = true;
-        searchdegrees = 0;
+        if (x > width - 75) {
+            robotStop();
+            robotPointTurnLeft();
+            // set a timer for when to stop
+            Intent intent = new Intent(this, AlarmLookAgainReceiver.class);
+            intent.putExtra("AlarmID", alarmNum);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent,
+                    0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 24),
+                    pendingIntent);
+            turning = true;
+            return;
+        }
+        else if (x < 75) {
+            robotStop();
+            robotPointTurnRight();
+            // set a timer for when to stop
+            Intent intent = new Intent(this, AlarmLookAgainReceiver.class);
+            intent.putExtra("AlarmID", alarmNum);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent,
+                    0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 24),
+                    pendingIntent);
+            turning = true;
+            return;
+        }
+        else {
+            robotForward();
+            moving = true;
+        }
     }
 
     /**
@@ -146,10 +184,6 @@ public class FindBalloonBot extends BasicBotActivity
         if (!allowedtorun)
             return;
         turning = true;
-        // if we've turned a ful circle, complain and keep trying
-        if (searchdegrees == 360)
-            Speak("I just can't see it anymore.  Oh no!");
-        searchdegrees += 15;
         robotClockwise();
 
         // set a timer for when to stop
@@ -248,13 +282,19 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         SharedPreferences prefs = FindBalloonBot.self.getSharedPreferences(
                 "edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
         double avghue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
-        Log.e("CARBOT", "HUE = " + prefs.getString(BasicBotActivity.PREF_HUE_AVG, "0"));
-
         double stdhue = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_HUE_STD, "0"));
         double avgsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_AVG, "0"));
         double stdsat = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_SAT_STD, "0"));
         double avgval = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_VAL_AVG, "0"));
         double stdval = Double.parseDouble(prefs.getString(BasicBotActivity.PREF_VAL_STD, "0"));
+
+        // force a big enough stdev
+        if (stdhue < 10)
+            stdhue = 10;
+        if (stdsat < 10)
+            stdsat = 10;
+        if (stdval < 10)
+            stdval = 10;
 
         double lohue = saturatingAdd(avghue, -3 * stdhue, 0, 179);
         double hihue = saturatingAdd(avghue, +3 * stdhue, 0, 179);
@@ -298,14 +338,6 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         foundObjectCenter = ImageUtils.getCoordinates(thresholdBuffer);
         cvReleaseImage(thresholdBuffer);
 
-        // if we have red and yellow, then put their circle coordinates on
-        // the screen
-        // if (mPointYellow.x() > 0 && mPointYellow.y() > 0 && mPointRed.x() > 0
-        // && mPointRed.y() > 0) {
-        // tvInfo.setText("mpy = (" + mPointYellow.x() + "," + mPointYellow.y()
-        // + "), mpr = (" + mPointRed.x()
-        // + "," + mPointRed.y() + ")");
-        // }
         postInvalidate();
     }
 
@@ -324,9 +356,12 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
         float scaleX = (float) getWidth() / scratchImage.width();
         float scaleY = (float) getHeight() / scratchImage.height();
 
+        Log.v("DOTINFO", "(x,y) = (" + foundObjectCenter.x() + "," + foundObjectCenter.y() + "); imgWH = ("
+                + scratchImage.width() + "," + scratchImage.height() + ")");
+
         // draw a circle at the red center
         if (foundObjectCenter.x() > 0 && foundObjectCenter.y() > 0) {
-            FindBalloonBot.self.shouldMove(foundObjectCenter.x(), getWidth());
+            FindBalloonBot.self.shouldMove(foundObjectCenter.y(), getHeight());
             Paint paint = new Paint();
             paint.setColor(Color.RED);
             canvas.drawCircle(foundObjectCenter.x() * scaleX, foundObjectCenter.y() * scaleY, 30, paint);

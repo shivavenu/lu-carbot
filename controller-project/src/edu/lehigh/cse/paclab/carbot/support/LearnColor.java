@@ -49,6 +49,8 @@ public class LearnColor extends Activity
     {
         super.onCreate(savedInstanceState);
 
+        self = this;
+
         // Create a layout, then nest a View inside a SurfaceView inside the
         // layout
         RelativeLayout layout = new RelativeLayout(this);
@@ -71,18 +73,9 @@ public class LearnColor extends Activity
             }
         });
 
-        // NB: need to stick button inside a LinearLayout, then shove that onto
-        // the FrameLayout. For now, we just set the button size and wish it was
-        // somewhere else...
-        //b.setWidth(45);
-        //b.setHeight(45);
-        //layout.addView(b);
-
         // reset the flag for whether we want the thresholds saved
         requestThresholdCapture = false;
 
-        // save a reference to the activity
-        self = this;
 
         // draw the Activity
         setContentView(layout);
