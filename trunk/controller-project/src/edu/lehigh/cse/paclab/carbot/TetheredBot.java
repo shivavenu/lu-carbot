@@ -1,6 +1,8 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 
@@ -16,7 +18,18 @@ public class TetheredBot extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tetheredbot);
+        // pick tablet or phone layout
+        // Note: tablet is 800x1232, phone is 480x800
+        Display display = getWindowManager().getDefaultDisplay();  
+        int width = display.getWidth();
+        int height = display.getHeight();
+        if (width > 700 || height > 900)
+            setContentView(R.layout.tetheredbot_tablet);
+        else
+            setContentView(R.layout.tetheredbot);
+        Log.v("CARBOT", "width, height = " + width + " " + height); 
+
+        
         initBTStatus();
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
 import edu.lehigh.cse.paclab.carbot.support.WalkablePathView;
@@ -47,8 +48,18 @@ public class DrawToControlBot extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.drawtocontrolbot);
-
+        
+        // pick tablet or phone layout
+        // Note: tablet is 800x1232, phone is 480x800
+        Display display = getWindowManager().getDefaultDisplay();  
+        int width = display.getWidth();
+        int height = display.getHeight();
+        if (width > 700 || height > 900)
+            setContentView(R.layout.drawtocontrolbot_tablet);
+        else
+            setContentView(R.layout.drawtocontrolbot);
+        Log.v("CARBOT", "width, height = " + width + " " + height);
+        
         wpView = (WalkablePathView) findViewById(R.id.wpv1);
 
         SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
