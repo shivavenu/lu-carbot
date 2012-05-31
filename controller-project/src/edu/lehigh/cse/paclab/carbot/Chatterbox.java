@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -144,7 +146,7 @@ public class Chatterbox extends BasicBotActivity
         // set up arraylist, start music, then pause briefly
         theDance = new ArrayList<TimedAction>();
         // first we wait, so phone can stop talking
-        theDance.add(new TimedAction(5000, 'n'));
+        theDance.add(new TimedAction(8000, 'n'));
         // then we start music
         theDance.add(new TimedAction(3650, 'p')); // nothing during
                                                   // "who let the dogs out"
@@ -237,7 +239,9 @@ public class Chatterbox extends BasicBotActivity
                 mp.stop();
                 break;
             case 'x':
-                Speak("Thank you for letting me come to class.  I hope you have a great summer!");
+                SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+                String s = prefs.getString(PREF_TAG_FAREWELL, "Thank you for letting me come to your class.  I hope you have a great summer!");
+                Speak(s);
                 return;
         }
 

@@ -47,6 +47,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 {
     // constants for preference tags
     final public static String PREF_TAG_NAME = "KB_CONFIG_NAME";
+    final public static String PREF_TAG_FAREWELL = "KB_CONFIG_FAREWELL";
     final public static String PREF_TAG_METER = "KB_CONFIG_METER";
     final public static String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
     final public static String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";

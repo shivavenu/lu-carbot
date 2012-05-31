@@ -101,14 +101,22 @@ public class FindBalloonBot extends BasicBotActivity
     /**
      * When the camera decides that it sees the ball, it calls this to let the
      * robot know that it should move
+     * @param  
+     * @param x 
+     * @param width 
      */
-    public synchronized void shouldMove()
+    public synchronized void shouldMove(int x, int width)
     {
         if (!allowedtorun)
             return;
         if (moving || turning)
             return;
-        robotForward();
+        if(x > width/2)
+        	robotPointTurnRight();
+        else if (x < width/2)
+        	robotPointTurnLeft();
+        else
+        	robotForward();
         moving = true;
         searchdegrees = 0;
     }
@@ -318,7 +326,7 @@ class BallFindOverlayView extends View implements Camera.PreviewCallback
 
         // draw a circle at the red center
         if (foundObjectCenter.x() > 0 && foundObjectCenter.y() > 0) {
-            FindBalloonBot.self.shouldMove();
+            FindBalloonBot.self.shouldMove(foundObjectCenter.x(), getWidth());
             Paint paint = new Paint();
             paint.setColor(Color.RED);
             canvas.drawCircle(foundObjectCenter.x() * scaleX, foundObjectCenter.y() * scaleY, 30, paint);
