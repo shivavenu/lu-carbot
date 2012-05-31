@@ -81,6 +81,11 @@ public class FindBalloonBot extends BasicBotActivity
     private synchronized void onToggle()
     {
         allowedtorun = !allowedtorun;
+        if (!allowedtorun) {
+            robotStop();
+            moving = false;
+            turning = false;
+        }
     }
 
     void ack()
@@ -123,7 +128,7 @@ public class FindBalloonBot extends BasicBotActivity
     {
         if (!allowedtorun)
             return;
-        if (moving || turning)
+        if (turning)
             return;
         if (x > width - 75) {
             robotStop();
@@ -134,9 +139,10 @@ public class FindBalloonBot extends BasicBotActivity
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent,
                     0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 24),
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 48),
                     pendingIntent);
             turning = true;
+            moving = false;
             return;
         }
         else if (x < 75) {
@@ -148,15 +154,16 @@ public class FindBalloonBot extends BasicBotActivity
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), alarmNum++, intent,
                     0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 24),
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (long) (rotationmillis / 48),
                     pendingIntent);
             turning = true;
+            moving = false;
             return;
         }
-        else {
-            robotForward();
-            moving = true;
-        }
+        if (moving)
+            return;
+        robotForward();
+        moving = true;
     }
 
     /**
