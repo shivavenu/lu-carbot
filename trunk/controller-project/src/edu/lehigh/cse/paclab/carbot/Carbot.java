@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.lehigh.cse.paclab.carbot.support.LearnColor;
 
 /**
@@ -115,7 +116,8 @@ public class Carbot extends Activity
         if (v == findViewById(R.id.btnCarbotFindBalloonBot))
             startActivity(new Intent(this, FindBalloonBot.class));
         if (v == findViewById(R.id.btnCarbotFindBalloonPhone))
-            startActivity(new Intent(this, FindBalloonPhone.class));
+            // startActivity(new Intent(this, FindBalloonPhone.class));
+            Toast.makeText(this, "This activity has been disabled", Toast.LENGTH_LONG).show();
         if (v == findViewById(R.id.btnCarbotLearnColor))
             startActivity(new Intent(this, LearnColor.class));
 

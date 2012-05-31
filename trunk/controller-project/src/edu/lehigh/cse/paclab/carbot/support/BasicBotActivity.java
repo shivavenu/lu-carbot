@@ -70,9 +70,10 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
     public static final String TAG = "Carbot";
 
-    // nasty that we're hacking it like this, but it's OK for now since we have one menu for all activities.
+    // nasty that we're hacking it like this, but it's OK for now since we have
+    // one menu for all activities.
     protected boolean chatterboxOverride = false;
-    
+
     // Following code block is setting up the android to arduino communication.
     private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
     private UsbManager mUsbManager;
@@ -136,7 +137,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     protected TextView tvStatus;
 
     protected void initBTStatus()
-    { 
+    {
         // save the status field so we can update it easily
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.bttitle);
         tvStatus = (TextView) findViewById(R.id.tvBtTitleRight);
@@ -458,7 +459,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
                 startActivityForResult(serverIntent, INTENT_CONNECT);
                 return true;
             case R.id.menuChatterboxOverride:
-                chatterboxOverride = ! chatterboxOverride;
+                chatterboxOverride = !chatterboxOverride;
                 return true;
         }
         return false;
