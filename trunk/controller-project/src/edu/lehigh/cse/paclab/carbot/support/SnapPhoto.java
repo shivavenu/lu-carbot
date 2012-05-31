@@ -140,14 +140,18 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
      */
     public void surfaceCreated(SurfaceHolder holder)
     {
-        mCamera = getBestCamera();
+        mCamera = getBestCamera(this);
     }
 
     /**
      * Open a camera... favor the front-facing one...
      */
-    public static Camera getBestCamera()
+    public static Camera getBestCamera(Context context)
     {
+        SharedPreferences prefs = context.getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_READABLE);
+        if (prefs.getString(BasicBotActivity.PREF_TAG_CAMFACE, "REAR").equals("REAR"))
+            return Camera.open();
+        
         // this code only works with a target of 2.3 or higher... 
         Camera.CameraInfo info = new Camera.CameraInfo();
         int num = Camera.getNumberOfCameras();
