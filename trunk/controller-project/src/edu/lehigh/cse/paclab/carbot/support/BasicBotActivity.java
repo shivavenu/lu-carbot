@@ -305,8 +305,8 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
             case INTENT_CONNECT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Connected to" + data.getExtras().getString("MAC_ADDRESS"), Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(this, "Connecting to " + data.getExtras().getString("MAC_ADDRESS"),
+                            Toast.LENGTH_SHORT).show();
                     // Get the device MAC address
                     String address = data.getExtras().getString("MAC_ADDRESS");
                     // Get the BLuetoothDevice object

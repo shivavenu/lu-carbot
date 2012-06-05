@@ -59,7 +59,6 @@ public class LearnColor extends Activity
         layout.addView(camera);
         layout.addView(overlay);
         
-
         // add a button that gets the data from the image and finishes the
         // activity
         //Button b = new Button(this);
@@ -75,7 +74,6 @@ public class LearnColor extends Activity
 
         // reset the flag for whether we want the thresholds saved
         requestThresholdCapture = false;
-
 
         // draw the Activity
         setContentView(layout);

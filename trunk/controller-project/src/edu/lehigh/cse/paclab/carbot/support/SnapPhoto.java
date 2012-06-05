@@ -236,7 +236,8 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
         FileOutputStream fileOutputStream = null;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 4;
+            // if we wanted to downsample the image, we could do it like this
+            // options.inSampleSize = 4;
             Bitmap myImage = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
             fileOutputStream = new FileOutputStream(getOutputMediaFile());
             BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
@@ -277,5 +278,4 @@ public class SnapPhoto extends Activity implements OnClickListener, SurfaceHolde
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "snap.jpg");
         return mediaFile;
     }
-
 }
