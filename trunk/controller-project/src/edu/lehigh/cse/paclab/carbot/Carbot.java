@@ -128,5 +128,9 @@ public class Carbot extends Activity
         // Configuration activity
         if (v == findViewById(R.id.btnCarbotConfigure))
             startActivity(new Intent(this, Configure.class));
+        
+        //latest DTMF activity
+        if(v == findViewById(R.id.btnCarbotDTMF))
+        	startActivity(new Intent(this, DTMF.class));
     }
 }
