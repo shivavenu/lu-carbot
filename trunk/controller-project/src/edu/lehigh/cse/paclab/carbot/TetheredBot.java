@@ -29,7 +29,6 @@ public class TetheredBot extends BasicBotActivity
             setContentView(R.layout.tetheredbot);
         Log.v("CARBOT", "width, height = " + width + " " + height); 
 
-        
         initBTStatus();
     }
 

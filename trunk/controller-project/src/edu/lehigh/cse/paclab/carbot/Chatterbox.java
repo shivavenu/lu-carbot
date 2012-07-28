@@ -7,9 +7,11 @@ import java.util.Random;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -54,6 +56,12 @@ public class Chatterbox extends BasicBotActivity
         catch (IOException ioe) {
             ioe.printStackTrace();
         }
+
+        // [mfs] This disables headphone communication... not exactly what we
+        // want, but enough of a demo to make things straightforward...
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.setMode(AudioManager.MODE_IN_CALL);
+        am.setSpeakerphoneOn(true);
     }
 
     /**
@@ -239,8 +247,10 @@ public class Chatterbox extends BasicBotActivity
                 mp.stop();
                 break;
             case 'x':
-                SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
-                String s = prefs.getString(PREF_TAG_FAREWELL, "Thank you for letting me come to your class.  I hope you have a great summer!");
+                SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
+                        Activity.MODE_WORLD_WRITEABLE);
+                String s = prefs.getString(PREF_TAG_FAREWELL,
+                        "Thank you for letting me come to your class.  I hope you have a great summer!");
                 Speak(s);
                 return;
         }
