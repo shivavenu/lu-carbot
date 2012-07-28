@@ -65,7 +65,6 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     public static final int INTENT_SNAP_PHOTO = 943557;
     final static private int INTENT_TURNITON = 7213;
     final static private int INTENT_CONNECT = 59847;
-    private static final int CHECK_TTS = 99873;
     public static final int INTENT_PHOTO_DONE = 66711324;
 
     public static final String TAG = "Carbot";
@@ -114,10 +113,21 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
             openAccessory(mAccessory);
         }
 
-        // check if text-to-speech is supported, via an intent:
-        Intent checkIntent = new Intent();
-        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, CHECK_TTS);
+        // jellybean edits for text-to-speech...
+        //
+        // Warning: this won't install a language pack if one isn't available,
+        // which means you might have really funky failures if you don't have
+        // languages installed. It's not a problem for Nexus7, so I'm leaving
+        // this for now
+        mTts = new TextToSpeech(this, this);
+        if (TextToSpeech.LANG_AVAILABLE == mTts.isLanguageAvailable(Locale.US)) {
+            mTts.setLanguage(Locale.US);
+        }
+        else {
+            Toast.makeText(this,
+                    "Unable to set a language pack for Text-To-Speech... Bad things are likely to happen from here.",
+                    Toast.LENGTH_LONG).show();
+        }
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter == null) {
@@ -276,22 +286,8 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        Log.i("CARBOT", "resultCode = " + resultCode);
         switch (requestCode) {
-            case CHECK_TTS:
-                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                    // success, create the TTS instance
-                    mTts = new TextToSpeech(this, this);
-                }
-                else {
-                    // missing data, install it
-                    Intent installIntent = new Intent();
-                    installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                    startActivity(installIntent);
-                }
-                if (mTts.isLanguageAvailable(Locale.US) == TextToSpeech.LANG_COUNTRY_AVAILABLE)
-                    mTts.setLanguage(Locale.US);
-                break;
-
             case INTENT_TURNITON:
                 if (resultCode == Activity.RESULT_OK) {
                     Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_SHORT).show();

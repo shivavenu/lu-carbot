@@ -18,7 +18,8 @@ import android.view.SurfaceView;
  * To the best of my knowledge, the "surface" is just the camera picture as a
  * Bitmap being drawn to the screen
  * 
- * This should be generic enough to use in both the BallLearn activity and the BallFind activity
+ * This should be generic enough to use in both the BallLearn activity and the
+ * BallFind activity
  */
 public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
@@ -27,7 +28,7 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
     Camera.PreviewCallback pc;
 
     Context cachedContext;
-    
+
     /**
      * Standard SurfaceHolder constructor
      * 
@@ -124,8 +125,11 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
         Size optimalSize = getOptimalPreviewSize(sizes, w, h);
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
 
-        parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        // [mfs] Unfortunately, we must turn these off as they are not supported
+        // on the Nexus 7 Front-Facing Camera
+
+        // parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+        // parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 
         camera.setParameters(parameters);
         if (pc != null) {
