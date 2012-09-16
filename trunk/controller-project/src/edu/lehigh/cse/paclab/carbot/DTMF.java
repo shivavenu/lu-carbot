@@ -14,6 +14,7 @@ import static android.media.ToneGenerator.TONE_DTMF_2;
 import static android.media.ToneGenerator.TONE_DTMF_3;
 import static android.media.ToneGenerator.TONE_DTMF_4;
 import static android.media.ToneGenerator.TONE_DTMF_5;
+import static android.media.ToneGenerator.TONE_DTMF_6;
 
 public class DTMF extends Activity{
 private static final String TAG = "DTMF";
@@ -59,7 +60,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "forward: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_0);
+			_toneGenerator.startTone(TONE_DTMF_1);
 			Log.e(TAG, "forward: emitting");
 		}
 	}
@@ -71,7 +72,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "reverse: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_1);
+			_toneGenerator.startTone(TONE_DTMF_2);
 			Log.e(TAG, "reverse: emitting");
 		}
 	}
@@ -83,7 +84,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "c_clockwise: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_2);
+			_toneGenerator.startTone(TONE_DTMF_3);
 			Log.e(TAG, "c_clockwise: emitting");
 		}
 	}
@@ -95,7 +96,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "clockwise: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_3);
+			_toneGenerator.startTone(TONE_DTMF_4);
 			Log.e(TAG, "clockwise: emitting");
 		}
 	}
@@ -107,7 +108,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "pointTurnLeft: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_4);
+			_toneGenerator.startTone(TONE_DTMF_5);
 			Log.e(TAG, "pointTurnLeft: emitting");
 		}
 	}
@@ -119,7 +120,7 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "pointTurnRight: not emitting");
 		}
 		else{
-			_toneGenerator.startTone(TONE_DTMF_5);
+			_toneGenerator.startTone(TONE_DTMF_6);
 			Log.e(TAG, "pointTurnRight: emitting");
 		}
 	}
