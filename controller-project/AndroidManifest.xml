@@ -22,7 +22,7 @@
         android:label="@string/app_name" 
         android:theme="@android:style/Theme.Black">
         <activity
-            android:name="Carbot"
+            android:name="CarbotBeta"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
             <intent-filter>
@@ -31,7 +31,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+		
+        <activity android:name="TetheredBotBeta" android:screenOrientation="portrait"></activity>
+        <activity android:name="Carbot" android:screenOrientation="portrait"></activity>
      	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
      	<activity android:name="FindBalloonBot" android:screenOrientation="landscape"></activity>
         <activity android:name=".support.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
@@ -50,6 +52,7 @@
         <receiver android:name=".support.AlarmStopMovingReceiver"></receiver>
         <receiver android:name=".support.AlarmLookAgainReceiver"></receiver>
         <receiver android:name=".support.AlarmSnapPhotoReceiver"></receiver>
+        <receiver android:name=".support.AlarmEndToneReceiver"></receiver>
         
     </application>
 </manifest>
