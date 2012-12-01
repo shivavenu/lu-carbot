@@ -22,6 +22,8 @@ public class CarbotBeta extends Activity {
 			startActivity(new Intent(this, Carbot.class));
 		if(v == findViewById(R.id.btnTetheredBot))
 			startActivity(new Intent(this, TetheredBotBeta.class));
+		if(v == findViewById(R.id.btnColorDetection))
+			startActivity(new Intent(this, ColorDetectionActivity.class));
 	}
 	
 }

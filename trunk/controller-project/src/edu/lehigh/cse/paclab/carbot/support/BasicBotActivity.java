@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -43,6 +44,7 @@ import edu.lehigh.cse.paclab.carbot.R;
  * @author spear
  * 
  */
+@SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
 public abstract class BasicBotActivity extends Activity implements OnInitListener
 {
     // constants for preference tags
@@ -442,10 +444,14 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
     }
 
     /** This runs when a menu item is clicked */
+    /**
+     * NOTE: OPENCV does not like this method, resolve later...
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
+    	 	
+        /*switch (item.getItemId()) {
             case R.id.menuBTDiscoverable:
                 setDiscoverable();
                 return true;
@@ -457,7 +463,7 @@ public abstract class BasicBotActivity extends Activity implements OnInitListene
             case R.id.menuChatterboxOverride:
                 chatterboxOverride = !chatterboxOverride;
                 return true;
-        }
+        }*/
         return false;
     }
 
