@@ -8,7 +8,7 @@ import android.widget.ToggleButton;
 import android.media.ToneGenerator;
 import android.media.AudioManager;
 
-import static android.media.ToneGenerator.TONE_DTMF_0;
+import static android.media.ToneGenerator.TONE_DTMF_D;
 import static android.media.ToneGenerator.TONE_DTMF_1;
 import static android.media.ToneGenerator.TONE_DTMF_2;
 import static android.media.ToneGenerator.TONE_DTMF_3;
@@ -25,6 +25,7 @@ private static final String TAG = "DTMF";
 	ToggleButton clockwise;
 	ToggleButton pointTurnLeft;
 	ToggleButton pointTurnRight;
+	ToggleButton stopButton;
 	
 	AudioManager audioManager;
 	
@@ -42,6 +43,7 @@ private static final String TAG = "DTMF";
 		clockwise = (ToggleButton)findViewById(R.id.clockwise);
 		pointTurnLeft = (ToggleButton)findViewById(R.id.pointTurnLeft);
 		pointTurnRight = (ToggleButton)findViewById(R.id.pointTurnRight);
+		stopButton = (ToggleButton)findViewById(R.id.stopButton);
 		
     }
     
@@ -124,5 +126,16 @@ private static final String TAG = "DTMF";
 			Log.e(TAG, "pointTurnRight: emitting");
 		}
 	}
+    
+    public void stopBot(View v) {
+    	if(!stopButton.isChecked()){
+			_toneGenerator.stopTone();
+			Log.e(TAG, "stop: not emitting");
+		}
+		else{
+			_toneGenerator.startTone(TONE_DTMF_D);
+			Log.e(TAG, "stop: emitting");
+		}
+    }
 
 }
