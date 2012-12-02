@@ -4,7 +4,6 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
-import edu.lehigh.cse.paclab.carbot.support.CameraPreviewSurfaceView;
 import edu.lehigh.cse.paclab.carbot.support.CameraView;
 
 import android.app.Activity;
@@ -102,11 +101,11 @@ public class ColorDetectionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
         
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-		RelativeLayout layout = new RelativeLayout(this);
-		CameraView camera = new CameraView(this);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//RelativeLayout layout = new RelativeLayout(this);
+		//CameraView camera = new CameraView(this);
 		
-		 layout.addView(camera);
+		//layout.addView(camera);
 		
         Log.i(TAG, "Trying to load OpenCV library");
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack))
