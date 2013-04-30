@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.carbot.support.WalkablePathView;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will

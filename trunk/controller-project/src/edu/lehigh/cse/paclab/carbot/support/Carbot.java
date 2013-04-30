@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 /**
  * The main TODO we have to cover before we can build out the bot controllers regards the service.  In particular, we need to:
@@ -16,7 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.support.LearnColor;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * This is the main activity for now. Its only job is to let us launch the other

@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,8 +16,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.support.AlarmDanceReceiver;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * This is going to be a silly speech-to-text game. We're going to let the kids

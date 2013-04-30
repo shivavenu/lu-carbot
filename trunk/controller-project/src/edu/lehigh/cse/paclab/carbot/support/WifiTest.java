@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * A simple demonstration of socket-based communication on Android

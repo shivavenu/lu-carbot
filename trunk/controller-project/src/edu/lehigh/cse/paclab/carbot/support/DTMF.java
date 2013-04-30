@@ -1,20 +1,20 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ToggleButton;
-import android.media.ToneGenerator;
-import android.media.AudioManager;
-
-import static android.media.ToneGenerator.TONE_DTMF_D;
 import static android.media.ToneGenerator.TONE_DTMF_1;
 import static android.media.ToneGenerator.TONE_DTMF_2;
 import static android.media.ToneGenerator.TONE_DTMF_3;
 import static android.media.ToneGenerator.TONE_DTMF_4;
 import static android.media.ToneGenerator.TONE_DTMF_5;
 import static android.media.ToneGenerator.TONE_DTMF_6;
+import static android.media.ToneGenerator.TONE_DTMF_D;
+import android.app.Activity;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ToggleButton;
+import edu.lehigh.cse.paclab.carbot.R;
 
 public class DTMF extends Activity
 {

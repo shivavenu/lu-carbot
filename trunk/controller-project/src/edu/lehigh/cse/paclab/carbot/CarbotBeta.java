@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import edu.lehigh.cse.paclab.carbot.support.Carbot;
 
 /**
  * This is the new framework for Carbot. Eventually we will deprecate and then remove everything else.
