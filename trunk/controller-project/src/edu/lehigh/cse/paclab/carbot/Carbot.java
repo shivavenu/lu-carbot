@@ -24,7 +24,6 @@ import edu.lehigh.cse.paclab.carbot.support.LearnColor;
  */
 public class Carbot extends Activity
 {
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
