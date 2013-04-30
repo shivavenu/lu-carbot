@@ -3,7 +3,6 @@ package edu.lehigh.cse.paclab.carbot.support;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import edu.lehigh.cse.paclab.carbot.Configure;
 
 /**
  * A receiver that is used during Configuration to stop the robot after an alarm

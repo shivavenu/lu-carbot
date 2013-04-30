@@ -1,10 +1,10 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * Simplest control mechanism: this phone is plugged into the Robot, and we

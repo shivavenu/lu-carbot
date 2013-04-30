@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvReleaseImage;
@@ -21,11 +21,6 @@ import android.widget.Toast;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
-import edu.lehigh.cse.paclab.carbot.support.AlarmLookAgainReceiver;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.carbot.support.CameraPreviewSurfaceView;
-import edu.lehigh.cse.paclab.carbot.support.ImageUtils;
 
 /**
  * Simple activity consisting (for now) of just a CameraDisplay. As far as I can

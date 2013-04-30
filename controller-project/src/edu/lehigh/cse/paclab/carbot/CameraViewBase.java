@@ -1,8 +1,7 @@
-package edu.lehigh.cse.paclab.carbot.support;
+package edu.lehigh.cse.paclab.carbot;
 
 import java.io.IOException;
 import java.util.List;
-
 
 import android.content.Context;
 import android.graphics.Bitmap;

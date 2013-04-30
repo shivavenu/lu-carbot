@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,16 +8,12 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.support.BTService;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * An activity for controlling a robot remotely
@@ -33,7 +29,7 @@ import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
  * instead of the botphone using something simpler
  * 
  */
-public class RemoteControlPhone extends BasicBotActivity
+public class FindBalloonPhone extends BasicBotActivity
 {
     TextView tvStatus;
 
@@ -42,8 +38,13 @@ public class RemoteControlPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.remotecontrolphone);
+        setContentView(R.layout.findballoonphone);
         initBTStatus();
+    }
+
+    public void onClickToggle(View v)
+    {
+        sendCMD("TOGGLE");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -59,26 +60,6 @@ public class RemoteControlPhone extends BasicBotActivity
                 return;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void onClickImage(View v)
-    {
-        if (v == findViewById(R.id.ivRemoteControlPhoneForward))
-            sendCMD("FWD");
-        if (v == findViewById(R.id.ivRemoteControlPhoneReverse))
-            sendCMD("REV");
-        if (v == findViewById(R.id.ivRemoteControlPhoneStop))
-            sendCMD("STOP");
-        if (v == findViewById(R.id.ivRemoteControlPhonePhoto))
-            sendCMD("SNAP");
-        if (v == findViewById(R.id.ivRemoteControlPhoneRight))
-            sendCMD("PTR");
-        if (v == findViewById(R.id.ivRemoteControlPhoneLeft))
-            sendCMD("PTL");
-        if (v == findViewById(R.id.ivRemoteControlPhoneRotPos))
-            sendCMD("ROT+");
-        if (v == findViewById(R.id.ivRemoteControlPhoneRotNeg))
-            sendCMD("ROT-");
     }
 
     // now we shall try to set up a 2-stage communication
@@ -206,8 +187,7 @@ public class RemoteControlPhone extends BasicBotActivity
     }
 
     /**
-     * Receive a message. Note that this is more general than needed, as it can
-     * handle either being RemoteControlBot or RemoteControlPhone
+     * Receive a message
      */
     protected void receiveMessage(byte[] readBuf, int bytes)
     {
@@ -245,6 +225,35 @@ public class RemoteControlPhone extends BasicBotActivity
                 ack();
                 robotForward();
                 sendDone();
+                return;
+            }
+            // check for known non-int messages
+            if (msg.equals("REV")) {
+                // it's forward: update the TV, send an ACK
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
+                tv.setText(msg);
+                ack();
+                robotReverse();
+                sendDone();
+                return;
+            }
+            // check for known non-int messages
+            if (msg.equals("STOP")) {
+                // it's forward: update the TV, send an ACK
+                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
+                tv.setText(msg);
+                ack();
+                robotStop();
+                sendDone();
+                return;
+            }
+            if (msg.equals("SNAP")) {
+                ack();
+                sendDone();
+                // time to take a photo...
+                Log.i("CARBOT", "Starting intent to take picture");
+                Intent i = new Intent(this, SnapPhoto.class);
+                startActivityForResult(i, INTENT_SNAP_PHOTO);
                 return;
             }
             // other known messages would be handled here, or better yet, have a
@@ -311,12 +320,6 @@ public class RemoteControlPhone extends BasicBotActivity
                 e.printStackTrace();
                 return;
             }
-            // if that worked, then update the imageView
-            ImageView iv = (ImageView) findViewById(R.id.ivRemoteControlPhoneImage);
-            iv.setImageURI(null);
-            iv.invalidate();
-            iv.setImageURI(Uri.fromFile(fImage));
-            iv.invalidate();
         }
     }
 

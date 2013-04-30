@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -9,8 +9,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import edu.lehigh.cse.paclab.carbot.support.AlarmStopMovingReceiver;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * For configuring the robot.

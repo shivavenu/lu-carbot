@@ -1,4 +1,4 @@
-package edu.lehigh.cse.paclab.carbot;
+package edu.lehigh.cse.paclab.carbot.support;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,12 +10,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.support.BTService;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivity;
-import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
+import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * An activity for controlling a robot remotely
@@ -31,7 +28,7 @@ import edu.lehigh.cse.paclab.carbot.support.SnapPhoto;
  * instead of the botphone using something simpler
  * 
  */
-public class FindBalloonPhone extends BasicBotActivity
+public class RemoteControlBot extends BasicBotActivity
 {
     TextView tvStatus;
 
@@ -40,13 +37,8 @@ public class FindBalloonPhone extends BasicBotActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.findballoonphone);
+        setContentView(R.layout.remotecontrolbot);
         initBTStatus();
-    }
-
-    public void onClickToggle(View v)
-    {
-        sendCMD("TOGGLE");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -219,33 +211,63 @@ public class FindBalloonPhone extends BasicBotActivity
         if (sendIter == -1) {
             String msg = new String(readBuf, 0, bytes);
             Log.i("CARBOT", "RECEIVED:::" + msg);
+            TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
             // check for known non-int messages
             if (msg.equals("FWD")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
-                tv.setText(msg);
+                tv.setText("Forward");
                 ack();
                 robotForward();
                 sendDone();
                 return;
             }
-            // check for known non-int messages
             if (msg.equals("REV")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
-                tv.setText(msg);
+                tv.setText("Reverse");
                 ack();
                 robotReverse();
                 sendDone();
                 return;
             }
-            // check for known non-int messages
             if (msg.equals("STOP")) {
                 // it's forward: update the TV, send an ACK
-                TextView tv = (TextView) findViewById(R.id.tvRemoteControlBotMessage);
-                tv.setText(msg);
+                tv.setText("Stop");
                 ack();
                 robotStop();
+                sendDone();
+                return;
+            }
+            if (msg.equals("PTR")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Right");
+                ack();
+                robotStop();
+                robotPointTurnRight();
+                sendDone();
+                return;
+            }
+            if (msg.equals("PTL")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Left");
+                ack();
+                robotStop();
+                robotPointTurnLeft();
+                sendDone();
+                return;
+            }
+            if (msg.equals("ROT+")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Clockwise");
+                ack();
+                robotClockwise();
+                sendDone();
+                return;
+            }
+            if (msg.equals("ROT-")) {
+                // it's forward: update the TV, send an ACK
+                tv.setText("Counterclockwise");
+                ack();
+                robotCounterclockwise();
                 sendDone();
                 return;
             }

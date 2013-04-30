@@ -1,9 +1,7 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.support.BasicBotActivityBeta;
 
 /**
  * This is the new interface to TetheredBot. It uses DTMF to communicate with the robot.

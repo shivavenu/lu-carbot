@@ -1,10 +1,11 @@
-package edu.lehigh.cse.paclab.carbot.support;
+package edu.lehigh.cse.paclab.carbot;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
+import edu.lehigh.cse.paclab.carbot.BasicBotActivityBeta;
 
 public class AlarmEndToneReceiver extends BroadcastReceiver{
 
