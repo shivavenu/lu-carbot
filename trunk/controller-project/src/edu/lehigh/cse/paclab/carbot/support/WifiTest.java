@@ -52,7 +52,7 @@ public class WifiTest extends Activity
     /**
      * Indicate the port this app uses
      */
-    static final int                   WIFIPORT        = 9599;
+    static final int                   WIFICONTROLPORT        = 9599;
 
     /**
      * It's useful to have a reference to the 'role' TextView that the client and server update
@@ -254,7 +254,7 @@ public class WifiTest extends Activity
         {
             try {
                 // make a socket
-                serverSocket = new ServerSocket(WIFIPORT);
+                serverSocket = new ServerSocket(WIFICONTROLPORT);
                 // listen for new connections
                 while (true) {
                     // When we get a connection, update the UI
@@ -354,7 +354,7 @@ public class WifiTest extends Activity
             try {
                 // attempt to connect to the server
                 InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
-                Socket socket = new Socket(serverAddr, WIFIPORT);
+                Socket socket = new Socket(serverAddr, WIFICONTROLPORT);
                 connected = true;
                 hdlrMsg("Connected");
                 // run the client protocol, then close the socket

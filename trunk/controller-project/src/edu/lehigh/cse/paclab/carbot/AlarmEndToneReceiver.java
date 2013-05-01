@@ -4,16 +4,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-import edu.lehigh.cse.paclab.carbot.BasicBotActivityBeta;
 
-public class AlarmEndToneReceiver extends BroadcastReceiver{
+/**
+ * Whenever we play a DTMF sound, we are responsible for shutting it off at some point. The way we do this is by setting
+ * an alarm that is caught by this receiver, which then stops the DTMF tone generator.
+ */
+public class AlarmEndToneReceiver extends BroadcastReceiver
+{
+    /**
+     * Quite simply, when we receive an alarm, we put a message in the log and we stop the DTMF tone generator.
+     */
+    @Override
+    public void onReceive(Context context, Intent intent)
+    {
+        Log.i("TestReceiver", "intent=" + intent);
+        BasicBotActivityBeta._toneGenerator.stopTone();
+    }
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.e("TestReceiver", "intent=" + intent);
-		Toast.makeText(context, "End Tone", Toast.LENGTH_SHORT).show();
-		BasicBotActivityBeta._toneGenerator.stopTone();
-	}
-	
 }

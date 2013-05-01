@@ -34,6 +34,9 @@
 		
         <activity android:name="ColorDetectionActivity" android:screenOrientation="landscape"></activity>
         <activity android:name="TetheredBotBeta" android:screenOrientation="portrait"></activity>
+        <activity android:name="RCSenderActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="RCReceiverActivity" android:screenOrientation="portrait"></activity>
+        
         <activity android:name=".support.Carbot" android:screenOrientation="portrait"></activity>
      	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
      	<activity android:name=".support.FindBalloonBot" android:screenOrientation="landscape"></activity>

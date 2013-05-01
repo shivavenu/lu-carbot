@@ -10,6 +10,7 @@
 
     <string name="str_listen">Listen</string>
     <string name="str_connect">Connect</string>
+    <string name="str_report">Report IP Address</string>
     <string name="str_send">Send</string>
     <string name="str_no_connection">No Connection</string>
 
