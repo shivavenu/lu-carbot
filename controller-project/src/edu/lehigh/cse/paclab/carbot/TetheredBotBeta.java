@@ -30,7 +30,6 @@ public class TetheredBotBeta extends BasicBotActivityBeta
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        
         // Use this code for managing screens of different size...this uses a more recent API than the previous
         // TetheredBot
         //

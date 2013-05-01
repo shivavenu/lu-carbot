@@ -13,7 +13,7 @@ import android.view.Window;
 
 public class ColorDetectionActivity extends Activity
 {
-    private static final String TAG = "ColorDetectionActivity";
+    private static final String TAG             = "ColorDetectionActivity";
 
     private CameraView          mView;
 
@@ -24,44 +24,48 @@ public class ColorDetectionActivity extends Activity
      * OpenCV recommended this route so I just went with it.
      */
     private BaseLoaderCallback  mOpenCVCallBack = new BaseLoaderCallback(this)
-    {
-        @Override
-        public void onManagerConnected(int status)
-        {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: 
-                    Log.i(TAG, "OpenCV loaded successfully");
-                    
-                    // Load native library after(!) OpenCV initialization
-                    System.loadLibrary("mixed_sample");
-                    
-                    // Create and set View
-                    mView = new CameraView(mAppContext);
-                    setContentView(mView);
-                    
-                    // Check native OpenCV camera
-                    if (!mView.openCamera()) {
-                        AlertDialog ad = new AlertDialog.Builder(mAppContext).create();
-                        ad.setCancelable(false); // This blocks the 'BACK'
-                        // button
-                        ad.setMessage("Fatal error: can't open camera!");
-                        ad.setButton("OK", new DialogInterface.OnClickListener()
-                        {
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                dialog.dismiss();
-                                finish();
-                            }
-                        }); 
-                        ad.show();
-                    }   
-                    break;
-                default: 
-                    super.onManagerConnected(status);
-                    break;
-                }
-            }
-        };
+                                                {
+                                                    @Override
+                                                    public void onManagerConnected(int status)
+                                                    {
+                                                        switch (status) {
+                                                            case LoaderCallbackInterface.SUCCESS:
+                                                                Log.i(TAG, "OpenCV loaded successfully");
+
+                                                                // Load native library after(!) OpenCV initialization
+                                                                System.loadLibrary("mixed_sample");
+
+                                                                // Create and set View
+                                                                mView = new CameraView(mAppContext);
+                                                                setContentView(mView);
+
+                                                                // Check native OpenCV camera
+                                                                if (!mView.openCamera()) {
+                                                                    AlertDialog ad = new AlertDialog.Builder(
+                                                                            mAppContext).create();
+                                                                    ad.setCancelable(false); // This blocks the 'BACK'
+                                                                                             // button
+                                                                    ad.setMessage("Fatal error: can't open camera!");
+                                                                    ad.setButton("OK",
+                                                                            new DialogInterface.OnClickListener()
+                                                                            {
+                                                                                public void onClick(
+                                                                                        DialogInterface dialog,
+                                                                                        int which)
+                                                                                {
+                                                                                    dialog.dismiss();
+                                                                                    finish();
+                                                                                }
+                                                                            });
+                                                                    ad.show();
+                                                                }
+                                                                break;
+                                                            default:
+                                                                super.onManagerConnected(status);
+                                                                break;
+                                                        }
+                                                    }
+                                                };
 
     public ColorDetectionActivity()
     {

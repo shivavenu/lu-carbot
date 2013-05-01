@@ -7,6 +7,12 @@ import static android.media.ToneGenerator.TONE_DTMF_4;
 import static android.media.ToneGenerator.TONE_DTMF_5;
 import static android.media.ToneGenerator.TONE_DTMF_6;
 import static android.media.ToneGenerator.TONE_DTMF_D;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -28,13 +34,21 @@ import android.widget.Toast;
  */
 public abstract class BasicBotActivityBeta extends Activity
 {
-    public static final String TAG            = "Carbot Beta";
+    /**
+     * Indicate the port this app uses for sending control signals between a client and server
+     */
+    public static final int           WIFICONTROLPORT = 9599;
 
-    static public final int    CHECK_TTS      = 99873;
+    public static final String        TAG             = "Carbot Beta";
 
-    public static final ToneGenerator _toneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
+    /**
+     * Unused, but will eventually help us with Text-to-speech stuff
+     */
+    static public final int           CHECK_TTS       = 99873;
 
-    private AlarmManager       am;
+    public static final ToneGenerator _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
+
+    private AlarmManager              am;
 
     // AudioManager audioManager;
 
@@ -62,57 +76,43 @@ public abstract class BasicBotActivityBeta extends Activity
     public void robotForward()
     {
         _toneGenerator.startTone(TONE_DTMF_1);
-        Toast.makeText(this, "Forward", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "forward: emitting");
     }
 
     public void robotReverse()
     {
         _toneGenerator.startTone(TONE_DTMF_2);
-        Toast.makeText(this, "Reverse", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "reverse: emitting");
     }
 
     public void robotCounterClockwise()
     {
         _toneGenerator.startTone(TONE_DTMF_3);
-        Toast.makeText(this, "CCW", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "c_clockwise: emitting");
     }
 
     public void robotClockwise()
     {
         _toneGenerator.startTone(TONE_DTMF_4);
-        Toast.makeText(this, "CW", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "clockwise: emitting");
     }
 
     public void robotPointTurnLeft()
     {
         _toneGenerator.startTone(TONE_DTMF_5);
-        Toast.makeText(this, "Left", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "pointTurnLeft: emitting");
     }
 
     public void robotPointTurnRight()
     {
         _toneGenerator.startTone(TONE_DTMF_6);
-        Toast.makeText(this, "Right", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "pointTurnRight: emitting");
     }
 
     public void robotStop()
     {
         _toneGenerator.startTone(TONE_DTMF_D);
-        Toast.makeText(this, "Stop", Toast.LENGTH_SHORT).show();
         setAlarm();
-        Log.e(TAG, "stopBot: emitting");
     }
 
     void initTTS()
@@ -138,5 +138,71 @@ public abstract class BasicBotActivityBeta extends Activity
     // required for OnInitListener... what should I use this for?
     void onInit(int status)
     {
+    }
+
+    /**
+     * This method returns the phone's IP addresses
+     * 
+     * @return A string representation of the phone's IP addresses
+     */
+    static String getLocalIpAddress()
+    {
+        String ans = "";
+        try {
+            // get all network interfaces, and create a string of all their addresses
+            Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            while (ifaces.hasMoreElements()) {
+                NetworkInterface ni = ifaces.nextElement();
+                Enumeration<InetAddress> addrList = ni.getInetAddresses();
+                while (addrList.hasMoreElements()) {
+                    InetAddress addr = addrList.nextElement();
+                    if (!addr.isLoopbackAddress()) {
+                        ans += addr.getHostAddress().toString() + ";";
+                    }
+                }
+            }
+        }
+        catch (SocketException ex) {
+            Log.e("ServerActivity", ex.toString());
+        }
+        return ans;
+    }
+
+    /**
+     * A wrapper for Toast that handles problems that stem from trying to Toast from a thread that isn't the UI thread.
+     * This variant prints a short toast.
+     * 
+     * @param s
+     *            The message to display
+     */
+    void shortbread(final String s)
+    {
+        BasicBotActivityBeta.this.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Toast.makeText(BasicBotActivityBeta.this, s, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * A wrapper for Toast that handles problems that stem from trying to Toast from a thread that isn't the UI thread.
+     * This variant prints a long toast.
+     * 
+     * @param s
+     *            The message to display
+     */
+    void longbread(final String s)
+    {
+        BasicBotActivityBeta.this.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Toast.makeText(BasicBotActivityBeta.this, s, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

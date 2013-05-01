@@ -33,6 +33,11 @@ public class CarbotBeta extends Activity
             startActivity(new Intent(this, TetheredBotBeta.class));
         if (v == findViewById(R.id.btnColorDetection))
             startActivity(new Intent(this, ColorDetectionActivity.class));
+        if (v == findViewById(R.id.btnRCReceiver))
+            startActivity(new Intent(this, RCReceiverActivity.class));
+        if (v == findViewById(R.id.btnRCSender))
+            startActivity(new Intent(this, RCSenderActivity.class));
+
         // NB: this last one is deprecated
         if (v == findViewById(R.id.btnCarbotLegacy))
             startActivity(new Intent(this, Carbot.class));
