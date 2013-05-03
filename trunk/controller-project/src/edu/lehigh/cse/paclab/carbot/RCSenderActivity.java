@@ -44,7 +44,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tetheredbot_beta);
+        setContentView(R.layout.rcsender);
     }
 
     /**
@@ -106,6 +106,8 @@ public class RCSenderActivity extends BasicBotActivityBeta
                 queue.put("CCW");
             if (v == findViewById(R.id.ivTetherStop))
                 queue.put("STOP");
+            if (v == findViewById(R.id.ivSnap))
+                queue.put("SNAP");
         }
         catch (InterruptedException ie) {
             // swallow the exception for now...

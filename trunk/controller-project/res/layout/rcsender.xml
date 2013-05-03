@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/ivTetherForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/up" />
+
+    <ImageView
+        android:id="@+id/ivTetherStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/ivTetherForward"
+        android:layout_centerVertical="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/stop" />
+
+    <ImageView
+        android:id="@+id/ivTetherRotNeg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ivTetherStop"
+        android:onClick="onClickImage"
+        android:src="@drawable/rotneg" />
+
+    <ImageView
+        android:id="@+id/ivTetherLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ivTetherStop"
+        android:layout_alignParentLeft="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/turnleft" />
+
+    <ImageView
+        android:id="@+id/ivTetherRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivTetherLeft"
+        android:layout_alignParentRight="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/turnright" />
+
+    <ImageView
+        android:id="@+id/ivTetherRotPos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivTetherStop"
+        android:onClick="onClickImage"
+        android:src="@drawable/rotpos" />
+
+    <ImageView
+        android:id="@+id/ivTetherReverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ivTetherStop"
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickImage"
+        android:src="@drawable/down" />
+
+    <ImageView
+        android:id="@+id/ivSnap"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:onClick="onClickImage"
+        android:src="@android:drawable/ic_menu_camera" />
+
+</RelativeLayout>

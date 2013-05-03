@@ -116,6 +116,8 @@ public class RCReceiverActivity extends BasicBotActivityBeta
             robotCounterClockwise();
         if (s.equals("STOP"))
             robotStop();
+        if (s.equals("SNAP"))
+            cm.snap();
     }
 
     /**
