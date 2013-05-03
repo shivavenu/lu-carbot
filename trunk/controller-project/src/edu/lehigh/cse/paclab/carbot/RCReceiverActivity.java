@@ -10,6 +10,7 @@ import java.net.Socket;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -41,6 +42,8 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rcreceiver);
         cm.onCreateCamera(this);
+        TextView tv = (TextView)findViewById(R.id.tvIP);
+        tv.setText(getLocalIpAddress());
     }
 
     /**
