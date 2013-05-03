@@ -1,11 +1,9 @@
 package edu.lehigh.cse.paclab.carbot;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -42,7 +40,7 @@ public class RCReceiverActivity extends BasicBotActivityBeta
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rcreceiver);
-        cm.onCreateCamera(this, findViewById(R.id.captureFront));
+        cm.onCreateCamera(this);
     }
 
     /**
@@ -145,8 +143,8 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         try {
             // get streams for reading and writing to the socket... the write direction is not yet implemented...
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())),
-                    true);
+            // send the output strem to the camera, so it can use it to transmit a photo
+            cm.myWriter = client.getOutputStream();
             // server protocol: as long as there is data to read, read it and send it back with a prefix attached
             String line = null;
             while ((line = in.readLine()) != null) {
