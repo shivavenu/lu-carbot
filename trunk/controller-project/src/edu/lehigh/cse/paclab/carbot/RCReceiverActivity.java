@@ -18,7 +18,8 @@ import android.widget.Toast;
  * This is the "robot" half of the remote-control station. We launch a wifi listener here, then take commands over wifi
  * and turn them into DTMF signals.
  * 
- * [TODO] Snap Photo is not supported yet...
+ * [TODO] Snap Photo is incomplete. Currently we have support for the receiver to take pictures, but it does so through
+ * manual intervention instead of via remote control
  * 
  * The layout for this activity is not useful right now. Longer-term, we are going to need to have a camera on the
  * screen for taking pictures and sending them back to the remote controller, which might motivate having the IP address
@@ -31,14 +32,17 @@ public class RCReceiverActivity extends BasicBotActivityBeta
      */
     private ServerSocket serverSocket;
 
+    CameraMechanism      cm = new CameraMechanism();
+
     /**
-     * On activity creation, we just inflate a layout
+     * On activity creation, we just inflate a layout and initialize the camera mechanism
      */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rcreceiver);
+        cm.onCreateCamera(this, findViewById(R.id.captureFront));
     }
 
     /**
@@ -182,5 +186,19 @@ public class RCReceiverActivity extends BasicBotActivityBeta
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        cm.onResumeCamera();
+    }
+
+    @Override
+    public void onPause()
+    {
+        cm.onPauseCamera();
+        super.onPause();
     }
 }
