@@ -17,8 +17,9 @@
 
 package edu.lehigh.cse.paclab.carbot;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,7 +27,6 @@ import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -70,15 +70,17 @@ public class CameraMechanism
     private Context       myContext        = null;
 
     /**
+     * The output stream of the socket, so we can write over the network
+     */
+    OutputStream  myWriter         = null;
+
+    /**
      * Call this from parentActivity's onCreate to configure the camera
      * 
      * @param parentActivity
      *            The activity owning the camera... we need this for Toasts
-     * 
-     * @param clickableView
-     *            The view that one presses to snap a photo
      */
-    void onCreateCamera(Activity parentActivity, View clickableView)
+    void onCreateCamera(Activity parentActivity)
     {
         myContext = parentActivity;
         // configure the surface view
@@ -86,17 +88,6 @@ public class CameraMechanism
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-        // set up the button
-        clickableView.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                snap();
-            }
-        });
-
     }
 
     /**
@@ -259,9 +250,7 @@ public class CameraMechanism
     Camera.PictureCallback photoCallback   = new Camera.PictureCallback()
                                            {
                                                /**
-                                                * For now, we'll save the picture to disk
-                                                * 
-                                                * TODO: this will change
+                                                * Shoot the photo over the network
                                                 */
                                                public void onPictureTaken(byte[] data, Camera camera)
                                                {
@@ -272,33 +261,27 @@ public class CameraMechanism
                                            };
 
     /**
-     * A background task for saving the photo, so that we don't have to block the camera while saving
+     * A background task for sending the photo, so we don't have to block during the transmission
      */
     class SavePhotoTask extends AsyncTask<byte[], String, String>
     {
         /**
-         * The main behavior of the task is to save a photo to disk, via this method
+         * The main behavior of the task is to zap a photo over the network
          */
         @Override
         protected String doInBackground(byte[]... jpeg)
         {
-            File photo = new File(Environment.getExternalStorageDirectory(), "photo.jpg");
-
-            if (photo.exists()) {
-                photo.delete();
-            }
-
             try {
-                FileOutputStream fos = new FileOutputStream(photo.getPath());
-
-                fos.write(jpeg[0]);
-                fos.close();
+                // protocol is simply write length, then write bytes
+                DataOutputStream dos = new DataOutputStream(myWriter);
+                dos.writeInt(jpeg[0].length);
+                dos.write(jpeg[0], 0, jpeg[0].length);
             }
-            catch (java.io.IOException e) {
-                Log.e("PictureDemo", "Exception in photoCallback", e);
+            catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
             }
-
-            return (null);
+            return null;
         }
     }
 

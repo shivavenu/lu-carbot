@@ -1,8 +1,8 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.InputStreamReader;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -11,11 +11,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 /**
  * This is the "controller" half of the remote-control station. We connect this activity to a wifi activity on the
@@ -37,14 +40,25 @@ public class RCSenderActivity extends BasicBotActivityBeta
     private ArrayBlockingQueue<String> queue     = new ArrayBlockingQueue<String>(20);
 
     /**
-     * On activity creation, we just inflate a layout... for now, the layout will be the same as for TetheredBotBeta,
-     * with 7 buttons.
+     * Reference to the ImageView where we display pictures that we receive over the net
+     */
+    ImageView                          myIV;
+
+    /**
+     * A handler for updating myIV from another thread
+     */
+    Handler                            myHandler;
+
+    /**
+     * On activity creation, we just inflate a layout, set the handler, and find the imageview
      */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rcsender);
+        myIV = (ImageView) findViewById(R.id.ivSHOW);
+        myHandler = new Handler();
     }
 
     /**
@@ -92,21 +106,21 @@ public class RCSenderActivity extends BasicBotActivityBeta
     public void onClickImage(View v)
     {
         try {
-            if (v == findViewById(R.id.ivTetherForward))
+            if (v == findViewById(R.id.cmdFWD))
                 queue.put("FWD");
-            if (v == findViewById(R.id.ivTetherReverse))
+            if (v == findViewById(R.id.cmdREV))
                 queue.put("REV");
-            if (v == findViewById(R.id.ivTetherLeft))
+            if (v == findViewById(R.id.cmdPTL))
                 queue.put("PTL");
-            if (v == findViewById(R.id.ivTetherRight))
+            if (v == findViewById(R.id.cmdPTR))
                 queue.put("PTR");
-            if (v == findViewById(R.id.ivTetherRotPos))
+            if (v == findViewById(R.id.cmdCW))
                 queue.put("CW");
-            if (v == findViewById(R.id.ivTetherRotNeg))
+            if (v == findViewById(R.id.cmdCCW))
                 queue.put("CCW");
-            if (v == findViewById(R.id.ivTetherStop))
+            if (v == findViewById(R.id.cmdSTOP))
                 queue.put("STOP");
-            if (v == findViewById(R.id.ivSnap))
+            if (v == findViewById(R.id.cmdSNAP))
                 queue.put("SNAP");
         }
         catch (InterruptedException ie) {
@@ -125,8 +139,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
     void clientProtocol(Socket socket)
     {
         try {
-            // set up streams for reading/writing on the socket... 'in' is unused for now...
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // set up stream for writing on the socket
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),
                     true);
             // main loop
@@ -135,12 +148,45 @@ public class RCSenderActivity extends BasicBotActivityBeta
                 String msg = queue.take();
                 // send the message we received to the server
                 out.println(msg);
+                // if we sent a SNAP, wait for a reply and display the result
+                if (msg.equals("SNAP")) {
+                    displayIt(socket);
+                }
             }
         }
         catch (Exception e) {
             longbread("Error while sending: " + e);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Helper routine for getting a picture and displaying it
+     * 
+     * @param socket
+     *            The socket on which the picture arrives
+     */
+    void displayIt(final Socket socket)
+    {
+        // [mfs] TODO: make this an asynctask?
+        // Be sure to run this on the main thread, not on the server thread
+        myHandler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try {
+                    DataInputStream dis = new DataInputStream(socket.getInputStream());
+                    int len = dis.readInt();
+                    byte[] jpeg = new byte[len];
+                    dis.readFully(jpeg);
+                    myIV.setImageBitmap(BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length));
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
