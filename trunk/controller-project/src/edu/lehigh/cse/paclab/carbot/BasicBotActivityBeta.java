@@ -25,12 +25,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * TODO: (1) Create the abstract methods for handling Standard Socket as well as any member or static variables (2) Fill
- * in methods for TTS (3) Use Wi-fi socket for remote (4) Remove "connected" pop-up, use either toast or background
- * icon.
+ * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
  * 
- * @author ArmonShariati
- * 
+ * TODO: Fill in methods for TTS
  */
 public abstract class BasicBotActivityBeta extends Activity
 {
@@ -39,6 +36,9 @@ public abstract class BasicBotActivityBeta extends Activity
      */
     public static final int           WIFICONTROLPORT = 9599;
 
+    /**
+     * Tag for Android debugging...
+     */
     public static final String        TAG             = "Carbot Beta";
 
     /**
@@ -46,21 +46,30 @@ public abstract class BasicBotActivityBeta extends Activity
      */
     static public final int           CHECK_TTS       = 99873;
 
+    /**
+     * The object used to create DTMF tones
+     */
     public static final ToneGenerator _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
 
+    /**
+     * An AlarmManager for receiving notification that it's time to stop a DTMF tone
+     */
     private AlarmManager              am;
 
-    // AudioManager audioManager;
-
+    /**
+     * [mfs] I don't think we need this
+     */
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         Log.e(TAG, "Call to BasicBotActivityBeta::onCreate");
     }
 
+    /**
+     * Set an alarm, so that we can know when it's time to stop DTMF
+     */
     public void setAlarm()
     {
-
         Context context = this;
         Intent intent = new Intent(context, AlarmEndToneReceiver.class);
 
@@ -68,74 +77,109 @@ public abstract class BasicBotActivityBeta extends Activity
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
                 intent, 0); // pending intent flags
 
+        // set an alarm for half a second
         am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 500, pi);
-
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "go forward"
+     */
     public void robotForward()
     {
         _toneGenerator.startTone(TONE_DTMF_1);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "go backward"
+     */
     public void robotReverse()
     {
         _toneGenerator.startTone(TONE_DTMF_2);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "rotate counterclockwise"
+     */
     public void robotCounterClockwise()
     {
         _toneGenerator.startTone(TONE_DTMF_3);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "rotate clockwise"
+     */
     public void robotClockwise()
     {
         _toneGenerator.startTone(TONE_DTMF_4);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "point turn left"
+     */
     public void robotPointTurnLeft()
     {
         _toneGenerator.startTone(TONE_DTMF_5);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "point turn right"
+     */
     public void robotPointTurnRight()
     {
         _toneGenerator.startTone(TONE_DTMF_6);
         setAlarm();
     }
 
+    /**
+     * Send a DTMF pulse that the robot understands as "stop"
+     */
     public void robotStop()
     {
         _toneGenerator.startTone(TONE_DTMF_D);
         setAlarm();
     }
 
+    /**
+     * Unused (for now): initialize text-to-speech
+     */
     void initTTS()
     {
 
     }
 
+    /**
+     * Unused (for now): close text-to-speech
+     */
     void closeTTS()
     {
 
     }
 
+    /**
+     * Unused (for now): speak via TTS
+     */
     void speak(String s)
     {
 
     }
 
+    /**
+     * Unused (for now): play a sound file?
+     */
     void playCustomSound()
     {
 
     }
 
-    // required for OnInitListener... what should I use this for?
+    /**
+     * Unused (for now): required for OnInitListener... not sure why we need this
+     */
     void onInit(int status)
     {
     }

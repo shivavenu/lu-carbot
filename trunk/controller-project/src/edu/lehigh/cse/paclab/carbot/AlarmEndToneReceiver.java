@@ -12,7 +12,7 @@ import android.util.Log;
 public class AlarmEndToneReceiver extends BroadcastReceiver
 {
     /**
-     * Quite simply, when we receive an alarm, we put a message in the log and we stop the DTMF tone generator.
+     * When we receive an alarm, we put a message in the log and we stop the DTMF tone generator.
      */
     @Override
     public void onReceive(Context context, Intent intent)

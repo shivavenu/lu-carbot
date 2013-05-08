@@ -46,6 +46,7 @@ public class ColorDetectionActivity extends Activity
                                                                     ad.setCancelable(false); // This blocks the 'BACK'
                                                                                              // button
                                                                     ad.setMessage("Fatal error: can't open camera!");
+                                                                    // [mfs] Should this be setPositiveButton?  See RCSender...
                                                                     ad.setButton("OK",
                                                                             new DialogInterface.OnClickListener()
                                                                             {
@@ -90,6 +91,7 @@ public class ColorDetectionActivity extends Activity
             AlertDialog ad = new AlertDialog.Builder(this).create();
             ad.setCancelable(false); // This blocks the 'BACK' button
             ad.setMessage("Fatal error: can't open camera!");
+            // [mfs] Should this be setPositiveButton?  See RCSender...
             ad.setButton("OK", new DialogInterface.OnClickListener()
             {
                 public void onClick(DialogInterface dialog, int which)

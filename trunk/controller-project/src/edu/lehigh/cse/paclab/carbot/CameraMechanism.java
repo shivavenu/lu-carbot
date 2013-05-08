@@ -30,12 +30,11 @@ import android.os.Build;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 /**
- * CameraMechanism moves all of the Camera code into a separate class, so that we can keep licenses independent
+ * CameraMechanism moves all of the Camera code into a separate class, so that we can keep licenses independent. This
+ * code is based on the above reference, and modified only as necessary to meet our needs
  */
 public class CameraMechanism
 {
@@ -72,7 +71,7 @@ public class CameraMechanism
     /**
      * The output stream of the socket, so we can write over the network
      */
-    OutputStream  myWriter         = null;
+    OutputStream          myWriter         = null;
 
     /**
      * Call this from parentActivity's onCreate to configure the camera
@@ -118,7 +117,6 @@ public class CameraMechanism
     private Camera.Size getBestPreviewSize(int width, int height, Camera.Parameters parameters)
     {
         Camera.Size result = null;
-
         for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
             if (size.width <= width && size.height <= height) {
                 if (result == null) {
@@ -134,7 +132,6 @@ public class CameraMechanism
                 }
             }
         }
-
         return result;
     }
 
@@ -149,7 +146,6 @@ public class CameraMechanism
     private Camera.Size getSmallestPictureSize(Camera.Parameters parameters)
     {
         Camera.Size result = null;
-
         for (Camera.Size size : parameters.getSupportedPictureSizes()) {
             if (result == null) {
                 result = size;
@@ -163,7 +159,6 @@ public class CameraMechanism
                 }
             }
         }
-
         return result;
     }
 

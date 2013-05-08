@@ -1,6 +1,5 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,12 +16,7 @@ import android.widget.Toast;
  * This is the "robot" half of the remote-control station. We launch a wifi listener here, then take commands over wifi
  * and turn them into DTMF signals.
  * 
- * [TODO] Snap Photo is incomplete. Currently we have support for the receiver to take pictures, but it does so through
- * manual intervention instead of via remote control
- * 
- * The layout for this activity is not useful right now. Longer-term, we are going to need to have a camera on the
- * screen for taking pictures and sending them back to the remote controller, which might motivate having the IP address
- * on screen, too
+ * TODO: The menu for this activity is not ideal, since only one of the three buttons matters
  */
 public class RCReceiverActivity extends BasicBotActivityBeta
 {
@@ -31,10 +25,13 @@ public class RCReceiverActivity extends BasicBotActivityBeta
      */
     private ServerSocket serverSocket;
 
+    /**
+     * We encapsulate all the camera behavior in a CameraMechanism object
+     */
     CameraMechanism      cm = new CameraMechanism();
 
     /**
-     * On activity creation, we just inflate a layout and initialize the camera mechanism
+     * On activity creation, we just inflate a layout, announce the IP, and initialize the camera mechanism
      */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -42,7 +39,7 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rcreceiver);
         cm.onCreateCamera(this);
-        TextView tv = (TextView)findViewById(R.id.tvIP);
+        TextView tv = (TextView) findViewById(R.id.tvIP);
         tv.setText(getLocalIpAddress());
     }
 
@@ -65,12 +62,15 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         // we just dispatch to a helper method, so that this code stays readable
         switch (item.getItemId()) {
             case R.id.menu_listen:
+                // this is for listening for connections
                 startListening();
                 return true;
             case R.id.menu_connect:
+                // not useful...
                 Toast.makeText(this, "You should run that on the remote control", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.menu_report:
+                // no longer useful since a TextView provides this information already
                 Toast.makeText(this, getLocalIpAddress(), Toast.LENGTH_LONG).show();
                 return true;
             default:
@@ -93,6 +93,26 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Lifecycle method to resurrect the camera on resume
+     */
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        cm.onResumeCamera();
+    }
+
+    /**
+     * Lifecycle method to give up the camera on pause
+     */
+    @Override
+    public void onPause()
+    {
+        cm.onPauseCamera();
+        super.onPause();
     }
 
     /**
@@ -144,14 +164,13 @@ public class RCReceiverActivity extends BasicBotActivityBeta
     boolean serverProtocol(Socket client)
     {
         try {
-            // get streams for reading and writing to the socket... the write direction is not yet implemented...
+            // get streams for reading and writing to the socket...
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            // send the output strem to the camera, so it can use it to transmit a photo
+            // send the output stream to the camera, so it can use it to transmit a photo
             cm.myWriter = client.getOutputStream();
-            // server protocol: as long as there is data to read, read it and send it back with a prefix attached
+            // server protocol: as long as there is data to read, read it and process it
             String line = null;
             while ((line = in.readLine()) != null) {
-                // display the message locally
                 parseMsg(line);
             }
         }
@@ -174,14 +193,14 @@ public class RCReceiverActivity extends BasicBotActivityBeta
                 serverSocket = new ServerSocket(WIFICONTROLPORT);
                 // listen for new connections
                 while (true) {
-                    // When we get a connection, update the UI
+                    // When we get a connection, run the server protocol
                     Socket client = serverSocket.accept();
                     shortbread("Received a connection!");
 
                     // run the server protocol, possibly break out of the loop instead of listening for a new connection
                     if (serverProtocol(client))
                         break;
-                    // [mfs] TODO: update protocol to sometimes not return true?
+                    // TODO: update protocol to sometimes not return true?
                 }
             }
             catch (Exception e) {
@@ -189,19 +208,5 @@ public class RCReceiverActivity extends BasicBotActivityBeta
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        cm.onResumeCamera();
-    }
-
-    @Override
-    public void onPause()
-    {
-        cm.onPauseCamera();
-        super.onPause();
     }
 }
