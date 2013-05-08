@@ -23,9 +23,6 @@ import android.widget.ImageView;
 /**
  * This is the "controller" half of the remote-control station. We connect this activity to a wifi activity on the
  * robot, and then the phone running this activity can send commands to the robot.
- * 
- * [TODO] Long-term, we are going to require this code to send 'snap photo' requests, and to receive photos back from
- * the remote host. However, in the short term we're just focused on basic remote control functionality
  */
 public class RCSenderActivity extends BasicBotActivityBeta
 {
@@ -50,7 +47,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
     Handler                            myHandler;
 
     /**
-     * On activity creation, we just inflate a layout, set the handler, and find the imageview
+     * On activity creation, we just inflate a layout, set the handler, and find the ImageView
      */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -78,7 +75,6 @@ public class RCSenderActivity extends BasicBotActivityBeta
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
-
             case R.id.menu_listen:
                 // the 'listen' menu item does not apply to the sender code
                 shortbread("You should run that on the robot");
@@ -154,6 +150,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
                 }
             }
         }
+        // if something goes wrong, put up some toast... note that this will drop us out of the loop
         catch (Exception e) {
             longbread("Error while sending: " + e);
             e.printStackTrace();
@@ -176,6 +173,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
             public void run()
             {
                 try {
+                    // read the data, turn it into a bitmap, and display it
                     DataInputStream dis = new DataInputStream(socket.getInputStream());
                     int len = dis.readInt();
                     byte[] jpeg = new byte[len];

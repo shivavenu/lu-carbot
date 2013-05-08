@@ -6,24 +6,20 @@ import android.view.View;
 /**
  * This is the new interface to TetheredBot. It uses DTMF to communicate with the robot.
  * 
- * TODO:
+ * TODO: STOP produces a pulse 
+ * [mfs] I think this is done
  * 
- * (1) STOP produces a pulse
+ * TODO: All sounds are a short pulse
+ * [mfs] We have short pulses, but I think we might want them to be even shorter...
  * 
- * (2) All sounds are a short pulse
+ * TODO: Change pulse mechanism, switch between headphone jack and speaker between pulses
  * 
- * (3) Change pulse mechanism, switch between headphone jack and speaker between pulses
+ * TODO: Get everything to work while playing music
  * 
- * (4) Get everything to work while playing music
- * 
- * (5) Get everything to work while doing TTS
- * 
- * @author ArmonShariati
- * 
+ * TODO: Get everything to work while doing TTS
  */
 public class TetheredBotBeta extends BasicBotActivityBeta
 {
-
     /**
      * On activity creation, we just inflate a menu
      */
