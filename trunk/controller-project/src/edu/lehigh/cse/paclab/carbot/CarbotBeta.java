@@ -37,6 +37,8 @@ public class CarbotBeta extends Activity
             startActivity(new Intent(this, RCReceiverActivity.class));
         if (v == findViewById(R.id.btnRCSender))
             startActivity(new Intent(this, RCSenderActivity.class));
+        if (v == findViewById(R.id.btnConfig))
+            startActivity(new Intent(this, Configure.class));
 
         // TODO: this last one is deprecated
         if (v == findViewById(R.id.btnCarbotLegacy))

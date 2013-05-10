@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -21,48 +22,96 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
 /**
  * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
- * 
- * TODO: Fill in methods for TTS
  */
-public abstract class BasicBotActivityBeta extends Activity
+public abstract class BasicBotActivityBeta extends Activity implements TextToSpeech.OnInitListener
 {
+    // constants for preference tags
+    final public static String         PREFS_NAME      = "CARBOT_NAME";
+    final public static String         PREFS_BYE       = "CARBOT_BYE";
+    final public static String         PREFS_DIST      = "CARBOT_DIST";
+    final public static String         PREFS_ROT       = "CARBOT_ROT";
+
     /**
      * Indicate the port this app uses for sending control signals between a client and server
      */
-    public static final int           WIFICONTROLPORT = 9599;
+    public static final int            WIFICONTROLPORT = 9599;
 
     /**
      * Tag for Android debugging...
      */
-    public static final String        TAG             = "Carbot Beta";
+    public static final String         TAG             = "Carbot Beta";
 
     /**
      * Unused, but will eventually help us with Text-to-speech stuff
      */
-    static public final int           CHECK_TTS       = 99873;
+    static public final int            CHECK_TTS       = 99873;
 
     /**
      * The object used to create DTMF tones
      */
-    public static final ToneGenerator _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
+    public static final ToneGenerator  _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
 
     /**
      * An AlarmManager for receiving notification that it's time to stop a DTMF tone
      */
-    private AlarmManager              am;
+    private AlarmManager               am;
 
     /**
-     * [mfs] I don't think we need this
+     * A self reference, for alarms
      */
+    public static BasicBotActivityBeta _self;
+
+    // for Text To Speech
+    TextToSpeech                       tts;
+
+    /**
+     * Program-wide configuration goes here
+     */
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        // Keep a self reference, so that alarms can work correctly
+        _self = this;
         super.onCreate(savedInstanceState);
-        Log.e(TAG, "Call to BasicBotActivityBeta::onCreate");
+        tts = new TextToSpeech(this, this);
+    }
+
+    /**
+     * When the activity goes away, we need to clear out TTS
+     */
+    @Override
+    public void onDestroy()
+    {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    /**
+     * When TTS is initialized, we need this
+     */
+    @Override
+    public void onInit(int status)
+    {
+        // if we were successful initialization, set the language to US
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e(TAG, "Trouble with language pack");
+            }
+        }
+        else {
+            Log.e(TAG, "TTS Initialization error");
+        }
+
     }
 
     /**
@@ -146,27 +195,11 @@ public abstract class BasicBotActivityBeta extends Activity
     }
 
     /**
-     * Unused (for now): initialize text-to-speech
-     */
-    void initTTS()
-    {
-
-    }
-
-    /**
-     * Unused (for now): close text-to-speech
-     */
-    void closeTTS()
-    {
-
-    }
-
-    /**
-     * Unused (for now): speak via TTS
+     * Simple mechanism for using text-to-speech
      */
     void speak(String s)
     {
-
+        tts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     /**
@@ -175,13 +208,6 @@ public abstract class BasicBotActivityBeta extends Activity
     void playCustomSound()
     {
 
-    }
-
-    /**
-     * Unused (for now): required for OnInitListener... not sure why we need this
-     */
-    void onInit(int status)
-    {
     }
 
     /**
