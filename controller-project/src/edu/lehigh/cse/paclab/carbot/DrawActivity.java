@@ -12,15 +12,28 @@ import android.view.View;
  * 
  * [TODO] this is a bit buggy right now... I think it's partly due to the use of threads, but I'm not sure.
  * 
- * @author spear
- * 
+ * [TODO] Actually, this is incredibly buggy right now because the threads don't know to wait for the DTMF stop pulses
+ * that are supposed to happen...
  */
 public class DrawActivity extends BasicBotActivityBeta
 {
+    /**
+     * A reference to the view we use to get user input... it also stores the array of points, which is bad engineering
+     * but will do for now...
+     */
     private DrawView         wpView;
+    
     private int              index               = 2;
+    
+    /**
+     * TODO: I'm not 100% sure, but I think these are for tracking the x/y coordinates of where the green point is on the screen
+     */
     private float            current_x;
     private float            current_y;
+    
+    /**
+     * TODO: I'm not 100% sure on this one either... need to figure it out...
+     */
     private double           current_orientation = 0;
 
     // [mfs] should try to use magnitude scaling eventually...
@@ -32,6 +45,8 @@ public class DrawActivity extends BasicBotActivityBeta
     private volatile boolean halt                = true;
 
     // time in milliseconds for a 360 degree turn
+    //
+    // TODO: why don't we have our meter stuff in here?
     int                      rotatemillis;
 
     public void onCreate(Bundle savedInstanceState)
@@ -49,13 +64,13 @@ public class DrawActivity extends BasicBotActivityBeta
             setContentView(R.layout.drawtocontrolbot);
         Log.v("CARBOT", "width, height = " + width + " " + height);
 
+        // find the drawable part of the screen
         wpView = (DrawView) findViewById(R.id.wpv1);
 
+        // figure out our rotation latency
         SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
-                Activity.MODE_WORLD_READABLE);
+                Activity.MODE_WORLD_WRITEABLE);
         rotatemillis = Integer.parseInt(prefs.getString(PREFS_ROT, "5000"));
-        shortbread("rotate" + rotatemillis);
-
         Log.e("CARBOT", rotatemillis + " = rotatemillis");
     }
 
@@ -156,9 +171,9 @@ public class DrawActivity extends BasicBotActivityBeta
 
                         double percentTraveled = (double) ((System.currentTimeMillis() - start))
                                 / ((double) (stop - start));
-                        wpView.currentX = (float) (x + (x_dis * percentTraveled));
+                        wpView.startPoint.x = (float) (x + (x_dis * percentTraveled));
                         // Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
-                        wpView.currentY = (float) (y + (y_dis * percentTraveled));
+                        wpView.startPoint.y = (float) (y + (y_dis * percentTraveled));
                         wpView.postInvalidate();
                     }
                 }
