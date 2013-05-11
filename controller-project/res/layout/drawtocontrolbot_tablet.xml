@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="Draw a path for the robot to follow:" />
 
-    <edu.lehigh.cse.paclab.carbot.support.WalkablePathView
+    <edu.lehigh.cse.paclab.carbot.DrawView
         android:id="@+id/wpv1"
         android:layout_width="450dp"
         android:layout_height="450dp"

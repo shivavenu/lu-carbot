@@ -36,7 +36,8 @@
         <activity android:name="TetheredBotBeta" android:screenOrientation="portrait"></activity>
         <activity android:name="RCSenderActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="RCReceiverActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="Configure"></activity>
+        <activity android:name="Configure" android:screenOrientation="portrait"></activity>
+        <activity android:name="DrawActivity" android:screenOrientation="portrait"></activity>
                 
         <activity android:name=".support.Carbot" android:screenOrientation="portrait"></activity>
      	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
@@ -60,6 +61,7 @@
         
         <receiver android:name="AlarmEndToneReceiver"></receiver>
         <receiver android:name="AlarmHaltReceiver"></receiver>
+        <receiver android:name="AlarmCallbackReceiver"></receiver>
 
         
     </application>
