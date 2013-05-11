@@ -39,6 +39,8 @@ public class CarbotBeta extends Activity
             startActivity(new Intent(this, RCSenderActivity.class));
         if (v == findViewById(R.id.btnConfig))
             startActivity(new Intent(this, Configure.class));
+        if (v == findViewById(R.id.btnDraw))
+            startActivity(new Intent(this, DrawActivity.class));
 
         // TODO: this last one is deprecated
         if (v == findViewById(R.id.btnCarbotLegacy))
