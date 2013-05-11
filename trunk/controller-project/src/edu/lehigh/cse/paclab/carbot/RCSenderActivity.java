@@ -274,4 +274,11 @@ public class RCSenderActivity extends BasicBotActivityBeta
             }
         }
     }
+
+    /**
+     * Provide an empty callback method, so that we are compatible with AlarmCallbackReceiver
+     */
+    public void callback()
+    {
+    }
 }

@@ -6,11 +6,9 @@ import android.view.View;
 /**
  * This is the new interface to TetheredBot. It uses DTMF to communicate with the robot.
  * 
- * TODO: STOP produces a pulse 
- * [mfs] I think this is done
+ * TODO: STOP produces a pulse [mfs] I think this is done
  * 
- * TODO: All sounds are a short pulse
- * [mfs] We have short pulses, but I think we might want them to be even shorter...
+ * TODO: All sounds are a short pulse [mfs] We have short pulses, but I think we might want them to be even shorter...
  * 
  * TODO: Change pulse mechanism, switch between headphone jack and speaker between pulses
  * 
@@ -56,5 +54,12 @@ public class TetheredBotBeta extends BasicBotActivityBeta
             robotCounterClockwise();
         if (v == findViewById(R.id.ivTetherStop))
             robotStop();
+    }
+
+    /**
+     * Provide an empty callback method, so that we are compatible with AlarmCallbackReceiver
+     */
+    public void callback()
+    {
     }
 }

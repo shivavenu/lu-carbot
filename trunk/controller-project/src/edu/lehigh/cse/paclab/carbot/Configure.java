@@ -135,4 +135,11 @@ public class Configure extends BasicBotActivityBeta
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + when, pi);
     }
+
+    /**
+     * Provide an empty callback method, so that we are compatible with AlarmCallbackReceiver
+     */
+    public void callback()
+    {
+    }
 }

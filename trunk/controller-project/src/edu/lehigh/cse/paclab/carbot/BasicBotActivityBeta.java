@@ -275,4 +275,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
             }
         });
     }
+
+    /**
+     * This function gives us the ability to have an AlarmReceiver that can do all sorts of arbitrary stuff
+     */
+    abstract public void callback();
 }
