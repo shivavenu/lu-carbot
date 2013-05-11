@@ -1,6 +1,10 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,34 +25,12 @@ public class DrawActivity extends BasicBotActivityBeta
      * A reference to the view we use to get user input... it also stores the array of points, which is bad engineering
      * but will do for now...
      */
-    private DrawView         wpView;
-    
-    private int              index               = 2;
-    
+    private DrawView wpView;
+
     /**
-     * TODO: I'm not 100% sure, but I think these are for tracking the x/y coordinates of where the green point is on the screen
+     * On creation, we inflate a layout, register our view, and figure out our motor parameters
      */
-    private float            current_x;
-    private float            current_y;
-    
-    /**
-     * TODO: I'm not 100% sure on this one either... need to figure it out...
-     */
-    private double           current_orientation = 0;
-
-    // [mfs] should try to use magnitude scaling eventually...
-    // private double current_mag = 1;
-
-    // track if we are moving
-    public boolean           moving              = false;
-
-    private volatile boolean halt                = true;
-
-    // time in milliseconds for a 360 degree turn
-    //
-    // TODO: why don't we have our meter stuff in here?
-    int                      rotatemillis;
-
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -72,27 +54,169 @@ public class DrawActivity extends BasicBotActivityBeta
                 Activity.MODE_WORLD_WRITEABLE);
         rotatemillis = Integer.parseInt(prefs.getString(PREFS_ROT, "5000"));
         Log.e("CARBOT", rotatemillis + " = rotatemillis");
+
+        // initialize the point for our last (current) position
+        position = wpView.new Point(0, 0);
     }
 
+    /**
+     * last position of the robot when it is moving, current position of the robot when it is stopped
+     */
+    DrawView.Point   position;
+
+    /**
+     * Orientation/rotation of the robot
+     */
+    private double   orientation   = 0;
+
+    /**
+     * The index of the point, within wpView.pathPoints, where we currently are. -1 means that we're not in the midst of
+     * moving.
+     */
+    private int      index         = -1;
+
+    /**
+     * The current mode of the robot: see documentation on callback(), and the four MODE_X constants below
+     */
+    private int      mode          = MODE_STOPPED;
+
+    /**
+     * enum representing when robot is at point, waiting to rotate and move to next point
+     */
+    static final int MODE_STOPPED  = 0;
+
+    /**
+     * enum representing when robot is rotating
+     */
+    static final int MODE_ROTATING = 1;
+
+    /**
+     * enum representing when robot is done rotating, ready to move
+     */
+    static final int MODE_ROTATED  = 2;
+
+    /**
+     * enum representing when robot is moving forward
+     */
+    static final int MODE_MOVING   = 3;
+
+    /**
+     * The heart of this activity is a state machine. We have, through wpView.pathPoints, an array of x,y coordinates
+     * that we'd like to travel. The robot is in an initial position (0, 0), with an initial orientation. Our index
+     * represents the current point that we are at. Lastly, we have a mode, to represent 4 states of rotation and motion
+     * that are possible. The processing of the state machine is handled via chained callbacks, according to this
+     * mechanism.
+     */
+    public void callback()
+    {
+        // Do nothing if index is -1
+        if (index == -1)
+            return;
+
+        switch (mode) {
+            case MODE_STOPPED:
+                // if there is another point, then we need to:
+                // - figure out how much to rotate
+                // - switch mode to ROTATING
+                // - start rotating
+                // - request a callback at the right time
+                break;
+            case MODE_ROTATING:
+                // from here we need to:
+                // - stop the robot
+                // - switch the mode to ROTATED
+                // - request a callback in a fixed interval after DTMF stops (1 second?)
+                break;
+            case MODE_ROTATED:
+                // from here we need to:
+                // - figure out how long the robot needs to move for
+                // - switch the mode to MOVING
+                // - start moving forward
+                // - request a callback at the right time
+                break;
+            case MODE_MOVING:
+                // from here we need to:
+                // - stop the robot
+                // - switch the mode to STOPPED
+                // - request a callback in a fixed interval after DTMF stops (1 second?)
+                break;
+        }
+    }
+
+    /**
+     * Helper method for requesting a callback for advancing the state machine
+     */
+    void requestCallback(int millis)
+    {
+        Context context = this;
+        Intent intent = new Intent(context, AlarmCallbackReceiver.class);
+
+        // remember to delete the older alarm before creating the new one
+        PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
+                intent, 0); // pending intent flags
+        // set an alarm
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + millis, pi);
+    }
+
+    /**
+     * This gets called when the user clicks 'go'. The old behavior is coded, the new behavior appears in a comment.
+     * 
+     * @param v
+     *            A reference to the button that was clicked
+     */
     public void onClickGo(View v)
     {
+        // new behavior: set mode to stopped, set index to 0?, set rotation to 0, request a callback to kick off the
+        // state machine
+
+        // old behavior:
         if (index < wpView.getSize()) {
             halt = false;
-            current_x = wpView.getPointX(index - 1);
-            current_y = wpView.getPointY(index - 1);
+            position.x = wpView.getPointX(index - 1);
+            position.y = wpView.getPointY(index - 1);
             moveToPoint(index);
         }
     }
 
+    /**
+     * This gets called when the user clicks 'clear'. The old behavior is coded, the new behavior appears in a comment.
+     * 
+     * @param v
+     *            A reference to the button that was clicked
+     */
     public void onClickClear(View v)
     {
+        // new behavior: stop the robot, set index to -1, request a callback
+        //
+        // NB: requesting a callback is a cute hack... since all callbacks have the same integer ID, this effectively
+        // cancels all pending callbacks
+
+        // old behavior:
         halt = true;
         robotStop();
         wpView.clearPoints();
         index = 2;
-        current_orientation = 0;
+        orientation = 0;
     }
 
+    // ////////////////
+    // [mfs] Everything below this is deprecated and can be deleted once we get the callback stuff working
+
+    // [mfs] should try to use magnitude scaling eventually...
+    // private double position.mag = 1;
+
+    // track if we are moving
+    public boolean           moving = false;
+
+    private volatile boolean halt   = true;
+
+    // time in milliseconds for a 360 degree turn
+    //
+    // TODO: why don't we have our meter stuff in here?
+    int                      rotatemillis;
+
+    // deprecated... delete once the new stuff works
     public void moveToPoint(int i)
     {
         if (halt)
@@ -100,28 +224,28 @@ public class DrawActivity extends BasicBotActivityBeta
         float x = wpView.getPointX(i);
         float y = wpView.getPointY(i);
 
-        float deltax = x - current_x;
-        float deltay = y - current_y;
+        float deltax = x - position.x;
+        float deltay = y - position.y;
         double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
 
-        Log.v("FROM", "(" + current_x + "," + current_y + ")");
+        Log.v("FROM", "(" + position.x + "," + position.y + ")");
         Log.v("TO", "(" + x + "," + y + ")");
         Log.v("DELTA", "(" + deltax + "," + deltay + ")");
-        Log.v("OLD ORIENTATION", current_orientation + "");
+        Log.v("OLD ORIENTATION", orientation + "");
         Log.v("ANGLE", "(" + ang + ")");
 
-        angle(current_orientation - ang);
-        Log.v("DONE ROTATING", "new angle = " + current_orientation);
+        angle(orientation - ang);
+        Log.v("DONE ROTATING", "new angle = " + orientation);
 
-        double distance = Math.sqrt(((x - current_x) * (x - current_x)) + ((y - current_y) * (y - current_y)));
-        long delay = move(distance, current_x, current_y, x, y);
+        double distance = Math.sqrt(((x - position.x) * (x - position.x)) + ((y - position.y) * (y - position.y)));
+        long delay = move(distance, position.x, position.y, x, y);
         final long t_delay = delay - System.currentTimeMillis();
         Log.v("DELAY TIME FOR MOVE", "" + delay);
 
         index++;
         if (index < wpView.getSize()) {
-            current_x = x;
-            current_y = y;
+            position.x = x;
+            position.y = y;
 
             // [mfs] using threads like this is going to create a lot of system
             // pressure... we could use an alarm instead...
@@ -143,6 +267,7 @@ public class DrawActivity extends BasicBotActivityBeta
 
     }
 
+    // deprecated... delete once the new stuff works
     // [todo] This should use prefs to know distance...
     public long move(double _dis, float _old_x, float _old_y, float _new_x, float _new_y)
     {
@@ -186,6 +311,7 @@ public class DrawActivity extends BasicBotActivityBeta
         return stop;
     }
 
+    // deprecated... delete once the new stuff works
     public void angle(double ang)
     {
         // compensate for the fact that left is 0 degrees in this code, by making up 0 degrees
@@ -207,14 +333,8 @@ public class DrawActivity extends BasicBotActivityBeta
         while (System.currentTimeMillis() < stop) {
         }
         robotStop();
-        current_orientation -= ang;
+        orientation -= ang;
         Log.i("WalkablePath", "0, 0");
     }
 
-    /**
-     * The alarm callback
-     */
-    public void callback()
-    {
-    }
 }
