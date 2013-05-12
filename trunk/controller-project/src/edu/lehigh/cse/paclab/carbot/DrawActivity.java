@@ -1,11 +1,9 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -13,11 +11,6 @@ import android.view.View;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will perform that movement
- * 
- * [TODO] this is a bit buggy right now... I think it's partly due to the use of threads, but I'm not sure.
- * 
- * [TODO] Actually, this is incredibly buggy right now because the threads don't know to wait for the DTMF stop pulses
- * that are supposed to happen...
  */
 public class DrawActivity extends BasicBotActivityBeta
 {
@@ -25,7 +18,38 @@ public class DrawActivity extends BasicBotActivityBeta
      * A reference to the view we use to get user input... it also stores the array of points, which is bad engineering
      * but will do for now...
      */
-    private DrawView wpView;
+    private DrawView dv;
+
+    /**
+     * time in milliseconds for a 360 degree turn
+     */
+    int              rotatemillis;
+
+    /**
+     * Current orientation/rotation of the robot
+     */
+    private double   orientation = 0;
+
+    /**
+     * The index of the point, within dv.pathPoints, where we currently are. -1 means that we're not in the midst of
+     * moving.
+     */
+    private int      index       = -1;
+
+    /**
+     * Used by the FSM to know what the robot is doing, and what it needs to be doing next
+     */
+    enum MODE {
+        STOPPED, // robot is at point[index], waiting to rotate and move to next point
+        ROTATING, // robot is in motion, rotating
+        ROTATED, // robot is done rotating, is ready to move
+        MOVING; // robot is in motion, moving forward
+    }
+
+    /**
+     * The current mode of the robot
+     */
+    private MODE mode = MODE.STOPPED;
 
     /**
      * On creation, we inflate a layout, register our view, and figure out our motor parameters
@@ -47,62 +71,17 @@ public class DrawActivity extends BasicBotActivityBeta
         Log.v("CARBOT", "width, height = " + width + " " + height);
 
         // find the drawable part of the screen
-        wpView = (DrawView) findViewById(R.id.wpv1);
+        dv = (DrawView) findViewById(R.id.wpv1);
 
         // figure out our rotation latency
-        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity",
-                Activity.MODE_WORLD_WRITEABLE);
         rotatemillis = Integer.parseInt(prefs.getString(PREFS_ROT, "5000"));
-        Log.e("CARBOT", rotatemillis + " = rotatemillis");
 
-        // initialize the point for our last (current) position
-        position = wpView.new Point(0, 0);
+        // TODO: why don't we use the parameter for PREFS_DIST, too?
     }
 
     /**
-     * last position of the robot when it is moving, current position of the robot when it is stopped
-     */
-    DrawView.Point   position;
-
-    /**
-     * Orientation/rotation of the robot
-     */
-    private double   orientation   = 0;
-
-    /**
-     * The index of the point, within wpView.pathPoints, where we currently are. -1 means that we're not in the midst of
-     * moving.
-     */
-    private int      index         = -1;
-
-    /**
-     * The current mode of the robot: see documentation on callback(), and the four MODE_X constants below
-     */
-    private int      mode          = MODE_STOPPED;
-
-    /**
-     * enum representing when robot is at point, waiting to rotate and move to next point
-     */
-    static final int MODE_STOPPED  = 0;
-
-    /**
-     * enum representing when robot is rotating
-     */
-    static final int MODE_ROTATING = 1;
-
-    /**
-     * enum representing when robot is done rotating, ready to move
-     */
-    static final int MODE_ROTATED  = 2;
-
-    /**
-     * enum representing when robot is moving forward
-     */
-    static final int MODE_MOVING   = 3;
-
-    /**
-     * The heart of this activity is a state machine. We have, through wpView.pathPoints, an array of x,y coordinates
-     * that we'd like to travel. The robot is in an initial position (0, 0), with an initial orientation. Our index
+     * The heart of this activity is a state machine. We have, through dv.pathPoints, an array of x,y coordinates that
+     * we'd like to travel. The robot is in an initial position (0, 0), with an initial orientation. Our index
      * represents the current point that we are at. Lastly, we have a mode, to represent 4 states of rotation and motion
      * that are possible. The processing of the state machine is handled via chained callbacks, according to this
      * mechanism.
@@ -114,32 +93,108 @@ public class DrawActivity extends BasicBotActivityBeta
             return;
 
         switch (mode) {
-            case MODE_STOPPED:
-                // if there is another point, then we need to:
-                // - figure out how much to rotate
-                // - switch mode to ROTATING
-                // - start rotating
-                // - request a callback at the right time
+            case STOPPED: {
+                // this is the base state. We have a point to go to, so we need to rotate and then request motion
+
+                // 1 - make sure we have a point to go to... important if there is only one point
+                if ((index + 1) >= dv.points.size())
+                    return;
+
+                // 2 - switch the mode to ROTATING
+                mode = MODE.ROTATING;
+
+                // 3 - figure out how much we need to rotate, and translate it into a time to rotate
+
+                // get the vector for the change in position we wish to achieve
+                float deltaX = dv.points.get(index + 1).x - dv.points.get(index).x;
+                float deltaY = dv.points.get(index + 1).y - dv.points.get(index).y;
+
+                // figure out angle of the distance vector in a standard x y plane
+                double ang = (Math.atan2(deltaY, deltaX) * (180 / Math.PI));
+
+                Log.v("FROM", "(" + dv.points.get(index).x + "," + dv.points.get(index).y + ")");
+                Log.v("TO", "(" + dv.points.get(index + 1).x + "," + dv.points.get(index + 1).y + ")");
+                Log.v("DELTA", "(" + deltaX + "," + deltaY + ")");
+                Log.v("OLD ORIENTATION", orientation + "");
+                Log.v("ANGLE", "(" + ang + ")");
+
+                // The angle is relative to an orientation of straight up... adjust for current robot orientation, then
+                // update /orientation/
+                ang = orientation - ang;
+                orientation = ang;
+                // Translate coordinate system... left isn't 0 degrees: up is 0 degrees
+                ang -= 90;
+
+                // figure out how long we need to rotate... remember that rotatemillis is the time to do a full circle
+                double time_to_rotate = rotatemillis * (Math.abs(ang) / 360);
+
+                // DTMF_DELAY_TIME represents the time a DTMF tone must play for our hardware to detect it. If our
+                // rotation is too quick, we'll not
+                // have shut off the signal yet. Our solution is to add a full rotation in that situation. It's gross,
+                // but it should work.
+                if (time_to_rotate < DTMF_DELAY_TIME)
+                    time_to_rotate += rotatemillis;
+                Log.v("ROTATION TIME", "" + time_to_rotate);
+
+                // 4 - start rotating the robot
+                if (ang > 0)
+                    robotCounterClockwise();
+                else
+                    robotClockwise();
+
+                // 5 - request callback to stop rotation and move to next stage of FSM
+                requestCallback((int) time_to_rotate);
+
                 break;
-            case MODE_ROTATING:
-                // from here we need to:
-                // - stop the robot
-                // - switch the mode to ROTATED
-                // - request a callback in a fixed interval after DTMF stops (1 second?)
+            }
+            case ROTATING: {
+                // rotation is done... stop the robot, move to next state, resume FSM
+                robotStop();
+                mode = MODE.ROTATED;
+                requestCallback(DTMF_DELAY_TIME + 100);
                 break;
-            case MODE_ROTATED:
-                // from here we need to:
-                // - figure out how long the robot needs to move for
-                // - switch the mode to MOVING
-                // - start moving forward
-                // - request a callback at the right time
+            }
+            case ROTATED: {
+                // The robot is ready to start moving forward. The challenge is to figure out when it should stop
+
+                // 1 - switch the mode to MOVING
+                mode = MODE.MOVING;
+
+                // 2 - Figure out how long the robot needs to move forward
+
+                // get the vector for the change in position we wish to achieve
+                float deltaX = dv.points.get(index + 1).x - dv.points.get(index).x;
+                float deltaY = dv.points.get(index + 1).y - dv.points.get(index).y;
+
+                Log.v("FROM", "(" + dv.points.get(index).x + "," + dv.points.get(index).y + ")");
+                Log.v("TO", "(" + dv.points.get(index + 1).x + "," + dv.points.get(index + 1).y + ")");
+                Log.v("DELTA", "(" + deltaX + "," + deltaY + ")");
+
+                // figure out the actual distance
+                double distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+                // for now, we just scale the pixel distance by 50 to get the time to move... this is a gross hack,
+                // should be done more cleanly
+                int time_to_go = (int) (50 * distance);
+                Log.v("TRAVEL_TIME", "" + time_to_go);
+
+                // 3 - Start the robot, unless we wouldn't be able to stop in time, in which case we skip this movement
+                if (time_to_go > DTMF_DELAY_TIME)
+                    robotForward();
+
+                // 4 - request a callback that fires when the robot should be at the destination
+                requestCallback(time_to_go);
+
                 break;
-            case MODE_MOVING:
-                // from here we need to:
-                // - stop the robot
-                // - switch the mode to STOPPED
-                // - request a callback in a fixed interval after DTMF stops (1 second?)
+            }
+            case MOVING: {
+                // Motion is done... stop the robot, advance index, resume FSM at new index
+                robotStop();
+                mode = MODE.STOPPED;
+                index++;
+                requestCallback(DTMF_DELAY_TIME + 100);
                 break;
+            }
         }
     }
 
@@ -150,191 +205,43 @@ public class DrawActivity extends BasicBotActivityBeta
     {
         Context context = this;
         Intent intent = new Intent(context, AlarmCallbackReceiver.class);
-
-        // remember to delete the older alarm before creating the new one
-        PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
-                intent, 0); // pending intent flags
-        // set an alarm
+        // NB: using same request ID for all PIs in this whole project is a feature
+        PendingIntent pi = PendingIntent.getBroadcast(this, 1, intent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + millis, pi);
     }
 
     /**
-     * This gets called when the user clicks 'go'. The old behavior is coded, the new behavior appears in a comment.
+     * This gets called when the user clicks 'go', and it starts the robot along the path that was drawn
      * 
      * @param v
      *            A reference to the button that was clicked
      */
     public void onClickGo(View v)
     {
-        // new behavior: set mode to stopped, set index to 0?, set rotation to 0, request a callback to kick off the
-        // state machine
-
-        // old behavior:
-        if (index < wpView.getSize()) {
-            halt = false;
-            position.x = wpView.getPointX(index - 1);
-            position.y = wpView.getPointY(index - 1);
-            moveToPoint(index);
-        }
+        // Stop the robot, then indicate we are at position 0 with 0 rotation and we want to start the FSM
+        robotStop();
+        index = 0;
+        orientation = 0;
+        mode = MODE.STOPPED;
+        requestCallback(2 * DTMF_DELAY_TIME); // make sure the 'stop' tone has ended before we start the FSM...
     }
 
     /**
-     * This gets called when the user clicks 'clear'. The old behavior is coded, the new behavior appears in a comment.
+     * This gets called when the user clicks 'clear'. it stops the robot, resets the FSM, and clears the array of points
      * 
      * @param v
      *            A reference to the button that was clicked
      */
     public void onClickClear(View v)
     {
-        // new behavior: stop the robot, set index to -1, request a callback
+        // stop the robot, invalidate the FSM, and clear the set of points
         //
-        // NB: requesting a callback is a cute hack... since all callbacks have the same integer ID, this effectively
-        // cancels all pending callbacks
-
-        // old behavior:
-        halt = true;
+        // NB: since all callbacks have the same integer ID, requesting a callback cancels all pending callbacks
         robotStop();
-        wpView.clearPoints();
-        index = 2;
-        orientation = 0;
+        index = -1;
+        mode = MODE.STOPPED;
+        requestCallback(1);
+        dv.clearPoints();
     }
-
-    // ////////////////
-    // [mfs] Everything below this is deprecated and can be deleted once we get the callback stuff working
-
-    // [mfs] should try to use magnitude scaling eventually...
-    // private double position.mag = 1;
-
-    // track if we are moving
-    public boolean           moving = false;
-
-    private volatile boolean halt   = true;
-
-    // time in milliseconds for a 360 degree turn
-    //
-    // TODO: why don't we have our meter stuff in here?
-    int                      rotatemillis;
-
-    // deprecated... delete once the new stuff works
-    public void moveToPoint(int i)
-    {
-        if (halt)
-            return;
-        float x = wpView.getPointX(i);
-        float y = wpView.getPointY(i);
-
-        float deltax = x - position.x;
-        float deltay = y - position.y;
-        double ang = (Math.atan2(deltay, deltax) * (180 / Math.PI));
-
-        Log.v("FROM", "(" + position.x + "," + position.y + ")");
-        Log.v("TO", "(" + x + "," + y + ")");
-        Log.v("DELTA", "(" + deltax + "," + deltay + ")");
-        Log.v("OLD ORIENTATION", orientation + "");
-        Log.v("ANGLE", "(" + ang + ")");
-
-        angle(orientation - ang);
-        Log.v("DONE ROTATING", "new angle = " + orientation);
-
-        double distance = Math.sqrt(((x - position.x) * (x - position.x)) + ((y - position.y) * (y - position.y)));
-        long delay = move(distance, position.x, position.y, x, y);
-        final long t_delay = delay - System.currentTimeMillis();
-        Log.v("DELAY TIME FOR MOVE", "" + delay);
-
-        index++;
-        if (index < wpView.getSize()) {
-            position.x = x;
-            position.y = y;
-
-            // [mfs] using threads like this is going to create a lot of system
-            // pressure... we could use an alarm instead...
-            Thread delayThread = new Thread(new Thread()
-            {
-                public void run()
-                {
-                    try {
-                        sleep(t_delay);
-                    }
-                    catch (Exception e) {
-                    }
-                    moveToPoint(index);
-                }
-            });
-
-            delayThread.start();
-        }
-
-    }
-
-    // deprecated... delete once the new stuff works
-    // [todo] This should use prefs to know distance...
-    public long move(double _dis, float _old_x, float _old_y, float _new_x, float _new_y)
-    {
-        final double dis = _dis;
-        final float old_x = _old_x;
-        final float old_y = _old_y;
-        final float new_x = _new_x;
-        final float new_y = _new_y;
-        final long start = System.currentTimeMillis();
-        final long stop = start + (long) (dis * 50);
-        moving = true;
-
-        Thread updateThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                robotForward();
-                Log.i("PathActivity", "send command .1, 0");
-                while (System.currentTimeMillis() < stop) {
-                    if (System.currentTimeMillis() % 100 == 0) {
-                        float x = old_x;
-                        float y = old_y;
-
-                        float x_dis = new_x - old_x;
-                        float y_dis = new_y - old_y;
-
-                        double percentTraveled = (double) ((System.currentTimeMillis() - start))
-                                / ((double) (stop - start));
-                        wpView.startPoint.x = (float) (x + (x_dis * percentTraveled));
-                        // Log.v("SHOULD Be", new Float((float) (x + (x_dis * percentTraveled))).toString());
-                        wpView.startPoint.y = (float) (y + (y_dis * percentTraveled));
-                        wpView.postInvalidate();
-                    }
-                }
-                robotStop();
-                Log.i("WalkablePath", "0,0");
-                moving = false;
-            }
-        });
-        updateThread.start();
-        return stop;
-    }
-
-    // deprecated... delete once the new stuff works
-    public void angle(double ang)
-    {
-        // compensate for the fact that left is 0 degrees in this code, by making up 0 degrees
-        ang -= 90;
-        Log.v("Calling ANGLE", "ang = " + ang);
-
-        // I think this is how long we need to wait...
-        double full_circle = rotatemillis;
-
-        long start = System.currentTimeMillis();
-        long time = (long) (full_circle * (Math.abs(ang) / 360));
-        long stop = start + time;
-        Log.v("ROTATION TIME", "" + time);
-
-        if (ang > 0)
-            robotCounterClockwise();
-        else
-            robotClockwise();
-        while (System.currentTimeMillis() < stop) {
-        }
-        robotStop();
-        orientation -= ang;
-        Log.i("WalkablePath", "0, 0");
-    }
-
 }

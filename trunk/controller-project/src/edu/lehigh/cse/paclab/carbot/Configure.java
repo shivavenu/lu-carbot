@@ -1,15 +1,12 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import edu.lehigh.cse.paclab.carbot.R;
 
 /**
  * An activity for saving configuration information, specifically the text that the robot should say as its name and
@@ -17,11 +14,6 @@ import edu.lehigh.cse.paclab.carbot.R;
  */
 public class Configure extends BasicBotActivityBeta
 {
-    /**
-     * For accessing the preferences storage of the activity
-     */
-    SharedPreferences prefs;
-
     /**
      * A counter for disambiguating alarms
      */
@@ -36,9 +28,6 @@ public class Configure extends BasicBotActivityBeta
         // set the layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.config_beta);
-
-        // configure the preferences object
-        prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
 
         // update all text boxes to show our current values
         EditText et;
