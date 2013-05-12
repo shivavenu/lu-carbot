@@ -19,6 +19,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
@@ -38,6 +39,11 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     final public static String         PREFS_ROT       = "CARBOT_ROT";
 
     /**
+     * This constant describes how long a DTMF tone must play before our system catches the sound
+     */
+    final public static int            DTMF_DELAY_TIME = 500;
+
+    /**
      * Indicate the port this app uses for sending control signals between a client and server
      */
     public static final int            WIFICONTROLPORT = 9599;
@@ -48,26 +54,23 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     public static final String         TAG             = "Carbot Beta";
 
     /**
-     * Unused, but will eventually help us with Text-to-speech stuff
-     */
-    static public final int            CHECK_TTS       = 99873;
-
-    /**
      * The object used to create DTMF tones
      */
     public static final ToneGenerator  _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
 
     /**
-     * An AlarmManager for receiving notification that it's time to stop a DTMF tone
+     * For accessing the preferences storage of the activity
      */
-    private AlarmManager               am;
+    SharedPreferences                  prefs;
 
     /**
      * A self reference, for alarms
      */
     public static BasicBotActivityBeta _self;
 
-    // for Text To Speech
+    /**
+     * The text to speech interface
+     */
     TextToSpeech                       tts;
 
     /**
@@ -79,7 +82,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         // Keep a self reference, so that alarms can work correctly
         _self = this;
         super.onCreate(savedInstanceState);
+        // configure tts and preferences
         tts = new TextToSpeech(this, this);
+        prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
     }
 
     /**
@@ -127,8 +132,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
                 intent, 0); // pending intent flags
 
         // set an alarm for half a second
-        am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 500, pi);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DTMF_DELAY_TIME, pi);
     }
 
     /**
