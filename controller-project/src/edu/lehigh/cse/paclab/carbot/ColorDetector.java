@@ -11,7 +11,16 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-public class ColorDetector
+import android.util.Log;
+
+/**
+ * TODO
+ * Make it stop crashing when I switch between activities, I think it may have to do with extending BasicBotActivityBeta
+ * 			Maybe make all the commands in BBAB public static methods?
+ * @author ArmonShariati
+ *
+ */
+public class ColorDetector extends BasicBotActivityBeta
 {
     // Lower and Upper bounds for range checking in HSV color space
     private Scalar           mLowerBound     = new Scalar(0);
@@ -24,6 +33,8 @@ public class ColorDetector
     private Scalar           mColorRadius    = new Scalar(25, 50, 50, 0);
     private Mat              mSpectrum       = new Mat();
     private List<MatOfPoint> mContours       = new ArrayList<MatOfPoint>();
+    
+    private static final String TAG = "ColorDetector";
 
     public void setColorRadius(Scalar radius)
     {
@@ -71,7 +82,8 @@ public class ColorDetector
     public void process(Mat rgbaImage)
     {
         Mat pyrDownMat = new Mat();
-
+        
+        //Uses a Gaussian Kernel to smooth the image
         Imgproc.pyrDown(rgbaImage, pyrDownMat);
         Imgproc.pyrDown(pyrDownMat, pyrDownMat);
 
@@ -79,27 +91,34 @@ public class ColorDetector
         Imgproc.cvtColor(pyrDownMat, hsvMat, Imgproc.COLOR_RGB2HSV_FULL);
 
         Mat Mask = new Mat();
+        //Creates the binary image of the  thresholded image
         Core.inRange(hsvMat, mLowerBound, mUpperBound, Mask);
         Mat dilatedMask = new Mat();
         Imgproc.dilate(Mask, dilatedMask, new Mat());
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
-
+        
         Imgproc.findContours(dilatedMask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
+        
         // Find max contour area
         double maxArea = 0;
+        int indexOfLargestContour = 0;
+        int i = 0;
         Iterator<MatOfPoint> each = contours.iterator();
         while (each.hasNext()) {
             MatOfPoint wrapper = each.next();
             double area = Imgproc.contourArea(wrapper);
-            if (area > maxArea)
+            if (area > maxArea) {
                 maxArea = area;
+                indexOfLargestContour = i;
+            }
+            i++;
         }
-
+        
+        
         // Filter contours by area and resize to fit the original image size
-        mContours.clear();
+        /*mContours.clear();
         each = contours.iterator();
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
@@ -107,11 +126,49 @@ public class ColorDetector
                 Core.multiply(contour, new Scalar(4, 4), contour);
                 mContours.add(contour);
             }
+        }*/
+        
+        //Filter the main contour by area and resize to fit the original image
+        mContours.clear();
+        if(!contours.isEmpty()) {
+        	MatOfPoint contour = contours.get(indexOfLargestContour);
+        	if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
+                Core.multiply(contour, new Scalar(4, 4), contour);
+                mContours.add(contour);
+                int x = Imgproc.boundingRect(contour).x;
+                int y = Imgproc.boundingRect(contour).y;
+                
+                if (y > 300) {
+                	robotPointTurnLeft();
+                	Log.e(TAG, "Left" + y);
+                }
+                else if (300 > y && y > 100) {
+                	robotForward();
+                	Log.e(TAG, "Straight" + y);
+                }
+                else if (100 > y) {
+                	robotPointTurnRight();
+                	Log.e(TAG, "Right" + y);
+                }
+            }
         }
+        else {
+        	Log.e(TAG, "No contours found, rotate clockwise");
+        	robotClockwise();
+        }
+        
     }
 
     public List<MatOfPoint> getContours()
     {
         return mContours;
     }
+
+	@Override
+	public void callback() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }
