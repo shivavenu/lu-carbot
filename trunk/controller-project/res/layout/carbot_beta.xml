@@ -17,14 +17,12 @@
             android:layout_gravity="center_horizontal"
             android:orientation="vertical" >
 
-
             <Button
                 android:id="@+id/btnTetheredBot"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Tethered Bot" />
-
 
             <Button
                 android:id="@+id/btnColorDetection"
@@ -33,14 +31,12 @@
                 android:onClick="launchActivity"
                 android:text="Color Detection" />
 
-
             <Button
                 android:id="@+id/btnRCSender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Remote Control (P)" />
-
 
             <Button
                 android:id="@+id/btnRCReceiver"
@@ -49,35 +45,27 @@
                 android:onClick="launchActivity"
                 android:text="Remote Control (B)" />
 
-
             <Button
                 android:id="@+id/btnDraw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Draw To Control" />
-            
+
             <Button
                 android:id="@+id/btnTalking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Talk Back" />
-            
+
             <Button
                 android:id="@+id/btnConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="launchActivity"
                 android:text="Configuration" />
-            
-                        <Button
-                android:id="@+id/btnCarbotLegacy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="launchActivity"
-                android:text="Carbot Legacy" />
-            
+
         </LinearLayout>
     </ScrollView>
 

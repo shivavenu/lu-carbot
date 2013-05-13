@@ -40,30 +40,9 @@
         <activity android:name="DrawActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="Chatterbox" android:screenOrientation="portrait"></activity>
                 
-        <activity android:name=".support.Carbot" android:screenOrientation="portrait"></activity>
-     	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
-     	<activity android:name=".support.FindBalloonBot" android:screenOrientation="landscape"></activity>
-        <activity android:name=".support.BTFindDeviceActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Dialog"></activity>
-        <activity android:name=".support.Chatterbox" android:screenOrientation="portrait" ></activity>
-        <activity android:name=".support.TetheredBot" android:screenOrientation="portrait"></activity>
-        <activity android:name=".support.RemoteControlBot" android:screenOrientation="portrait"></activity>
-        <activity android:name=".support.DrawToControlBot" android:screenOrientation="portrait"></activity>
-        <activity android:name=".cupport.Configure" android:screenOrientation="portrait"></activity>
-        <activity android:name=".support.SnapPhoto" android:screenOrientation="landscape" ></activity>
-        <activity android:name=".support.DrawToControlPhone" android:screenOrientation="portrait" ></activity>
-        <activity android:name=".support.FindBalloonPhone" android:screenOrientation="portrait" ></activity>
-        <activity android:name=".support.RemoteControlPhone" android:screenOrientation="portrait" ></activity>
-        <activity android:name=".support.DTMF" android:screenOrientation="portrait" ></activity>
-        
-        <receiver android:name=".support.AlarmDanceReceiver"></receiver>
-        <receiver android:name=".support.AlarmStopMovingReceiver"></receiver>
-        <receiver android:name=".support.AlarmLookAgainReceiver"></receiver>
-        <receiver android:name=".support.AlarmSnapPhotoReceiver"></receiver>
-        
         <receiver android:name="AlarmEndToneReceiver"></receiver>
         <receiver android:name="AlarmHaltReceiver"></receiver>
         <receiver android:name="AlarmCallbackReceiver"></receiver>
 
-        
     </application>
 </manifest>

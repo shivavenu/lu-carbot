@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import edu.lehigh.cse.paclab.carbot.support.Carbot;
 
 /**
  * This is the new framework for Carbot. Eventually we will deprecate and then remove everything else.
@@ -43,9 +42,5 @@ public class CarbotBeta extends Activity
             startActivity(new Intent(this, DrawActivity.class));
         if (v == findViewById(R.id.btnTalking))
             startActivity(new Intent(this, Chatterbox.class));
-
-        // TODO: this last one is deprecated
-        if (v == findViewById(R.id.btnCarbotLegacy))
-            startActivity(new Intent(this, Carbot.class));
     }
 }
