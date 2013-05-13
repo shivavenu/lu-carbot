@@ -41,6 +41,8 @@ public class CarbotBeta extends Activity
             startActivity(new Intent(this, Configure.class));
         if (v == findViewById(R.id.btnDraw))
             startActivity(new Intent(this, DrawActivity.class));
+        if (v == findViewById(R.id.btnTalking))
+            startActivity(new Intent(this, Chatterbox.class));
 
         // TODO: this last one is deprecated
         if (v == findViewById(R.id.btnCarbotLegacy))
