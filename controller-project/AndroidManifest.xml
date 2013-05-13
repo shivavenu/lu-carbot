@@ -38,6 +38,7 @@
         <activity android:name="RCReceiverActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="Configure" android:screenOrientation="portrait"></activity>
         <activity android:name="DrawActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="Chatterbox" android:screenOrientation="portrait"></activity>
                 
         <activity android:name=".support.Carbot" android:screenOrientation="portrait"></activity>
      	<activity android:name=".support.LearnColor" android:screenOrientation="landscape"></activity>
