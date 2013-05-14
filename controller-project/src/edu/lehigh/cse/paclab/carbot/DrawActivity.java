@@ -64,7 +64,8 @@ public class DrawActivity extends BasicBotActivityBeta
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
         int height = display.getHeight();
-        if (width > 700 || height > 900)
+        //if (width > 799 || height > 1100)
+        if (width > 799 && height > 1100)
             setContentView(R.layout.drawtocontrolbot_tablet);
         else
             setContentView(R.layout.drawtocontrolbot);
