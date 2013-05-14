@@ -127,7 +127,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void setAlarm(Context c)
     {
-        Intent intent = new Intent(this, AlarmEndToneReceiver.class);
+        Intent intent = new Intent(c, AlarmEndToneReceiver.class);
 
         // remember to delete the older alarm before creating the new one
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
