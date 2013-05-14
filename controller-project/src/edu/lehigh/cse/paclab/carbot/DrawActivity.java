@@ -14,7 +14,8 @@ import android.view.View;
  */
 public class DrawActivity extends BasicBotActivityBeta
 {
-    /**
+
+	/**
      * A reference to the view we use to get user input... it also stores the array of points, which is bad engineering
      * but will do for now...
      */
@@ -133,6 +134,8 @@ public class DrawActivity extends BasicBotActivityBeta
                 // rotation is too quick, we'll not
                 // have shut off the signal yet. Our solution is to add a full rotation in that situation. It's gross,
                 // but it should work.
+                
+                
                 if (time_to_rotate < DTMF_DELAY_TIME)
                     time_to_rotate += rotatemillis;
                 Log.v("ROTATION TIME", "" + time_to_rotate);
