@@ -4,13 +4,10 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,14 +16,7 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.os.PowerManager;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.Window;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Any activity that runs on a phone that is plugged into an Arduino will
@@ -40,35 +30,9 @@ import android.widget.Toast;
  * 
  */
 @SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
-public abstract class USBDemo extends Activity implements OnInitListener
+public abstract class USBDemo extends Activity 
 {
-    // constants for preference tags
-    final public static String PREF_TAG_NAME = "KB_CONFIG_NAME";
-    final public static String PREF_TAG_FAREWELL = "KB_CONFIG_FAREWELL";
-    final public static String PREF_TAG_METER = "KB_CONFIG_METER";
-    final public static String PREF_TAG_ROTATE = "KB_CONFIG_ROTATE";
-    final public static String PREF_TAG_CAMLAG = "KB_CONFIG_CAMLAG";
-    final public static String PREF_TAG_CAMSTART = "KB_CONFIG_CAMSTART";
-    final public static String PREF_TAG_CAMFACE = "KB_CONFIG_CAMFACE";
-
-    final public static String PREF_HUE_AVG = "PREF_HUE_AVG";
-    final public static String PREF_HUE_STD = "PREF_HUE_STD";
-    final public static String PREF_SAT_AVG = "PREF_SAT_AVG";
-    final public static String PREF_SAT_STD = "PREF_SAT_STD";
-    final public static String PREF_VAL_AVG = "PREF_VAL_AVG";
-    final public static String PREF_VAL_STD = "PREF_VAL_STD";
-
-    // intent constants
-    public static final int INTENT_SNAP_PHOTO = 943557;
-    final static private int INTENT_TURNITON = 7213;
-    final static private int INTENT_CONNECT = 59847;
-    public static final int INTENT_PHOTO_DONE = 66711324;
-
     public static final String TAG = "Carbot";
-
-    // nasty that we're hacking it like this, but it's OK for now since we have
-    // one menu for all activities.
-    protected boolean chatterboxOverride = false;
 
     // Following code block is setting up the android to arduino communication.
     private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
@@ -80,12 +44,7 @@ public abstract class USBDemo extends Activity implements OnInitListener
     FileInputStream mInputStream;
     FileOutputStream mOutputStream;
 
-    // this is how we interact with the Bluetooth device
-    private BluetoothAdapter btAdapter = null;
-
     private boolean isUSBReceiverRegistered = false;
-
-    PowerManager.WakeLock wl;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -109,42 +68,6 @@ public abstract class USBDemo extends Activity implements OnInitListener
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
             openAccessory(mAccessory);
         }
-
-        // jellybean edits for text-to-speech...
-        //
-        // Warning: this won't install a language pack if one isn't available,
-        // which means you might have really funky failures if you don't have
-        // languages installed. It's not a problem for Nexus7, so I'm leaving
-        // this for now
-        mTts = new TextToSpeech(this, this);
-        if (TextToSpeech.LANG_AVAILABLE == mTts.isLanguageAvailable(Locale.US)) {
-            mTts.setLanguage(Locale.US);
-        }
-        else {
-            Toast.makeText(this,
-                    "Unable to set a language pack for Text-To-Speech... Bad things are likely to happen from here.",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (btAdapter == null) {
-            Toast.makeText(this, "Error: no Bluetooth support", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        // grab a wake lock
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
-        wl.acquire();
-
-        // set up custom window title
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-    }
-
-    protected TextView tvStatus;
-
-    protected void initBTStatus()
-    {
     }
 
     /**
@@ -194,26 +117,8 @@ public abstract class USBDemo extends Activity implements OnInitListener
         if (isUSBReceiverRegistered)
             unregisterReceiver(mUsbReceiver);
 
-        // TTS
-        if (mTts != null) {
-            mTts.stop();
-            mTts.shutdown();
-        }
-
-
-        // give up the wakelock
-        wl.release();
-
         // finish the activity
         finish();
-    }
-
-    /**
-     * Required for TextToSpeech.OnInitListener
-     */
-    @Override
-    public void onInit(int status)
-    {
     }
 
     /**
@@ -254,29 +159,6 @@ public abstract class USBDemo extends Activity implements OnInitListener
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.i("CARBOT", "resultCode = " + resultCode);
-        switch (requestCode) {
-            case INTENT_TURNITON:
-                if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(this, "Bluetooth is still off", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                break;
-
-            case INTENT_CONNECT:
-                if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Connecting to " + data.getExtras().getString("MAC_ADDRESS"),
-                            Toast.LENGTH_SHORT).show();
-                    // Get the device MAC address
-                    String address = data.getExtras().getString("MAC_ADDRESS");
-                    // Get the BLuetoothDevice object
-                    BluetoothDevice device = btAdapter.getRemoteDevice(address);
-                    // Attempt to connect to the device
-                }
-        }
     }
 
     /**
@@ -382,50 +264,4 @@ public abstract class USBDemo extends Activity implements OnInitListener
         sendCommand((byte) 5);
     }
 
-    private TextToSpeech mTts;
-
-    public void Speak(String s)
-    {
-        mTts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
-    }
-
-
-    /** This runs when a menu item is clicked */
-    /**
-     * NOTE: OPENCV does not like this method, resolve later...
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-    	 	
-        /*switch (item.getItemId()) {
-            case R.id.menuBTDiscoverable:
-                setDiscoverable();
-                return true;
-            case R.id.menuBTFindDevice:
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(this, BTFindDeviceActivity.class);
-                startActivityForResult(serverIntent, INTENT_CONNECT);
-                return true;
-            case R.id.menuChatterboxOverride:
-                chatterboxOverride = !chatterboxOverride;
-                return true;
-        }*/
-        return false;
-    }
-
-    /** make Bluetooth discoverable for 300 seconds */
-    private void setDiscoverable()
-    {
-        if (btAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent i = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            i.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(i);
-        }
-    }
-
-    /** name of the remote device */
-    private String devName = null;
-
-    abstract protected void receiveMessage(byte[] readBuf, int bytes);
 }
