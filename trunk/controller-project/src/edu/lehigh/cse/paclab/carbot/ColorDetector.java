@@ -11,8 +11,6 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import android.util.Log;
-
 public class ColorDetector
 {
     // Lower and Upper bounds for range checking in HSV color space

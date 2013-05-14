@@ -7,10 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * This is the "robot" half of the remote-control station. We launch a wifi listener here, then take commands over wifi
@@ -41,41 +40,14 @@ public class RCReceiverActivity extends BasicBotActivityBeta
         cm.onCreateCamera(this);
         TextView tv = (TextView) findViewById(R.id.tvIP);
         tv.setText(getLocalIpAddress());
-    }
-
-    /**
-     * Mandatory method for setting up the menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.listen_connect, menu);
-        return true;
-    }
-
-    /**
-     * Dispatch method for dealing with menu events
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // we just dispatch to a helper method, so that this code stays readable
-        switch (item.getItemId()) {
-            case R.id.menu_listen:
-                // this is for listening for connections
+        tv.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View arg0)
+            {
                 startListening();
-                return true;
-            case R.id.menu_connect:
-                // not useful...
-                Toast.makeText(this, "You should run that on the remote control", Toast.LENGTH_LONG).show();
-                return true;
-            case R.id.menu_report:
-                // no longer useful since a TextView provides this information already
-                Toast.makeText(this, getLocalIpAddress(), Toast.LENGTH_LONG).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+        });
     }
 
     /**

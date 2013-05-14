@@ -14,8 +14,6 @@ import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,40 +57,6 @@ public class RCSenderActivity extends BasicBotActivityBeta
     }
 
     /**
-     * Mandatory method for setting up the menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.listen_connect, menu);
-        return true;
-    }
-
-    /**
-     * Dispatch method for dealing with menu events
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId()) {
-            case R.id.menu_listen:
-                // the 'listen' menu item does not apply to the sender code
-                shortbread("You should run that on the robot");
-                return true;
-            case R.id.menu_connect:
-                // the 'connect' menu item causes us to prompt for an IP and connect
-                initiateConnection();
-                return true;
-            case R.id.menu_report:
-                // the 'report' menu item reports our IP address
-                longbread(getLocalIpAddress());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
      * Whenever one of the buttons is pressed, we send the appropriate request over the network by putting a string in
      * the queue that the network thread is blocked on
      * 
@@ -118,6 +82,8 @@ public class RCSenderActivity extends BasicBotActivityBeta
                 queue.put("STOP");
             if (v == findViewById(R.id.cmdSNAP))
                 queue.put("SNAP");
+            if (v == findViewById(R.id.cmdCNCT))
+                initiateConnection();
         }
         catch (InterruptedException ie) {
             // swallow the exception for now...
@@ -167,6 +133,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
     {
         // [mfs] TODO: make this an asynctask?
         // Be sure to run this on the main thread, not on the server thread
+        // [mfs] Actually, running on main thread is not allowed in ICS and JB...
         myHandler.post(new Runnable()
         {
             @Override
@@ -193,6 +160,8 @@ public class RCSenderActivity extends BasicBotActivityBeta
      */
     private void initiateConnection()
     {
+        if (connected)
+            return;
         // create a dialog consisting of an EditText and two buttons
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Connect to Server");
