@@ -126,6 +126,12 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
     {
     }
 
+    /**
+     * Wrapper for calling point turn left only if we haven't issued a DTMF command in 200 ms
+     * 
+     * @param y
+     *            the y coordinate that triggered this call
+     */
     void PTL(int y)
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
@@ -134,6 +140,12 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
         lastEventTime = System.currentTimeMillis();
     }
 
+    /**
+     * Wrapper for calling forward only if we haven't issued a DTMF command in 200 ms
+     * 
+     * @param y
+     *            the y coordinate that triggered this call
+     */
     void FWD(int y)
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
@@ -142,6 +154,12 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
         lastEventTime = System.currentTimeMillis();
     }
 
+    /**
+     * Wrapper for calling point turn right only if we haven't issued a DTMF command in 200 ms
+     * 
+     * @param y
+     *            the y coordinate that triggered this call
+     */
     void PTR(int y)
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
@@ -150,6 +168,12 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
         lastEventTime = System.currentTimeMillis();
     }
 
+    /**
+     * Wrapper for calling rotate only if we haven't issued a DTMF command in 200 ms
+     * 
+     * @param y
+     *            the y coordinate that triggered this call
+     */
     void CW()
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
@@ -159,7 +183,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
     }
 
     /**
-     * This is a gross hack for ColorDetectionActivity
+     * Track time of last event, so that we can tell if it's OK to issue a new DTMF command yet.
      */
     public static long lastEventTime = 0;
 }
