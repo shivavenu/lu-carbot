@@ -85,7 +85,6 @@ public abstract class CameraViewBase extends SurfaceView implements SurfaceHolde
 
     public void releaseCamera()
     {
-        // TODO Auto-generated method stub
         Log.i(TAG, "Releasing Camera");
         mThreadRun = false;
         synchronized (this) {

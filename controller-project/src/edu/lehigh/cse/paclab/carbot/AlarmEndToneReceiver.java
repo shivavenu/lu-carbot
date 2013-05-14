@@ -17,9 +17,8 @@ public class AlarmEndToneReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Log.i("TestReceiver", "intent=" + intent);
+        Log.i("AlarmEndToneReceiver", "intent=" + intent);
         BasicBotActivityBeta._toneGenerator.stopTone();
-        BasicBotActivityBeta.isEmitting = false;
     }
 
 }

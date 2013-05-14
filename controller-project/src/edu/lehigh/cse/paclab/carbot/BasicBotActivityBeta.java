@@ -25,6 +25,7 @@ import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 /**
@@ -73,8 +74,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     TextToSpeech                       tts;
 
-    public static boolean isEmitting = false;
-    
     /**
      * Program-wide configuration goes here
      */
@@ -87,6 +86,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         // configure tts and preferences
         tts = new TextToSpeech(this, this);
         prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+        // grab a pseudo-wakelock
+        getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     /**
@@ -124,17 +125,15 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     /**
      * Set an alarm, so that we can know when it's time to stop DTMF
      */
-    public void setAlarm()
+    public void setAlarm(Context c)
     {
-        Context context = this;
-        Intent intent = new Intent(context, AlarmEndToneReceiver.class);
+        Intent intent = new Intent(this, AlarmEndToneReceiver.class);
 
         // remember to delete the older alarm before creating the new one
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
                 intent, 0); // pending intent flags
 
-       
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DTMF_DELAY_TIME, pi);
     }
 
@@ -143,11 +142,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotForward()
     {
-    	if (!isEmitting){
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_1);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_1);
+        setAlarm(this);
     }
 
     /**
@@ -155,11 +151,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotReverse()
     {
-    	if (!isEmitting) {
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_2);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_2);
+        setAlarm(this);
     }
 
     /**
@@ -167,11 +160,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotCounterClockwise()
     {
-    	if (!isEmitting) {
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_3);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_3);
+        setAlarm(this);
     }
 
     /**
@@ -179,11 +169,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotClockwise()
     {
-    	if (!isEmitting) {
-        	isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_4);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_4);
+        setAlarm(this);
     }
 
     /**
@@ -191,11 +178,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotPointTurnLeft()
     {
-    	if (!isEmitting) {
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_5);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_5);
+        setAlarm(this);
     }
 
     /**
@@ -203,11 +187,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotPointTurnRight()
     {
-    	if (!isEmitting) {
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_6);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_6);
+        setAlarm(this);
     }
 
     /**
@@ -215,11 +196,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     public void robotStop()
     {
-    	if (!isEmitting) {
-    		isEmitting = true;
-    		_toneGenerator.startTone(TONE_DTMF_D);
-    		setAlarm();
-    	}
+        _toneGenerator.startTone(TONE_DTMF_D);
+        setAlarm(this);
     }
 
     /**
