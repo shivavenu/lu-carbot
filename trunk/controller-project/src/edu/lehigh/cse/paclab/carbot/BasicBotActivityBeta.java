@@ -1,28 +1,29 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import static android.media.ToneGenerator.TONE_DTMF_1;
-import static android.media.ToneGenerator.TONE_DTMF_2;
-import static android.media.ToneGenerator.TONE_DTMF_3;
-import static android.media.ToneGenerator.TONE_DTMF_4;
-import static android.media.ToneGenerator.TONE_DTMF_5;
-import static android.media.ToneGenerator.TONE_DTMF_6;
-import static android.media.ToneGenerator.TONE_DTMF_D;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager.LayoutParams;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 /**
  * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
  */
+@SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
 public abstract class BasicBotActivityBeta extends Activity implements TextToSpeech.OnInitListener
 {
     // constants for preference tags
@@ -39,10 +41,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     final public static String         PREFS_DIST      = "CARBOT_DIST";
     final public static String         PREFS_ROT       = "CARBOT_ROT";
 
-    /**
-     * This constant describes how long a DTMF tone must play before our system catches the sound
-     */
-    final public static int            DTMF_DELAY_TIME = 75;
 
     /**
      * Indicate the port this app uses for sending control signals between a client and server
@@ -53,11 +51,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      * Tag for Android debugging...
      */
     public static final String         TAG             = "Carbot Beta";
-
-    /**
-     * The object used to create DTMF tones
-     */
-    public static final ToneGenerator  _toneGenerator  = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
 
     /**
      * For accessing the preferences storage of the activity
@@ -74,6 +67,223 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     TextToSpeech                       tts;
 
+    
+    protected static final int DTMF_DELAY_TIME = 1;
+    
+    
+    
+    
+    
+    
+    
+ // Following code block is setting up the android to arduino communication.
+    private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
+    private UsbManager mUsbManager;
+    private PendingIntent mPermissionIntent;
+    private boolean mPermissionRequestPending;
+    UsbAccessory mAccessory;
+    ParcelFileDescriptor mFileDescriptor;
+    FileInputStream mInputStream;
+    FileOutputStream mOutputStream;
+    
+    private boolean isUSBReceiverRegistered = false;
+    
+    /**
+     * BroadcastReceiver is the object responsible for establishing
+     * communication with any sort of entity sending information to the
+     * application, in this case, the application is receiving information from
+     * an arduino. The BroadcastReceiver sees if the entity sending information
+     * is a supported usb accessory, in which case opens full communication with
+     * the device beyond the handshake which is initiated upon application
+     * launch.
+     */
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        openAccessory(accessory);
+                    }
+                    else {
+                        Log.d(TAG, "permission denied for accessory " + accessory);
+                    }
+                    mPermissionRequestPending = false;
+                }
+            }
+            else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+                UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                if (accessory != null && accessory.equals(mAccessory)) {
+                    closeAccessory();
+                }
+            }
+        }
+    };
+    /**
+     * If the application has stopped and then has resumed, the application will
+     * check to see if the input and output stream of data is still active then
+     * checks to see if an accessory is present, if so, opens communication; if
+     * not, the application will request permission for communication.
+     */
+    @Override
+	protected void onResume()
+    {
+        super.onResume();
+
+        if (mInputStream != null && mOutputStream != null) {
+            return;
+        }
+
+        UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+        UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+        if (accessory != null) {
+            if (mUsbManager.hasPermission(accessory)) {
+                openAccessory(accessory);
+            }
+            else {
+                synchronized (mUsbReceiver) {
+                    if (!mPermissionRequestPending) {
+                        mUsbManager.requestPermission(accessory, mPermissionIntent);
+                        mPermissionRequestPending = true;
+                    }
+                }
+            }
+        }
+        else {
+            Log.d(TAG, "mAccessory is null");
+        }
+    }
+   
+
+    /**
+     * More watchdogs...
+     */
+    @Override
+    public void onBackPressed()
+    {
+        // Arduino
+        closeAccessory();
+        if (isUSBReceiverRegistered)
+            unregisterReceiver(mUsbReceiver);
+
+        // finish the activity
+        finish();
+    }
+    
+    /**
+     * In the event of the application being terminated or paused closeAccessory
+     * is called to end the data input stream.
+     */
+    protected void closeAccessory()
+    {
+        try {
+            if (mFileDescriptor != null) {
+                mFileDescriptor.close();
+            }
+        }
+        catch (IOException e) {
+        }
+        finally {
+            mFileDescriptor = null;
+            mAccessory = null;
+        }
+    }
+
+    /**
+     * Called upon the construction of the BroadcastReceiver assuming the
+     * BroadcastReceiver has found an accessory to interact with. openAccessory
+     * is also called in the onResume method. Opens up a data output and input
+     * stream for communication with an accessory.
+     * 
+     * @param accessory
+     */
+    protected void openAccessory(UsbAccessory accessory)
+    {
+        mFileDescriptor = mUsbManager.openAccessory(accessory);
+        if (mFileDescriptor != null) {
+            mAccessory = accessory;
+            FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+            mInputStream = new FileInputStream(fd);
+            mOutputStream = new FileOutputStream(fd);
+        }
+        else {
+            Log.d(TAG, "accessory open fail");
+        }
+    }
+
+    /**
+     * Called anytime information is to be sent out from the application over
+     * the output stream. An array of bytes is created with the first value
+     * holding the "address" of the hardware being communicated with. In this
+     * case, 1 means the forward, 2 means reverse, etc. In our system, arduino
+     * handles the task to be carried out by the hardware, so, arduino only
+     * needs to know whether or not to carry out a particular action indicated
+     * by the action reference number.
+     * 
+     * @param target
+     */
+    public void sendCommand(byte target)
+    {
+        byte[] buffer = new byte[1];
+        buffer[0] = target;
+
+        Log.e(TAG, "Message sent" + buffer[0]);
+        if (mOutputStream != null) {
+            try {
+                mOutputStream.write(buffer);
+            }
+            catch (IOException e) {
+                Log.e(TAG, "write failed", e);
+            }
+        }
+    }
+    public void robotStop()
+    {
+        sendCommand((byte) 0);
+    }
+
+    public void robotForward()
+    {
+        sendCommand((byte) 1);
+    }
+
+    public void robotReverse()
+    {
+        sendCommand((byte) 2);
+    }
+
+    public void robotClockwise()
+    {
+        sendCommand((byte) 3);
+    }
+
+    public void robotCounterClockwise()
+    {
+        sendCommand((byte) 4);
+    }
+
+    public void robotPointTurnRight()
+    {
+        sendCommand((byte) 6);
+    }
+
+    public void robotPointTurnLeft()
+    {
+        sendCommand((byte) 5);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Program-wide configuration goes here
      */
@@ -88,6 +298,26 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
         // grab a pseudo-wakelock
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+        
+        
+     // Arduino Support
+
+        // Looks for input
+        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        // Creates new IntentFilter to indicate future communication with a
+        // particular entity
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+        registerReceiver(mUsbReceiver, filter);
+        isUSBReceiverRegistered = true;
+
+        if (getLastNonConfigurationInstance() != null) {
+            mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
+            openAccessory(mAccessory);
+        }
+        
     }
 
     /**
@@ -121,84 +351,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         }
 
     }
-
-    /**
-     * Set an alarm, so that we can know when it's time to stop DTMF
-     */
-    public void setAlarm(Context c)
-    {
-        Intent intent = new Intent(c, AlarmEndToneReceiver.class);
-
-        // remember to delete the older alarm before creating the new one
-        PendingIntent pi = PendingIntent.getBroadcast(this, 1, // the request id, used for disambiguating this intent
-                intent, 0); // pending intent flags
-
-        AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DTMF_DELAY_TIME, pi);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "go forward"
-     */
-    public void robotForward()
-    {
-        _toneGenerator.startTone(TONE_DTMF_1);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "go backward"
-     */
-    public void robotReverse()
-    {
-        _toneGenerator.startTone(TONE_DTMF_2);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "rotate counterclockwise"
-     */
-    public void robotCounterClockwise()
-    {
-        _toneGenerator.startTone(TONE_DTMF_3);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "rotate clockwise"
-     */
-    public void robotClockwise()
-    {
-        _toneGenerator.startTone(TONE_DTMF_4);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "point turn left"
-     */
-    public void robotPointTurnLeft()
-    {
-        _toneGenerator.startTone(TONE_DTMF_5);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "point turn right"
-     */
-    public void robotPointTurnRight()
-    {
-        _toneGenerator.startTone(TONE_DTMF_6);
-        setAlarm(this);
-    }
-
-    /**
-     * Send a DTMF pulse that the robot understands as "stop"
-     */
-    public void robotStop()
-    {
-        _toneGenerator.startTone(TONE_DTMF_D);
-        setAlarm(this);
-    }
+ 
 
     /**
      * Simple mechanism for using text-to-speech
