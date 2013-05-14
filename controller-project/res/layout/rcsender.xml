@@ -3,88 +3,93 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-<TableLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/cmdPTL"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/turnleft" />
+
+            <ImageView
+                android:id="@+id/cmdFWD"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/up" />
+
+            <ImageView
+                android:id="@+id/cmdPTR"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/turnright" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/cmdCCW"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/rotneg" />
+
+            <ImageView
+                android:id="@+id/cmdSTOP"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/stop" />
+
+            <ImageView
+                android:id="@+id/cmdCW"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/rotpos" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/cmdSNAP"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@android:drawable/ic_menu_camera" />
+
+            <ImageView
+                android:id="@+id/cmdREV"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@drawable/down" />
+
+            <ImageView
+                android:id="@+id/cmdCNCT"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClickImage"
+                android:src="@android:drawable/ic_menu_compass" />
+        </TableRow>
 
         <ImageView
-            android:id="@+id/cmdPTL"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/turnleft" />
-
-        <ImageView
-            android:id="@+id/cmdFWD"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/up" />
-
-        <ImageView
-            android:id="@+id/cmdPTR"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/turnright" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <ImageView
-            android:id="@+id/cmdCCW"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/rotneg" />
-
-        <ImageView
-            android:id="@+id/cmdSTOP"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/stop" />
-
-        <ImageView
-            android:id="@+id/cmdCW"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/rotpos" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <ImageView
-            android:id="@+id/cmdSNAP"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@android:drawable/ic_menu_camera" />
-
-        <ImageView
-            android:id="@+id/cmdREV"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="onClickImage"
-            android:src="@drawable/down" />
-    </TableRow>
-
-    <ImageView
-        android:id="@+id/ivSHOW"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_launcher" />
-    
-</TableLayout>
+            android:id="@+id/ivSHOW"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_launcher" />
+    </TableLayout>
 
 </RelativeLayout>
-
