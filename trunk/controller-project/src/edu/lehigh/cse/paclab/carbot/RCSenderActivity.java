@@ -131,27 +131,26 @@ public class RCSenderActivity extends BasicBotActivityBeta
      */
     void displayIt(final Socket socket)
     {
-        // [mfs] TODO: make this an asynctask?
-        // Be sure to run this on the main thread, not on the server thread
-        // [mfs] Actually, running on main thread is not allowed in ICS and JB...
-        myHandler.post(new Runnable()
-        {
-            @Override
-            public void run()
+        try {
+            // read the data, turn it into a bitmap, and display it
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            int len = dis.readInt();
+            final byte[] jpeg = new byte[len];
+            dis.readFully(jpeg);
+            // [mfs] TODO: make this an asynctask?
+            // Be sure to run GUI updates on the main thread, not on the server thread
+            myHandler.post(new Runnable()
             {
-                try {
-                    // read the data, turn it into a bitmap, and display it
-                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                    int len = dis.readInt();
-                    byte[] jpeg = new byte[len];
-                    dis.readFully(jpeg);
+                @Override
+                public void run()
+                {
                     myIV.setImageBitmap(BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length));
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+            });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
