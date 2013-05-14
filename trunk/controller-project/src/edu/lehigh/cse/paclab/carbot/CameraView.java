@@ -61,7 +61,6 @@ public class CameraView extends CameraViewBase implements OnTouchListener
     @Override
     protected void onPreviewStopped()
     {
-
         if (mBitmap != null) {
             mBitmap.recycle();
             mBitmap = null;
@@ -77,7 +76,6 @@ public class CameraView extends CameraViewBase implements OnTouchListener
         mYuv = null;
         mRgba = null;
         mIntermediateMat = null;
-
     }
 
     @Override
@@ -126,6 +124,8 @@ public class CameraView extends CameraViewBase implements OnTouchListener
     @Override
     public boolean onTouch(View v, MotionEvent event)
     {
+        ColorDetectionActivity.lastEventTime = System.currentTimeMillis();
+
         int cols = mRgba.cols();
         int rows = mRgba.rows();
 
@@ -170,6 +170,7 @@ public class CameraView extends CameraViewBase implements OnTouchListener
         Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
+
 
         return false; // don't need subsequent touch events
     }

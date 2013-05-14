@@ -13,28 +13,19 @@ import org.opencv.imgproc.Imgproc;
 
 import android.util.Log;
 
-/**
- * TODO
- * Make it stop crashing when I switch between activities, I think it may have to do with extending BasicBotActivityBeta
- * 			Maybe make all the commands in BBAB public static methods?
- * @author ArmonShariati
- *
- */
-public class ColorDetector extends BasicBotActivityBeta
+public class ColorDetector
 {
     // Lower and Upper bounds for range checking in HSV color space
     private Scalar           mLowerBound     = new Scalar(0);
     private Scalar           mUpperBound     = new Scalar(0);
-    
+
     // Minimum contour area in percent for contours filtering
     private static double    mMinContourArea = 0.1;
-    
+
     // Color radius for range checking in HSV color space
     private Scalar           mColorRadius    = new Scalar(25, 50, 50, 0);
     private Mat              mSpectrum       = new Mat();
     private List<MatOfPoint> mContours       = new ArrayList<MatOfPoint>();
-    
-    private static final String TAG = "ColorDetector";
 
     public void setColorRadius(Scalar radius)
     {
@@ -82,8 +73,8 @@ public class ColorDetector extends BasicBotActivityBeta
     public void process(Mat rgbaImage)
     {
         Mat pyrDownMat = new Mat();
-        
-        //Uses a Gaussian Kernel to smooth the image
+
+        // Uses a Gaussian Kernel to smooth the image
         Imgproc.pyrDown(rgbaImage, pyrDownMat);
         Imgproc.pyrDown(pyrDownMat, pyrDownMat);
 
@@ -91,16 +82,16 @@ public class ColorDetector extends BasicBotActivityBeta
         Imgproc.cvtColor(pyrDownMat, hsvMat, Imgproc.COLOR_RGB2HSV_FULL);
 
         Mat Mask = new Mat();
-        //Creates the binary image of the  thresholded image
+        // Creates the binary image of the thresholded image
         Core.inRange(hsvMat, mLowerBound, mUpperBound, Mask);
         Mat dilatedMask = new Mat();
         Imgproc.dilate(Mask, dilatedMask, new Mat());
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
-        
+
         Imgproc.findContours(dilatedMask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        
+
         // Find max contour area
         double maxArea = 0;
         int indexOfLargestContour = 0;
@@ -115,60 +106,43 @@ public class ColorDetector extends BasicBotActivityBeta
             }
             i++;
         }
-        
-        
+
         // Filter contours by area and resize to fit the original image size
-        /*mContours.clear();
-        each = contours.iterator();
-        while (each.hasNext()) {
-            MatOfPoint contour = each.next();
-            if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
-                Core.multiply(contour, new Scalar(4, 4), contour);
-                mContours.add(contour);
-            }
-        }*/
-        
-        //Filter the main contour by area and resize to fit the original image
+        /*
+         * mContours.clear(); each = contours.iterator(); while (each.hasNext()) { MatOfPoint contour = each.next(); if
+         * (Imgproc.contourArea(contour) > mMinContourArea * maxArea) { Core.multiply(contour, new Scalar(4, 4),
+         * contour); mContours.add(contour); } }
+         */
+
+        // Filter the main contour by area and resize to fit the original image
         mContours.clear();
-        if(!contours.isEmpty()) {
-        	MatOfPoint contour = contours.get(indexOfLargestContour);
-        	if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
+        if (!contours.isEmpty()) {
+            MatOfPoint contour = contours.get(indexOfLargestContour);
+            if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
                 Core.multiply(contour, new Scalar(4, 4), contour);
                 mContours.add(contour);
                 int x = Imgproc.boundingRect(contour).x;
                 int y = Imgproc.boundingRect(contour).y;
-                
+
                 if (y > 300) {
-                	robotPointTurnLeft();
-                	Log.e(TAG, "Left" + y);
+                    ColorDetectionActivity.self.PTL(y);
                 }
                 else if (300 > y && y > 100) {
-                	robotForward();
-                	Log.e(TAG, "Straight" + y);
+                    ColorDetectionActivity.self.FWD(y);
                 }
                 else if (100 > y) {
-                	robotPointTurnRight();
-                	Log.e(TAG, "Right" + y);
+                    ColorDetectionActivity.self.PTR(y);
                 }
             }
         }
         else {
-        	Log.e(TAG, "No contours found, rotate clockwise");
-        	robotClockwise();
+            ColorDetectionActivity.self.CW();
         }
-        
+
     }
 
     public List<MatOfPoint> getContours()
     {
         return mContours;
     }
-
-	@Override
-	public void callback() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 }

@@ -1,11 +1,8 @@
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.util.Log;
 import android.view.View;
 
 /**
@@ -16,22 +13,15 @@ public class CarbotBeta extends Activity
     /**
      * The main activity is just a menu, so we don't have much to do here... just call super and then draw the screen
      */
-	PowerManager.WakeLock wl;
-	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-    	wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-    	wl.acquire();
-    	Log.e("Carbot", "wakelock acquired");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carbot_beta);
     }
-    
-    public void onPause(Bundle savedInstanceState){
-    	Log.e("Carbot", "wakelock released");
-    	wl.release();
+
+    public void onPause(Bundle savedInstanceState)
+    {
     }
 
     /**
