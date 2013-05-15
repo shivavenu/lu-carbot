@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Whenever we play a DTMF sound, we are responsible for shutting it off at some point. The way we do this is by setting
- * an alarm that is caught by this receiver, which then stops the DTMF tone generator.
+ * This alarm causes us to issue a 'halt' command.
+ * 
+ * TODO: We should roll this into the callback mechanism, and be done with multiple AlarmReceiver objects.
  */
 public class AlarmHaltReceiver extends BroadcastReceiver
 {

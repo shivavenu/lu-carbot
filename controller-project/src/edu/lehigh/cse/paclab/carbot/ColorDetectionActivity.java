@@ -10,8 +10,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 
+/**
+ * This code suffers from a few bugs right now.
+ * 
+ * TODO: We observed some ForceClose issues earlier, related to a null pointer exception. It is not clear that this is
+ * resolved... I think we were just getting lucky
+ * 
+ * TODO: The logic for steering the robot is not quite right. The robot never turns to the left, and it favors moving
+ * forward over keeping its target centered on the screen, which leads to lots of drift.
+ * 
+ * TODO: The USBManager interface created some hassle, due to bad interactions with the NativeCamera. Often, one would
+ * (1) start the activity, (2) connect usbmanager, (3) see that the camera was frozen, (4) hit back, (5) restart the
+ * activity, and then it would magically work. We can surely do better.
+ */
 public class ColorDetectionActivity extends BasicBotActivityBeta
 {
+    /**
+     * TODO: standardize debug tags... not sure we even need this one
+     */
     private static final String   TAG             = "ColorDetectionActivity";
 
     private CameraView            mView;
@@ -23,6 +39,9 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * initialization. That means that it uses the OpenCV manager (as separate app) to access OpenCV libraries
      * externally installed in the target system. I am not sure if we want to do static initialization or not, but
      * OpenCV recommended this route so I just went with it.
+     * 
+     * TODO: if we could change how we start the native camera relative to how we start USBManager, we might be able to
+     * call a method to configure this, in which case the code wouldn't have such horrible indentation
      */
     private BaseLoaderCallback    mOpenCVCallBack = new BaseLoaderCallback(this)
                                                   {
@@ -47,7 +66,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
                                                                       ad.setCancelable(false); // This blocks the 'BACK'
                                                                                                // button
                                                                       ad.setMessage("Fatal error: can't open camera!");
-                                                                      // [mfs] Should this be setPositiveButton? See
+                                                                      // TODO: Should this be setPositiveButton? See
                                                                       // RCSender...
                                                                       ad.setButton("OK",
                                                                               new DialogInterface.OnClickListener()
@@ -89,7 +108,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
             AlertDialog ad = new AlertDialog.Builder(this).create();
             ad.setCancelable(false); // This blocks the 'BACK' button
             ad.setMessage("Fatal error: can't open camera!");
-            // [mfs] Should this be setPositiveButton? See RCSender...
+            // TODO: Should this be setPositiveButton? See RCSender...
             ad.setButton("OK", new DialogInterface.OnClickListener()
             {
                 public void onClick(DialogInterface dialog, int which)
@@ -105,16 +124,8 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
-
         self = this;
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // RelativeLayout layout = new RelativeLayout(this);
-        // CameraView camera = new CameraView(this);
-
-        // layout.addView(camera);
-
         Log.i(TAG, "Trying to load OpenCV library");
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack)) {
             Log.e(TAG, "Cannot connect to OpenCV Manager");
@@ -128,6 +139,8 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
 
     /**
      * Wrapper for calling point turn left only if we haven't issued a DTMF command in 200 ms
+     * 
+     * [TODO] This and subsequent wrappers can be removed now that we aren't doing DTMF anymore...
      * 
      * @param y
      *            the y coordinate that triggered this call
@@ -179,6 +192,20 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
         if (lastEventTime > (System.currentTimeMillis() - 200))
             return;
         robotClockwise();
+        lastEventTime = System.currentTimeMillis();
+    }
+
+    /**
+     * Wrapper for calling stop only if we haven't issued a DTMF command in 200 ms
+     * 
+     * @param y
+     *            the y coordinate that triggered this call
+     */
+    void HLT(int y)
+    {
+        if (lastEventTime > (System.currentTimeMillis() - 200))
+            return;
+        robotStop();
         lastEventTime = System.currentTimeMillis();
     }
 
