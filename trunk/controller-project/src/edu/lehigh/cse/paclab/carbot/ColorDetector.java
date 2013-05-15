@@ -139,6 +139,9 @@ public class ColorDetector
 
     }
 
+    /**
+     * TODO: do we really need getters and setters here, or could we just make the fields more visible?
+     */
     public List<MatOfPoint> getContours()
     {
         return mContours;

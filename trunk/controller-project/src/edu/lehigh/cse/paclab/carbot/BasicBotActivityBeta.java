@@ -1,6 +1,5 @@
 package edu.lehigh.cse.paclab.carbot;
 
-
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,9 +10,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,25 +29,24 @@ import android.widget.Toast;
 /**
  * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
  */
-@SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
+// @SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
 public abstract class BasicBotActivityBeta extends Activity implements TextToSpeech.OnInitListener
 {
     // constants for preference tags
-    final public static String         PREFS_NAME      = "CARBOT_NAME";
-    final public static String         PREFS_BYE       = "CARBOT_BYE";
-    final public static String         PREFS_DIST      = "CARBOT_DIST";
-    final public static String         PREFS_ROT       = "CARBOT_ROT";
-
+    final public static String         PREFS_NAME              = "CARBOT_NAME";
+    final public static String         PREFS_BYE               = "CARBOT_BYE";
+    final public static String         PREFS_DIST              = "CARBOT_DIST";
+    final public static String         PREFS_ROT               = "CARBOT_ROT";
 
     /**
      * Indicate the port this app uses for sending control signals between a client and server
      */
-    public static final int            WIFICONTROLPORT = 9599;
+    public static final int            WIFICONTROLPORT         = 9599;
 
     /**
      * Tag for Android debugging...
      */
-    public static final String         TAG             = "Carbot Beta";
+    public static final String         TAG                     = "Carbot Beta";
 
     /**
      * For accessing the preferences storage of the activity
@@ -67,70 +63,72 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     TextToSpeech                       tts;
 
-    
-    protected static final int DTMF_DELAY_TIME = 1;
-    
-    
-    
-    
-    
-    
-    
- // Following code block is setting up the android to arduino communication.
-    private static final String ACTION_USB_PERMISSION = "com.google.android.Demokit.action.USB_PERMISSION";
-    private UsbManager mUsbManager;
-    private PendingIntent mPermissionIntent;
-    private boolean mPermissionRequestPending;
-    UsbAccessory mAccessory;
-    ParcelFileDescriptor mFileDescriptor;
-    FileInputStream mInputStream;
-    FileOutputStream mOutputStream;
-    
-    private boolean isUSBReceiverRegistered = false;
-    
     /**
-     * BroadcastReceiver is the object responsible for establishing
-     * communication with any sort of entity sending information to the
-     * application, in this case, the application is receiving information from
-     * an arduino. The BroadcastReceiver sees if the entity sending information
-     * is a supported usb accessory, in which case opens full communication with
-     * the device beyond the handshake which is initiated upon application
-     * launch.
+     * Deprecated, and needs to be removed...
      */
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        openAccessory(accessory);
-                    }
-                    else {
-                        Log.d(TAG, "permission denied for accessory " + accessory);
-                    }
-                    mPermissionRequestPending = false;
-                }
-            }
-            else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-                UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                if (accessory != null && accessory.equals(mAccessory)) {
-                    closeAccessory();
-                }
-            }
-        }
-    };
+    protected static final int         DTMF_DELAY_TIME         = 1;
+
+    // The following code block is setting up the android to arduino communication.
+    private static final String        ACTION_USB_PERMISSION   = "com.google.android.Demokit.action.USB_PERMISSION";
+    private UsbManager                 mUsbManager;
+    private PendingIntent              mPermissionIntent;
+    private boolean                    mPermissionRequestPending;
+    UsbAccessory                       mAccessory;
+    ParcelFileDescriptor               mFileDescriptor;
+    FileInputStream                    mInputStream;
+    FileOutputStream                   mOutputStream;
+
+    private boolean                    isUSBReceiverRegistered = false;
+
     /**
-     * If the application has stopped and then has resumed, the application will
-     * check to see if the input and output stream of data is still active then
-     * checks to see if an accessory is present, if so, opens communication; if
-     * not, the application will request permission for communication.
+     * BroadcastReceiver is the object responsible for establishing communication with any sort of entity sending
+     * information to the application, in this case, the application is receiving information from an arduino. The
+     * BroadcastReceiver sees if the entity sending information is a supported usb accessory, in which case opens full
+     * communication with the device beyond the handshake which is initiated upon application launch.
+     */
+    private final BroadcastReceiver    mUsbReceiver            = new BroadcastReceiver()
+                                                               {
+                                                                   @Override
+                                                                   public void onReceive(Context context, Intent intent)
+                                                                   {
+                                                                       String action = intent.getAction();
+                                                                       if (ACTION_USB_PERMISSION.equals(action)) {
+                                                                           synchronized (this) {
+                                                                               UsbAccessory accessory = (UsbAccessory) intent
+                                                                                       .getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                                                                               if (intent
+                                                                                       .getBooleanExtra(
+                                                                                               UsbManager.EXTRA_PERMISSION_GRANTED,
+                                                                                               false)) {
+                                                                                   openAccessory(accessory);
+                                                                               }
+                                                                               else {
+                                                                                   Log.d(TAG,
+                                                                                           "permission denied for accessory "
+                                                                                                   + accessory);
+                                                                               }
+                                                                               mPermissionRequestPending = false;
+                                                                           }
+                                                                       }
+                                                                       else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED
+                                                                               .equals(action)) {
+                                                                           UsbAccessory accessory = (UsbAccessory) intent
+                                                                                   .getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                                                                           if (accessory != null
+                                                                                   && accessory.equals(mAccessory)) {
+                                                                               closeAccessory();
+                                                                           }
+                                                                       }
+                                                                   }
+                                                               };
+
+    /**
+     * If the application has stopped and then has resumed, the application will check to see if the input and output
+     * stream of data is still active then checks to see if an accessory is present, if so, opens communication; if not,
+     * the application will request permission for communication.
      */
     @Override
-	protected void onResume()
+    protected void onResume()
     {
         super.onResume();
 
@@ -157,7 +155,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
             Log.d(TAG, "mAccessory is null");
         }
     }
-   
 
     /**
      * More watchdogs...
@@ -173,10 +170,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         // finish the activity
         finish();
     }
-    
+
     /**
-     * In the event of the application being terminated or paused closeAccessory
-     * is called to end the data input stream.
+     * In the event of the application being terminated or paused closeAccessory is called to end the data input stream.
      */
     protected void closeAccessory()
     {
@@ -194,10 +190,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     }
 
     /**
-     * Called upon the construction of the BroadcastReceiver assuming the
-     * BroadcastReceiver has found an accessory to interact with. openAccessory
-     * is also called in the onResume method. Opens up a data output and input
-     * stream for communication with an accessory.
+     * Called upon the construction of the BroadcastReceiver assuming the BroadcastReceiver has found an accessory to
+     * interact with. openAccessory is also called in the onResume method. Opens up a data output and input stream for
+     * communication with an accessory.
      * 
      * @param accessory
      */
@@ -216,13 +211,11 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     }
 
     /**
-     * Called anytime information is to be sent out from the application over
-     * the output stream. An array of bytes is created with the first value
-     * holding the "address" of the hardware being communicated with. In this
-     * case, 1 means the forward, 2 means reverse, etc. In our system, arduino
-     * handles the task to be carried out by the hardware, so, arduino only
-     * needs to know whether or not to carry out a particular action indicated
-     * by the action reference number.
+     * Called anytime information is to be sent out from the application over the output stream. An array of bytes is
+     * created with the first value holding the "address" of the hardware being communicated with. In this case, 1 means
+     * the forward, 2 means reverse, etc. In our system, arduino handles the task to be carried out by the hardware, so,
+     * arduino only needs to know whether or not to carry out a particular action indicated by the action reference
+     * number.
      * 
      * @param target
      */
@@ -241,67 +234,82 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
             }
         }
     }
+
+    /**
+     * Send a byte to the Arduino that instructs it to stop
+     */
     public void robotStop()
     {
         sendCommand((byte) 0);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to go forward
+     */
     public void robotForward()
     {
         sendCommand((byte) 1);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to go backward
+     */
     public void robotReverse()
     {
         sendCommand((byte) 2);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to go clockwise
+     */
     public void robotClockwise()
     {
         sendCommand((byte) 3);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to go counterclockwise
+     */
     public void robotCounterClockwise()
     {
         sendCommand((byte) 4);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to do a point turn right
+     */
     public void robotPointTurnRight()
     {
         sendCommand((byte) 6);
     }
 
+    /**
+     * Send a byte to the Arduino that instructs it to do a pont turn left
+     */
     public void robotPointTurnLeft()
     {
         sendCommand((byte) 5);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * Program-wide configuration goes here
      */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        super.onCreate(savedInstanceState);
+
         // Keep a self reference, so that alarms can work correctly
         _self = this;
-        super.onCreate(savedInstanceState);
+
         // configure tts and preferences
         tts = new TextToSpeech(this, this);
         prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+
         // grab a pseudo-wakelock
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-        
-        
-     // Arduino Support
+
+        // Arduino Support
 
         // Looks for input
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -317,7 +325,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
             openAccessory(mAccessory);
         }
-        
+
     }
 
     /**
@@ -349,9 +357,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         else {
             Log.e(TAG, "TTS Initialization error");
         }
-
     }
- 
 
     /**
      * Simple mechanism for using text-to-speech
@@ -359,14 +365,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     void speak(String s)
     {
         tts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
-    }
-
-    /**
-     * Unused (for now): play a sound file?
-     */
-    void playCustomSound()
-    {
-
     }
 
     /**
@@ -437,6 +435,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
 
     /**
      * This function gives us the ability to have an AlarmReceiver that can do all sorts of arbitrary stuff
+     * 
+     * TODO: right now we aren't using this to the fullest... consider using it better?
      */
     abstract public void callback();
 }

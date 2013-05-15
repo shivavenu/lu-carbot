@@ -8,6 +8,8 @@ import android.util.Log;
 /**
  * Whenever we play a DTMF sound, we are responsible for shutting it off at some point. The way we do this is by setting
  * an alarm that is caught by this receiver, which then stops the DTMF tone generator.
+ * 
+ * TODO: DTMF is gone, so maybe we can stop having this?
  */
 public class AlarmEndToneReceiver extends BroadcastReceiver
 {

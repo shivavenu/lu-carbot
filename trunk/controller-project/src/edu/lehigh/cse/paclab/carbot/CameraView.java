@@ -19,6 +19,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+/**
+ * TODO: I'm not clear on why we need CameraView and CameraViewBase... could we roll them into one?
+ */
 public class CameraView extends CameraViewBase implements OnTouchListener
 {
     public static final int     VIEW_MODE_RGBA   = 0;
@@ -81,6 +84,8 @@ public class CameraView extends CameraViewBase implements OnTouchListener
     @Override
     protected Bitmap processFrame(byte[] data)
     {
+        // [mfs] observing crashes here on Activity close/restart... we should figure this out, but for now let's just
+        // be careful.
         mYuv.put(0, 0, data);
         // mRgba.put(0, 0, data);
 
@@ -124,6 +129,12 @@ public class CameraView extends CameraViewBase implements OnTouchListener
     @Override
     public boolean onTouch(View v, MotionEvent event)
     {
+        if (mIsColorSelected) {
+            mIsColorSelected = false;
+            ColorDetectionActivity.self.HLT(0);
+            return false;
+        }
+
         ColorDetectionActivity.lastEventTime = System.currentTimeMillis();
 
         int cols = mRgba.cols();
@@ -170,7 +181,6 @@ public class CameraView extends CameraViewBase implements OnTouchListener
         Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
-
 
         return false; // don't need subsequent touch events
     }

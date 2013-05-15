@@ -11,11 +11,16 @@ import android.view.View;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will perform that movement
+ * 
+ * TODO: there is a bug in this code, in that the rotations do not seem to work correctly. It may be vestigal from the
+ * DTMF interface, but it needs to be cleaned up
+ * 
+ * TODO: There is a bug in how we initialize the camera relative to how the USBManager gets set up, which results in us
+ * having weird behavior. See ColorDetectionActivity.java for more details.
  */
 public class DrawActivity extends BasicBotActivityBeta
 {
-
-	/**
+    /**
      * A reference to the view we use to get user input... it also stores the array of points, which is bad engineering
      * but will do for now...
      */
@@ -65,7 +70,7 @@ public class DrawActivity extends BasicBotActivityBeta
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
         int height = display.getHeight();
-        //if (width > 799 || height > 1100)
+        // if (width > 799 || height > 1100)
         if (width > 799 && height > 1100)
             setContentView(R.layout.drawtocontrolbot_tablet);
         else
@@ -134,8 +139,7 @@ public class DrawActivity extends BasicBotActivityBeta
                 // rotation is too quick, we'll not
                 // have shut off the signal yet. Our solution is to add a full rotation in that situation. It's gross,
                 // but it should work.
-                
-                
+
                 if (time_to_rotate < DTMF_DELAY_TIME)
                     time_to_rotate += rotatemillis;
                 Log.v("ROTATION TIME", "" + time_to_rotate);
