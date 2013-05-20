@@ -227,6 +227,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         Log.e(TAG, "Message sent" + buffer[0]);
         if (mOutputStream != null) {
             try {
+                // TODO: we could use this instead: mOutputStream.write(oneByte);
                 mOutputStream.write(buffer);
             }
             catch (IOException e) {
