@@ -153,6 +153,9 @@ public abstract class CameraViewBase extends SurfaceView implements SurfaceHolde
                 onPreviewStarted(params.getPreviewSize().width, params.getPreviewSize().height);
 
                 /* Now we can start a preview */
+                
+                // [TODO] this is causing an FC on Jellybean devices... OpenCV cameras *do* work on these devices, not
+                // sure what we're doing wrong here...
                 mCamera.startPreview();
 
             }
