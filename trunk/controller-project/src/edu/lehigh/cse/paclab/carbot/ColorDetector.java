@@ -11,6 +11,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+// TODO: this code is not commented or well explained right now
 public class ColorDetector
 {
     // Lower and Upper bounds for range checking in HSV color space
@@ -123,13 +124,13 @@ public class ColorDetector
                 int y = Imgproc.boundingRect(contour).y;
 
                 if (y > 300) {
-                    ColorDetectionActivity.self.PTL(y);
+                    ColorDetectionActivity.self.PTL();
                 }
                 else if (300 > y && y > 100) {
-                    ColorDetectionActivity.self.FWD(y);
+                    ColorDetectionActivity.self.FWD();
                 }
                 else if (100 > y) {
-                    ColorDetectionActivity.self.PTR(y);
+                    ColorDetectionActivity.self.PTR();
                 }
             }
         }

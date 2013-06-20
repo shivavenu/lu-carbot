@@ -211,10 +211,10 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     }
 
     /**
-     * Called anytime information is to be sent out from the application over the output stream. An array of bytes is
+     * Called any time information is to be sent out from the application over the output stream. An array of bytes is
      * created with the first value holding the "address" of the hardware being communicated with. In this case, 1 means
-     * the forward, 2 means reverse, etc. In our system, arduino handles the task to be carried out by the hardware, so,
-     * arduino only needs to know whether or not to carry out a particular action indicated by the action reference
+     * the forward, 2 means reverse, etc. In our system, Arduino handles the task to be carried out by the hardware, so,
+     * Arduino only needs to know whether or not to carry out a particular action indicated by the action reference
      * number.
      * 
      * @param target
@@ -326,7 +326,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
             openAccessory(mAccessory);
         }
-
     }
 
     /**

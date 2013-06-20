@@ -22,5 +22,4 @@ public class AlarmEndToneReceiver extends BroadcastReceiver
         Log.i("AlarmEndToneReceiver", "intent=" + intent);
         //BasicBotActivityBeta._toneGenerator.stopTone();
     }
-
 }
