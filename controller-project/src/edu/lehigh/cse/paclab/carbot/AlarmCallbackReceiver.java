@@ -20,5 +20,4 @@ public class AlarmCallbackReceiver extends BroadcastReceiver
         Log.i("TestReceiver", "intent=" + intent);
         BasicBotActivityBeta._self.callback();
     }
-
 }

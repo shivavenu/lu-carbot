@@ -13,15 +13,14 @@ import android.view.Window;
 /**
  * This code suffers from a few bugs right now.
  * 
- * TODO: We observed some ForceClose issues earlier, related to a null pointer exception. It is not clear that this is
- * resolved... I think we were just getting lucky
- * 
  * TODO: The logic for steering the robot is not quite right. The robot never turns to the left, and it favors moving
  * forward over keeping its target centered on the screen, which leads to lots of drift.
  * 
  * TODO: The USBManager interface created some hassle, due to bad interactions with the NativeCamera. Often, one would
  * (1) start the activity, (2) connect usbmanager, (3) see that the camera was frozen, (4) hit back, (5) restart the
  * activity, and then it would magically work. We can surely do better.
+ * 
+ * TODO: this activity requires better commenting
  */
 public class ColorDetectionActivity extends BasicBotActivityBeta
 {
@@ -41,7 +40,9 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * OpenCV recommended this route so I just went with it.
      * 
      * TODO: if we could change how we start the native camera relative to how we start USBManager, we might be able to
-     * call a method to configure this, in which case the code wouldn't have such horrible indentation
+     * call a method to configure this, in which case the code wouldn't have such horrible indentation.
+     * 
+     * [mfs] I think we can initialize it in onCreate?
      */
     private BaseLoaderCallback    mOpenCVCallBack = new BaseLoaderCallback(this)
                                                   {
@@ -145,7 +146,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * @param y
      *            the y coordinate that triggered this call
      */
-    void PTL(int y)
+    void PTL()
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
             return;
@@ -159,7 +160,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * @param y
      *            the y coordinate that triggered this call
      */
-    void FWD(int y)
+    void FWD()
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
             return;
@@ -173,7 +174,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * @param y
      *            the y coordinate that triggered this call
      */
-    void PTR(int y)
+    void PTR()
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
             return;
@@ -201,7 +202,7 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
      * @param y
      *            the y coordinate that triggered this call
      */
-    void HLT(int y)
+    void HLT()
     {
         if (lastEventTime > (System.currentTimeMillis() - 200))
             return;

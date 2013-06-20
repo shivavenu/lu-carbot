@@ -21,5 +21,4 @@ public class AlarmHaltReceiver extends BroadcastReceiver
         Log.i("TestReceiver", "intent=" + intent);
         BasicBotActivityBeta._self.robotStop();
     }
-
 }
