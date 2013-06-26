@@ -7,10 +7,8 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import android.content.Context;
@@ -302,13 +300,14 @@ public class CameraView extends SurfaceView
 
         Bitmap        mBitmap;                                      // a bitmap for displaying matrix on UI
 
-        boolean       mIsColorSelected = false;
+        boolean       mIsColorSelected = false;                     // flag for if we have a color to chase right now
         Scalar        mBlobColorRgba   = new Scalar(255);
         Scalar        mBlobColorHsv    = new Scalar(255);
-        ColorDetector mDetector        = new ColorDetector();
-        Mat           mSpectrum        = new Mat();
-        Size          SPECTRUM_SIZE    = new Size(200, 32);
-        final Scalar  CONTOUR_COLOR    = new Scalar(255, 0, 0, 255);
+        ColorDetector mDetector        = new ColorDetector();       // a ColorDetector object, used for finding
+                                                                     // contours and doing other cool stuff
+        final Scalar  CONTOUR_COLOR    = new Scalar(255, 0, 0, 255); // color of the outline of contours we draw
+
+        Scalar        locatedBox       = new Scalar(255, 0, 0, 0);  // a red box for now...
 
         /**
          * Initialize all variables, based on the width and height of the Camera preview
@@ -421,27 +420,29 @@ public class CameraView extends SurfaceView
         protected Bitmap processFrame(byte[] data)
         {
             // make a YUV-format matrix from the data, then convert it to RGBA
+            //
+            // NB: we ultimately need hsv, but OpenCV doesn't let us convert YUV direct to HSV
             ocvVars.yuvMatrix.put(0, 0, data);
             Imgproc.cvtColor(ocvVars.yuvMatrix, ocvVars.rgbaMatrix, Imgproc.COLOR_YUV420sp2RGB, 4);
 
             // if we've got a target color, run the contour algorithm
             if (ocvVars.mIsColorSelected) {
-                // The color detector is responsible for finding the contours, and steering the robot
-                ocvVars.mDetector.process(ocvVars.rgbaMatrix);
+                // Find the color we're looking for
+                ColorDetector cd = ocvVars.mDetector;
+                cd.findColor(ocvVars.rgbaMatrix);
 
-                // draw the contours
-                List<MatOfPoint> contours = ocvVars.mDetector.getContours();
-                Log.e(TAG, "Contours count: " + contours.size());
-                Imgproc.drawContours(ocvVars.rgbaMatrix, contours, -1, ocvVars.CONTOUR_COLOR);
+                // draw the region we found
+                cd.drawContours(ocvVars.rgbaMatrix, ocvVars.CONTOUR_COLOR);
 
                 // draw the swatch for the color we're looking for
                 Mat colorLabel = ocvVars.rgbaMatrix.submat(2, 34, 2, 34);
                 colorLabel.setTo(ocvVars.mBlobColorRgba);
 
-                // draw the spectrum for the color we're looking for
-                Mat spectrumLabel = ocvVars.rgbaMatrix.submat(2, 2 + ocvVars.mSpectrum.rows(), 38,
-                        38 + ocvVars.mSpectrum.cols());
-                ocvVars.mSpectrum.copyTo(spectrumLabel);
+                // draw the 'found' box
+                cd.drawFoundBox(ocvVars.rgbaMatrix, ocvVars.locatedBox, 10);
+
+                // drive the robot
+                cd.driveRobot(ocvVars.rgbaMatrix);
             }
 
             // now let's update the bitmap based on our RGBA matrix
@@ -537,13 +538,16 @@ public class CameraView extends SurfaceView
         @Override
         public boolean onTouch(View v, MotionEvent event)
         {
-            // TODO: should we swallow all non-Down presses?
+            // swallow non-down presses
+            if (event.getAction() != MotionEvent.ACTION_DOWN)
+                return true;
 
             // if we were tracking a color, this will cause us to stop tracking and stop the robot
             if (ocvVars.mIsColorSelected) {
                 ocvVars.mIsColorSelected = false;
+                Log.d("Driving", "STOP");
                 ColorDetectionActivity.self.HLT();
-                return false;
+                return true;
             }
 
             // TODO: I think this is deprecated
@@ -562,37 +566,34 @@ public class CameraView extends SurfaceView
             if ((x < 0) || (y < 0) || (x > cols) || (y > rows))
                 return false;
 
-            // Create a rectangle representing the touch
+            // Create a 4x4 rectangle representing the touch
+            //
+            // NB: we use the touch point as the bottom right, so there is no risk of overflow
             Rect touchedRect = new Rect();
-            touchedRect.x = (x > 4) ? x - 4 : 0;
-            touchedRect.y = (y > 4) ? y - 4 : 0;
-            touchedRect.width = (x + 4 < cols) ? x + 4 - touchedRect.x : cols - touchedRect.x;
-            touchedRect.height = (y + 4 < rows) ? y + 4 - touchedRect.y : rows - touchedRect.y;
+            touchedRect.x = (x > 4) ? x - 4 : 0; // prevent x underflow
+            touchedRect.y = (y > 4) ? y - 4 : 0; // prevent y underflow
+            touchedRect.width = 4;
+            touchedRect.height = 4;
 
             // Get the color of the rectangle, convert to HSV
             Mat touchedRegionRgba = ocvVars.rgbaMatrix.submat(touchedRect);
             Mat touchedRegionHsv = new Mat();
             Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
-            // Calculate average color of touched region as HSV
+            // Calculate average color of touched region as HSV, send it to the color detector
             ocvVars.mBlobColorHsv = Core.sumElems(touchedRegionHsv);
             int pointCount = touchedRect.width * touchedRect.height;
             for (int i = 0; i < ocvVars.mBlobColorHsv.val.length; i++) {
                 ocvVars.mBlobColorHsv.val[i] /= pointCount;
             }
+            ocvVars.mDetector.setHsvColor(ocvVars.mBlobColorHsv);
 
-            // convert back to RGBA so we can log and display it
+            // convert back to RGBA so we can display it
             ocvVars.mBlobColorRgba = convertScalarHsv2Rgba(ocvVars.mBlobColorHsv);
             Log.i(TAG, "Touched rgba color: (" + ocvVars.mBlobColorRgba.val[0] + ", " + ocvVars.mBlobColorRgba.val[1]
                     + ", " + ocvVars.mBlobColorRgba.val[2] + ", " + ocvVars.mBlobColorRgba.val[3] + ")");
 
-            // update the color detector with this HSV color
-            ocvVars.mDetector.setHsvColor(ocvVars.mBlobColorHsv);
-
-            // update the spectrum that we display
-            Imgproc.resize(ocvVars.mDetector.getSpectrum(), ocvVars.mSpectrum, ocvVars.SPECTRUM_SIZE);
-
-            // Notify renderer to start drawing contours
+            // Start drawing contours and driving the robot
             ocvVars.mIsColorSelected = true;
             return true;
         }
