@@ -130,8 +130,8 @@ public class RCReceiverActivity extends BasicBotActivityBeta
      * @param client
      *            The open socket that the server uses to communicate with the client
      * 
-     * @return For now, just return true, which causes the caller to break out of its listening routine... we could
-     *         handle this better...
+     * @return TODO: For now, just return true, which causes the caller to break out of its listening routine... we
+     *         could handle this better...
      */
     boolean serverProtocol(Socket client)
     {

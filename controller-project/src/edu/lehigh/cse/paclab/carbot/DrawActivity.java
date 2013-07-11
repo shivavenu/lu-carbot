@@ -17,6 +17,8 @@ import android.view.View;
  * 
  * TODO: There is a bug in how we initialize the camera relative to how the USBManager gets set up, which results in us
  * having weird behavior. See ColorDetectionActivity.java for more details.
+ * 
+ * TODO: This code is not verified as correct yet
  */
 public class DrawActivity extends BasicBotActivityBeta
 {
@@ -70,7 +72,6 @@ public class DrawActivity extends BasicBotActivityBeta
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
         int height = display.getHeight();
-        // if (width > 799 || height > 1100)
         if (width > 799 && height > 1100)
             setContentView(R.layout.drawtocontrolbot_tablet);
         else
@@ -135,13 +136,6 @@ public class DrawActivity extends BasicBotActivityBeta
                 // figure out how long we need to rotate... remember that rotatemillis is the time to do a full circle
                 double time_to_rotate = rotatemillis * (Math.abs(ang) / 360);
 
-                // DTMF_DELAY_TIME represents the time a DTMF tone must play for our hardware to detect it. If our
-                // rotation is too quick, we'll not
-                // have shut off the signal yet. Our solution is to add a full rotation in that situation. It's gross,
-                // but it should work.
-
-                if (time_to_rotate < DTMF_DELAY_TIME)
-                    time_to_rotate += rotatemillis;
                 Log.v("ROTATION TIME", "" + time_to_rotate);
 
                 // 4 - start rotating the robot
@@ -159,7 +153,7 @@ public class DrawActivity extends BasicBotActivityBeta
                 // rotation is done... stop the robot, move to next state, resume FSM
                 robotStop();
                 mode = MODE.ROTATED;
-                requestCallback(DTMF_DELAY_TIME + 100);
+                requestCallback(1);
                 break;
             }
             case ROTATED: {
@@ -186,9 +180,8 @@ public class DrawActivity extends BasicBotActivityBeta
                 int time_to_go = (int) (50 * distance);
                 Log.v("TRAVEL_TIME", "" + time_to_go);
 
-                // 3 - Start the robot, unless we wouldn't be able to stop in time, in which case we skip this movement
-                if (time_to_go > DTMF_DELAY_TIME)
-                    robotForward();
+                // 3 - Start the robot
+                robotForward();
 
                 // 4 - request a callback that fires when the robot should be at the destination
                 requestCallback(time_to_go);
@@ -200,7 +193,7 @@ public class DrawActivity extends BasicBotActivityBeta
                 robotStop();
                 mode = MODE.STOPPED;
                 index++;
-                requestCallback(DTMF_DELAY_TIME + 100);
+                requestCallback(1);
                 break;
             }
         }
@@ -213,7 +206,7 @@ public class DrawActivity extends BasicBotActivityBeta
     {
         Context context = this;
         Intent intent = new Intent(context, AlarmCallbackReceiver.class);
-        // NB: using same request ID for all PIs in this whole project is a feature
+        // NB: using same request ID for all PIs in this whole project is a feature... see onClickClear
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, intent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + millis, pi);
@@ -232,7 +225,7 @@ public class DrawActivity extends BasicBotActivityBeta
         index = 0;
         orientation = 0;
         mode = MODE.STOPPED;
-        requestCallback(2 * DTMF_DELAY_TIME); // make sure the 'stop' tone has ended before we start the FSM...
+        requestCallback(1); // Kick off the FSM
     }
 
     /**

@@ -4,17 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 /**
- * This is the new interface to TetheredBot. It uses DTMF to communicate with the robot.
- * 
- * TODO: STOP produces a pulse [mfs] I think this is done
- * 
- * TODO: All sounds are a short pulse [mfs] We have short pulses, but I think we might want them to be even shorter...
- * 
- * TODO: Change pulse mechanism, switch between headphone jack and speaker between pulses
- * 
- * TODO: Get everything to work while playing music
- * 
- * TODO: Get everything to work while doing TTS
+ * This is the interface to TetheredBot.  There are on-screen buttons for controlling the robot
  */
 public class TetheredBotBeta extends BasicBotActivityBeta
 {
@@ -24,6 +14,9 @@ public class TetheredBotBeta extends BasicBotActivityBeta
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        
+        // TODO: manage screen size better
+        
         // Use this code for managing screens of different size...this uses a more recent API than the previous
         // TetheredBot
         //
@@ -33,7 +26,7 @@ public class TetheredBotBeta extends BasicBotActivityBeta
     }
 
     /**
-     * Whenever one of the buttons is pressed, we issue the appropriate DTMF command
+     * Whenever one of the buttons is pressed, we issue the appropriate command to move the robot
      * 
      * @param v
      *            A reference to the button that was pressed

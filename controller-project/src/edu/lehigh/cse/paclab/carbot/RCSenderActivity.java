@@ -137,7 +137,7 @@ public class RCSenderActivity extends BasicBotActivityBeta
             int len = dis.readInt();
             final byte[] jpeg = new byte[len];
             dis.readFully(jpeg);
-            // [mfs] TODO: make this an asynctask?
+            // TODO: should we make this an asynctask?
             // Be sure to run GUI updates on the main thread, not on the server thread
             myHandler.post(new Runnable()
             {

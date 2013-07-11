@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 /**
- * This is the new framework for Carbot. Eventually we will deprecate and then remove everything else.
+ * This is the main menu for choosing how to control a robot
  */
 public class CarbotBeta extends Activity
 {
@@ -18,10 +18,6 @@ public class CarbotBeta extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carbot_beta);
-    }
-
-    public void onPause(Bundle savedInstanceState)
-    {
     }
 
     /**

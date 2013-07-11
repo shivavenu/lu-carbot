@@ -28,6 +28,8 @@ import android.view.View;
 /**
  * The CameraView is where the picture is drawn on the screen when we are getting camera images, marking them up, and
  * using them to drive the robot.
+ * 
+ * TODO: ensure this works on a Nexus
  */
 public class CameraView extends SurfaceView
 {
@@ -47,7 +49,7 @@ public class CameraView extends SurfaceView
     private Camera              mCamera;
 
     /**
-     * Technically, this code is defining a View that can be displayed in an activity, and the speicific View type is
+     * Technically, this code is defining a View that can be displayed in an activity, and the specific View type is
      * SurfaceView. Broadly speaking, a SurfaceView is a view that displays graphics, and in order to do it right, we
      * need to have a "SurfaceHolder" that encapsulates the SurfaceView and provides an interface for controlling the
      * surface size and format, and for drawing/changing actual pixels.
@@ -128,8 +130,6 @@ public class CameraView extends SurfaceView
         // shuts down, we'll call the onDestroy code.
         mHolder = getHolder();
         mHolder.addCallback(new HolderCallback());
-        // this is required on pre 3.0 devices
-        // mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         // set up a touch listener, so that we can use touches of the surface to both (a) identify what color to look
         // for, and (b) determine if we are currently supposed to let the robot move or not.
