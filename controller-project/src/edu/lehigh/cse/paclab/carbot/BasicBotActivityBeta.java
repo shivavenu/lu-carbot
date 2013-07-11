@@ -29,7 +29,6 @@ import android.widget.Toast;
 /**
  * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
  */
-// @SuppressLint({ "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi", "NewApi" })
 public abstract class BasicBotActivityBeta extends Activity implements TextToSpeech.OnInitListener
 {
     // constants for preference tags

@@ -62,6 +62,11 @@ public class ColorDetector
     public int     contourCenterX = 0;
 
     /**
+     * Track the last move we made
+     */
+    private String lastMove = "";
+    
+    /**
      * Compute the upper and lower bounds that specify the range of colors that count as being 'identical' to the color
      * we trying to identify
      * 
@@ -217,7 +222,7 @@ public class ColorDetector
         // start a spin to look for the color we want
         if (bestContour == null) {
             Log.d("Driving", "SEARCH");
-            ColorDetectionActivity.self.CW();
+            ColorDetectionActivity.self.robotClockwise();
             return;
         }
 
@@ -229,16 +234,25 @@ public class ColorDetector
         // if we are in the bottom third, turn right
         if (contourCenterY < maxY / 3) {
             Log.d("Driving", "RIGHT");
-            ColorDetectionActivity.self.PTR();
+            if (!lastMove.equals("R"))
+                ColorDetectionActivity.self.robotStop();
+            lastMove = "R";
+            ColorDetectionActivity.self.robotPointTurnRight();
         }
         // middle third goes straight
         else if (contourCenterY < (2 * maxY / 3)) {
-            ColorDetectionActivity.self.FWD();
+            if (!lastMove.equals("F"))
+                ColorDetectionActivity.self.robotStop();
+            lastMove = "F";
+            ColorDetectionActivity.self.robotForward();
             Log.d("Driving", "FORWARD");
         }
         // top third goes left
         else {
-            ColorDetectionActivity.self.PTL();
+            if (!lastMove.equals("L"))
+                ColorDetectionActivity.self.robotStop();
+            lastMove = "L";
+            ColorDetectionActivity.self.robotPointTurnLeft();
             Log.d("Driving", "LEFT");
         }
     }
