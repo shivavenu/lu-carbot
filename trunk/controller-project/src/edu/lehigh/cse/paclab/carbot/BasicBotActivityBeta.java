@@ -27,7 +27,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 /**
- * This is a parent class so that all of our activities have easy access to constants, TTS, and DTMF
+ * This is a parent class so that all of our activities have easy access to constants and TTS
  */
 public abstract class BasicBotActivityBeta extends Activity implements TextToSpeech.OnInitListener
 {
@@ -39,13 +39,15 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
 
     /**
      * Indicate the port this app uses for sending control signals between a client and server
+     * 
+     * TODO: move to preferences?
      */
     public static final int            WIFICONTROLPORT         = 9599;
 
     /**
-     * Tag for Android debugging...
+     * Tag for debugging...
      */
-    public static final String         TAG                     = "Carbot Beta";
+    public static final String         TAG                     = "Carbot";
 
     /**
      * For accessing the preferences storage of the activity
@@ -62,12 +64,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     TextToSpeech                       tts;
 
-    /**
-     * Deprecated, and needs to be removed...
-     */
-    protected static final int         DTMF_DELAY_TIME         = 1;
-
     // The following code block is setting up the android to arduino communication.
+    // TODO: can we make this a has-a instead of an is-a?
+    // TODO: comment better, so that new users can learn about USBManager from this code
     private static final String        ACTION_USB_PERMISSION   = "com.google.android.Demokit.action.USB_PERMISSION";
     private UsbManager                 mUsbManager;
     private PendingIntent              mPermissionIntent;
@@ -77,6 +76,9 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     FileInputStream                    mInputStream;
     FileOutputStream                   mOutputStream;
 
+    /**
+     * Flag for tracking if we have USB support configured
+     */
     private boolean                    isUSBReceiverRegistered = false;
 
     /**
@@ -84,6 +86,8 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      * information to the application, in this case, the application is receiving information from an arduino. The
      * BroadcastReceiver sees if the entity sending information is a supported usb accessory, in which case opens full
      * communication with the device beyond the handshake which is initiated upon application launch.
+     * 
+     * TODO: make this code less ugly
      */
     private final BroadcastReceiver    mUsbReceiver            = new BroadcastReceiver()
                                                                {
@@ -131,10 +135,10 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     {
         super.onResume();
 
+        // resurrect the USBManager
         if (mInputStream != null && mOutputStream != null) {
             return;
         }
-
         UsbAccessory[] accessories = mUsbManager.getAccessoryList();
         UsbAccessory accessory = (accessories == null ? null : accessories[0]);
         if (accessory != null) {
@@ -150,23 +154,17 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
                 }
             }
         }
-        else {
-            Log.d(TAG, "mAccessory is null");
-        }
     }
 
     /**
-     * More watchdogs...
+     * When 'back' is pressed, shut off the USBManager support and terminate the app
      */
     @Override
     public void onBackPressed()
     {
-        // Arduino
         closeAccessory();
         if (isUSBReceiverRegistered)
             unregisterReceiver(mUsbReceiver);
-
-        // finish the activity
         finish();
     }
 
@@ -193,7 +191,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      * interact with. openAccessory is also called in the onResume method. Opens up a data output and input stream for
      * communication with an accessory.
      * 
-     * @param accessory
+     * @param accessory TODO:
      */
     protected void openAccessory(UsbAccessory accessory)
     {
@@ -216,7 +214,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      * Arduino only needs to know whether or not to carry out a particular action indicated by the action reference
      * number.
      * 
-     * @param target
+     * @param target TODO:
      */
     public void sendCommand(byte target)
     {
@@ -306,12 +304,12 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
         tts = new TextToSpeech(this, this);
         prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
 
-        // grab a pseudo-wakelock
+        // Don't let the app sleep
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Arduino Support
 
-        // Looks for input
+        // Configure USBManager
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         // Creates new IntentFilter to indicate future communication with a
@@ -434,8 +432,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
 
     /**
      * This function gives us the ability to have an AlarmReceiver that can do all sorts of arbitrary stuff
-     * 
-     * TODO: right now we aren't using this to the fullest... consider using it better?
      */
     abstract public void callback();
 }

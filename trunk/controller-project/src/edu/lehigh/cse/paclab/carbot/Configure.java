@@ -11,13 +11,15 @@ import android.widget.EditText;
 /**
  * An activity for saving configuration information, specifically the text that the robot should say as its name and
  * farewell message, and the time it takes the robot to move in standard ways (distance, rotation)
+ * 
+ * TODO: verify that robotStop works correctly
  */
 public class Configure extends BasicBotActivityBeta
 {
     /**
      * A counter for disambiguating alarms
      */
-    int               alarmNum = 0;
+    int alarmNum = 0;
 
     /**
      * Lifecycle method to create this activity
@@ -118,7 +120,7 @@ public class Configure extends BasicBotActivityBeta
      */
     private void requestStop(long when)
     {
-        Intent intent = new Intent(this, AlarmHaltReceiver.class);
+        Intent intent = new Intent(this, AlarmCallbackReceiver.class);
         intent.putExtra("AlarmID", alarmNum);
         PendingIntent pi = PendingIntent.getBroadcast(this, alarmNum++, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -126,9 +128,11 @@ public class Configure extends BasicBotActivityBeta
     }
 
     /**
-     * Provide an empty callback method, so that we are compatible with AlarmCallbackReceiver
+     * When we are testing the amount of time to rotate, requestStop registers a callback. This code stops the robot
+     * when the callback arrives.
      */
     public void callback()
     {
+        BasicBotActivityBeta._self.robotStop();
     }
 }

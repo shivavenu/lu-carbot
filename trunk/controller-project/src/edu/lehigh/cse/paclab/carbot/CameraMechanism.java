@@ -1,4 +1,6 @@
-/***
+/**
+ * TODO: fix formatting of license
+ * 
  * Copyright (c) 2008-2012 CommonsWare, LLC Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software
@@ -9,11 +11,8 @@
  * From _The Busy Coder's Guide to Advanced Android Development_ http://commonsware.com/AdvAndroid
  */
 
-/**
- * this code is based on
- * https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Picture/src/com/commonsware/android
- * /picture/PictureDemo.java
- */
+// this code is based on
+// https://github.com/commonsguy/cw-advandroid/blob/master/Camera/Picture/src/com/commonsware/android/picture/PictureDemo.java
 
 package edu.lehigh.cse.paclab.carbot;
 
@@ -34,7 +33,8 @@ import android.widget.Toast;
 
 /**
  * CameraMechanism moves all of the Camera code into a separate class, so that we can keep licenses independent. This
- * code is based on the above reference, and modified only as necessary to meet our needs
+ * code is based on the above reference, and modified only as necessary to meet our needs. It is used by RCReceiver to
+ * take photos upon request from the remote controller.
  */
 public class CameraMechanism
 {
@@ -211,6 +211,8 @@ public class CameraMechanism
 
     /**
      * Configure the callback that manages previewing
+     * 
+     * TODO: handle this within constructor, so it isn't so messy?
      */
     SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback()
                                            {
@@ -241,6 +243,8 @@ public class CameraMechanism
 
     /**
      * Configure the callback for when a picture is taken
+     * 
+     * TODO: handle this in constructor, so that the code isn't so messy?
      */
     Camera.PictureCallback photoCallback   = new Camera.PictureCallback()
                                            {

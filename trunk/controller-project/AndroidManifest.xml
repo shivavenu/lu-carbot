@@ -38,8 +38,6 @@
         <activity android:name="DrawActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="Chatterbox" android:screenOrientation="portrait"></activity>
 
-        <receiver android:name="AlarmEndToneReceiver"></receiver>
-        <receiver android:name="AlarmHaltReceiver"></receiver>
         <receiver android:name="AlarmCallbackReceiver"></receiver>
 
     </application>

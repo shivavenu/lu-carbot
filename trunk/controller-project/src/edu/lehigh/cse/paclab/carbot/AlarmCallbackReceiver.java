@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Whenever we play a DTMF sound, we are responsible for shutting it off at some point. The way we do this is by setting
- * an alarm that is caught by this receiver, which then stops the DTMF tone generator.
+ * In many of our codes, we start the robot moving in a certain way, and then we need to shut it off after a little
+ * while. Sometimes we need to just stop, sometimes we need to advance a state machine. This receiver forwards to the
+ * Activity, so that the correct action can be taken after the right amount of time has passed.
  */
 public class AlarmCallbackReceiver extends BroadcastReceiver
 {
     /**
-     * When we receive an alarm, we put a message in the log and we stop the DTMF tone generator.
+     * When we receive an alarm, we just forward to the callback mechanism
      */
     @Override
     public void onReceive(Context context, Intent intent)

@@ -13,9 +13,6 @@ import android.view.Window;
 /**
  * This code suffers from a few bugs right now.
  * 
- * TODO: The logic for steering the robot is not quite right. The robot never turns to the left, and it favors moving
- * forward over keeping its target centered on the screen, which leads to lots of drift.
- * 
  * TODO: The USBManager interface created some hassle, due to bad interactions with the NativeCamera. Often, one would
  * (1) start the activity, (2) connect usbmanager, (3) see that the camera was frozen, (4) hit back, (5) restart the
  * activity, and then it would magically work. We can surely do better.
