@@ -546,12 +546,9 @@ public class CameraView extends SurfaceView
             if (ocvVars.mIsColorSelected) {
                 ocvVars.mIsColorSelected = false;
                 Log.d("Driving", "STOP");
-                ColorDetectionActivity.self.HLT();
+                ColorDetectionActivity.self.robotStop();
                 return true;
             }
-
-            // TODO: I think this is deprecated
-            ColorDetectionActivity.lastEventTime = System.currentTimeMillis();
 
             // convert the screen coordinates of the touch into coordinates on the image
             int cols = ocvVars.rgbaMatrix.cols();
