@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Carbot</string>
+    <string name="BotBuilderDescription">The "Bot Builder" station involves blue robot #1.\n\nIn this station, students learn about how the robots are constructed.  We talk about wires, motors, controllers, and phones.  The station has a robot wired to a tablet, and students hold the tablet and press buttons to control the robot.\n\nTODO: tetheredbot.xml is a little bit ugly.</string>
+    <string name="RemoteControlDescription">The "Remote Control" station involves blue robot #2.\n\nIn this station, students are introduced to the idea of wireless control and cameras.  The station has a robot with a built-in tablet, and a phone as the controller.  Students use the phone to move the robot.  They can also have the robot take pictures.\n\nTODO: The appearance of the Bot activity on a tablet has not been tested, and is probably too small.  Also, the picture orientation is odd.</string>
+    <string name="DrawToControlDescription">The "Draw To Control" station involves the black robot.\n\nIn this station, students are introduced to the idea of drawing to control the robot.  The station has a robot with a built-in tablet.  Students draw on the tablet to control the robot.  \n\nTODO: We need to make the screen look nice on the tablet.  Longer-term, we need to replace threads with alarms.</string>
+    <string name="BalloonChaseDescription">The "Balloon Chase" station involves the red robot.\n\nIn this station, students are introduced to the idea of colors and control.  The station has a robot with a built-in phone, and a phone as the controller.  The controller enables and disables the robot motors.  The robot has two activities: one for training the robot on a color, and one for letting the robot chase a balloon of that color.\n\nTODO: Our thresholds/standard deviations may not be good enough, and we only rotate in one direction.</string>
+    <string name="ChatterboxDescription">The final station involves the red robot.\n\nIn this station, students are shown a robot who can listen to them and who can talk.  The robot does not understand very much, but if it hears the word dance, it will dance to a song.</string>
+
+    <string name="str_listen">Listen</string>
+    <string name="str_connect">Connect</string>
+    <string name="str_report">Report IP Address</string>
+    <string name="str_send">Send</string>
+    <string name="str_no_connection">No Connection</string>
+
+</resources>
