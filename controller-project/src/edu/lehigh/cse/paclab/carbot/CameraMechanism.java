@@ -79,6 +79,7 @@ public class CameraMechanism
      * @param parentActivity
      *            The activity owning the camera... we need this for Toasts
      */
+    @SuppressWarnings("deprecation")
     void onCreateCamera(Activity parentActivity)
     {
         myContext = parentActivity;

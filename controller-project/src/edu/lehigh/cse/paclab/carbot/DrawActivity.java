@@ -62,6 +62,7 @@ public class DrawActivity extends BasicBotActivityBeta
     /**
      * On creation, we inflate a layout, register our view, and figure out our motor parameters
      */
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
