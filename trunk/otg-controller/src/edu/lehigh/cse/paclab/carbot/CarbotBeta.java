@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TwoLineListItem;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -34,6 +33,7 @@ import com.hoho.android.usbserial.util.HexDump;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
+@SuppressWarnings("deprecation")
 public class CarbotBeta extends Activity {
 
     private final String TAG = CarbotBeta.class.getSimpleName();
