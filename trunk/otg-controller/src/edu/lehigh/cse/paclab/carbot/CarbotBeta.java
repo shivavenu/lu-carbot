@@ -197,7 +197,8 @@ public class CarbotBeta extends Activity {
     }
 
     private void showConsoleActivity(UsbSerialDriver driver) {
-        DrawActivity.show(this, driver);
+        // DrawActivity.show(this, driver);
+        TetheredBotBeta.show(this, driver);
     }
     
     public void btnConfig(View v)
