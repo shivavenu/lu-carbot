@@ -19,13 +19,13 @@ import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will perform that movement
- * 
+ *
  * TODO: there is a bug in this code, in that the rotations do not seem to work correctly. It may be vestigal from the
  * DTMF interface, but it needs to be cleaned up
- * 
+ *
  * TODO: There is a bug in how we initialize the camera relative to how the USBManager gets set up, which results in us
  * having weird behavior. See ColorDetectionActivity.java for more details.
- * 
+ *
  * TODO: This code is not verified as correct yet
  */
 public class DrawActivity extends BasicBotActivityBeta
@@ -224,7 +224,7 @@ public class DrawActivity extends BasicBotActivityBeta
 
     /**
      * This gets called when the user clicks 'go', and it starts the robot along the path that was drawn
-     * 
+     *
      * @param v
      *            A reference to the button that was clicked
      */
@@ -240,7 +240,7 @@ public class DrawActivity extends BasicBotActivityBeta
 
     /**
      * This gets called when the user clicks 'clear'. it stops the robot, resets the FSM, and clears the array of points
-     * 
+     *
      * @param v
      *            A reference to the button that was clicked
      */
@@ -362,7 +362,7 @@ public class DrawActivity extends BasicBotActivityBeta
 
     /**
      * Starts the activity, using the supplied driver instance.
-     * 
+     *
      * @param context
      * @param driver
      */
@@ -376,7 +376,7 @@ public class DrawActivity extends BasicBotActivityBeta
 
     void myRobotStop()
     {
-        data[0] = 2;
+        data[0] = 0;
         mSerialIoManager.writeAsync(data);
     }
 
