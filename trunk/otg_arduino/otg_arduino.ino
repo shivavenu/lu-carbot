@@ -18,31 +18,36 @@ void setup() {
 void loop() {
   byte a = (byte)Serial.read();
   switch (a) {
-  case 0x2:
+  case 0x0: // 0 in other system
     servoR.write(90);
     servoL.write(90);
     state = !state;
     break;
-  case 0x1:
+  case 0x1: // 1 in other system
     servoR.write(180);
     servoL.write(0);
     state = !state;
     break;
-  case 0x3:
+  case 0x2: // 2 in other system
+    servoR.write(0);
+    servoL.write(180);
+    state = !state;
+    break;    
+  case 0x3: // 3 in other system
     servoR.write(180);
     servoL.write(180);
     state = !state;
     break;
-  case 0x4:
+  case 0x4: // 4 in other system
     servoR.write(0);
     servoL.write(0);
     state = !state;
     break;
-  case 0x5:
+  case 0x5: // 5 in other system
     servoL.write(0);
     state = !state;
     break;
-  case 0x6:
+  case 0x6: // 6 in other system
     servoR.write(180);
     state = !state;
     break;
