@@ -3,16 +3,27 @@
 #include <AndroidAccessory.h>
 #include <Servo.h>
 
-AndroidAccessory acc ("Manufacturer",
-"Model",
-"Description",
+AndroidAccessory acc ("Lehigh University",
+"Carbot V1",
+"Carbot with Wood Chassis",
 "1.0",
-"http://yoursite.com",
+"http://code.google.com/p/lu-carbot",
 "0000000012345678");
 
+/**
+ * Variables representing the two servos
+ */
 Servo servoR;
 Servo servoL;
+
+/**
+ * A buffer for holding the data received from the android phone
+ */
 byte msg[1];
+
+/**
+ * To configure, turn on the serial port, attach servos to ports 8 and 10, and turn on the accessory
+ */
 void setup(){
   Serial.begin(115200);
   servoR.attach(8);
@@ -59,22 +70,5 @@ void loop(){
       }
     }
   }
-
 }
-void forward(){
-}
-void reverse(){
-}
-void cw(){
-}
-void ccw(){
-}
-void ptr(){
-}
-void ptl(){
-}
-
-
-
-
 
