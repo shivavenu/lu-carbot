@@ -1,3 +1,4 @@
+
 package edu.lehigh.cse.paclab.carbot;
 
 import android.app.AlarmManager;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * This is for drawing a path, and then the robot connected to the phone will perform that movement
@@ -117,6 +119,7 @@ public class DrawActivity extends BasicBotActivityBeta
                 // get the vector for the change in position we wish to achieve
                 float deltaX = dv.points.get(index + 1).x - dv.points.get(index).x;
                 float deltaY = dv.points.get(index + 1).y - dv.points.get(index).y;
+                Toast.makeText(this, "deltaX: " + deltaX + " deltaY " + deltaY + "", Toast.LENGTH_SHORT).show();
 
                 // figure out angle of the distance vector in a standard x y plane
                 double ang = (Math.atan2(deltaY, deltaX) * (180 / Math.PI));
@@ -129,13 +132,23 @@ public class DrawActivity extends BasicBotActivityBeta
 
                 // The angle is relative to an orientation of straight up... adjust for current robot orientation, then
                 // update /orientation/
-                ang = orientation - ang;
-                orientation = ang;
+                double angleToTurn = -90 - orientation + ang;
+
+                //ang = 90 - ang;
+                double oldOrientation = orientation;
+                //ang = orientation - ang; 
+                orientation = ang - 90; //you get the correct new orientation.
+                String toShow = "old Orientation: " + oldOrientation + " angle to turn " + angleToTurn + " new Orientation " + orientation + " ";
+                Toast.makeText(this, toShow, Toast.LENGTH_SHORT).show();
+                //ERIK: Now we need to find the angle between the old orientation and the new one.
+
                 // Translate coordinate system... left isn't 0 degrees: up is 0 degrees
-                ang -= 90;
+                //Erik's thought, isn't RIGHT 0 degrees?
+                //ang -= 90;
 
                 // figure out how long we need to rotate... remember that rotatemillis is the time to do a full circle
-                double time_to_rotate = rotatemillis * (Math.abs(ang) / 360);
+                //double time_to_rotate = rotatemillis * (Math.abs(ang) / 360);
+                double time_to_rotate = rotatemillis * (Math.abs(angleToTurn) / 360);
 
                 Log.v("ROTATION TIME", "" + time_to_rotate);
 
