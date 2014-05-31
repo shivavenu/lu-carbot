@@ -42,6 +42,8 @@ public class Configure extends BasicBotActivityBeta
         et.setText("" + Integer.parseInt(prefs.getString(PREFS_DIST, "5000")));
         et = (EditText) findViewById(R.id.etCfgRot);
         et.setText("" + Integer.parseInt(prefs.getString(PREFS_ROT, "5000")));
+        et = (EditText) findViewById(R.id.etCfgMode);
+        et.setText("" + Integer.parseInt(prefs.getString(PREFS_MODE, "1")));
     }
 
     /**
@@ -84,7 +86,7 @@ public class Configure extends BasicBotActivityBeta
             // ask for an alarm to stop the robot at that time
             requestStop(time);
             // start moving
-            robotForward();
+            myRobotForward();
         }
         // save the distance time
         if (v == findViewById(R.id.btnCfgDistSave)) {
@@ -101,13 +103,20 @@ public class Configure extends BasicBotActivityBeta
             // ask for an alarm to stop the robot at that time
             requestStop(time);
             // start spinning
-            robotClockwise();
+            myRobotClockwise();
         }
         // save the rotation time
-        if (v == findViewById(R.id.btnCfgRotTest)) {
+        if (v == findViewById(R.id.btnCfgRotSave)) {
             EditText et = (EditText) findViewById(R.id.etCfgRot);
             Editor e = prefs.edit();
             e.putString(PREFS_ROT, et.getText().toString());
+            e.commit();
+        }
+        // save the mode
+        if (v == findViewById(R.id.btnCfgModeSave)) {
+            EditText et = (EditText) findViewById(R.id.etCfgMode);
+            Editor e = prefs.edit();
+            e.putString(PREFS_MODE, et.getText().toString());
             e.commit();
         }
     }
@@ -133,6 +142,6 @@ public class Configure extends BasicBotActivityBeta
      */
     public void callback()
     {
-        BasicBotActivityBeta._self.robotStop();
+        BasicBotActivityBeta._self.myRobotStop();
     }
 }

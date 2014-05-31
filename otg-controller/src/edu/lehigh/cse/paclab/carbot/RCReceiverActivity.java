@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -96,19 +100,19 @@ public class RCReceiverActivity extends BasicBotActivityBeta
     void parseMsg(String s)
     {
         if (s.equals("FWD"))
-            robotForward();
+            myRobotForward();
         if (s.equals("REV"))
-            robotReverse();
+            myRobotReverse();
         if (s.equals("PTL"))
-            robotPointTurnLeft();
+            myRobotPointTurnLeft();
         if (s.equals("PTR"))
-            robotPointTurnRight();
+            myRobotPointTurnRight();
         if (s.equals("CW"))
-            robotClockwise();
+            myRobotClockwise();
         if (s.equals("CCW"))
-            robotCounterClockwise();
+            myRobotCounterClockwise();
         if (s.equals("STOP"))
-            robotStop();
+            myRobotStop();
         if (s.equals("SNAP"))
             cm.snap();
     }
@@ -163,6 +167,7 @@ public class RCReceiverActivity extends BasicBotActivityBeta
             try {
                 // make a socket
                 serverSocket = new ServerSocket(WIFICONTROLPORT);
+                shortbread("created a socket");
                 // listen for new connections
                 while (true) {
                     // When we get a connection, run the server protocol
@@ -187,5 +192,19 @@ public class RCReceiverActivity extends BasicBotActivityBeta
      */
     public void callback()
     {
+    }
+
+    /**
+     * Starts the activity, using the supplied driver instance.
+     *
+     * @param context
+     * @param driver
+     */
+    static void show(Context context, UsbSerialDriver driver)
+    {
+        sDriver = driver;
+        final Intent intent = new Intent(context, RCReceiverActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        context.startActivity(intent);
     }
 }
