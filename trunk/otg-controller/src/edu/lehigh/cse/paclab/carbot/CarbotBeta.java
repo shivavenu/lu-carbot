@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
@@ -197,8 +198,14 @@ public class CarbotBeta extends Activity {
     }
 
     private void showConsoleActivity(UsbSerialDriver driver) {
-        // DrawActivity.show(this, driver);
-        TetheredBotBeta.show(this, driver);
+        SharedPreferences prefs = getSharedPreferences("edu.lehigh.cse.paclab.carbot.CarBotActivity", Activity.MODE_WORLD_WRITEABLE);
+        int mode = Integer.parseInt(prefs.getString(BasicBotActivityBeta.PREFS_MODE, "1"));
+        if (mode == 1)
+            DrawActivity.show(this, driver);
+        else if (mode == 2)
+            TetheredBotBeta.show(this, driver);
+        else if (mode == 3)
+            RCReceiverActivity.show(this, driver);
     }
     
     public void btnConfig(View v)

@@ -546,7 +546,7 @@ public class CameraView extends SurfaceView
             if (ocvVars.mIsColorSelected) {
                 ocvVars.mIsColorSelected = false;
                 Log.d("Driving", "STOP");
-                ColorDetectionActivity.self.robotStop();
+                ColorDetectionActivity.self.myRobotStop();
                 return true;
             }
 

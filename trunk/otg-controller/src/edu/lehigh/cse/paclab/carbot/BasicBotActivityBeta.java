@@ -1,26 +1,22 @@
 package edu.lehigh.cse.paclab.carbot;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager.LayoutParams;
@@ -36,6 +32,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     final public static String         PREFS_BYE               = "CARBOT_BYE";
     final public static String         PREFS_DIST              = "CARBOT_DIST";
     final public static String         PREFS_ROT               = "CARBOT_ROT";
+    final public static String         PREFS_MODE              = "CARBOT_MODE";
 
     /**
      * Indicate the port this app uses for sending control signals between a client and server
@@ -64,97 +61,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      */
     TextToSpeech                       tts;
 
-    // The following code block is setting up the android to arduino communication.
-    // TODO: can we make this a has-a instead of an is-a?
-    // TODO: comment better, so that new users can learn about USBManager from this code
-    private static final String        ACTION_USB_PERMISSION   = "com.google.android.Demokit.action.USB_PERMISSION";
-    private UsbManager                 mUsbManager;
-    private PendingIntent              mPermissionIntent;
-    private boolean                    mPermissionRequestPending;
-    UsbAccessory                       mAccessory;
-    ParcelFileDescriptor               mFileDescriptor;
-    FileInputStream                    mInputStream;
-    FileOutputStream                   mOutputStream;
-
-    /**
-     * Flag for tracking if we have USB support configured
-     */
-    private boolean                    isUSBReceiverRegistered = false;
-
-    /**
-     * BroadcastReceiver is the object responsible for establishing communication with any sort of entity sending
-     * information to the application, in this case, the application is receiving information from an arduino. The
-     * BroadcastReceiver sees if the entity sending information is a supported usb accessory, in which case opens full
-     * communication with the device beyond the handshake which is initiated upon application launch.
-     * 
-     * TODO: make this code less ugly
-     */
-    private final BroadcastReceiver    mUsbReceiver            = new BroadcastReceiver()
-                                                               {
-                                                                   @Override
-                                                                   public void onReceive(Context context, Intent intent)
-                                                                   {
-                                                                       String action = intent.getAction();
-                                                                       if (ACTION_USB_PERMISSION.equals(action)) {
-                                                                           synchronized (this) {
-                                                                               UsbAccessory accessory = (UsbAccessory) intent
-                                                                                       .getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                                                                               if (intent
-                                                                                       .getBooleanExtra(
-                                                                                               UsbManager.EXTRA_PERMISSION_GRANTED,
-                                                                                               false)) {
-                                                                                   openAccessory(accessory);
-                                                                               }
-                                                                               else {
-                                                                                   Log.d(TAG,
-                                                                                           "permission denied for accessory "
-                                                                                                   + accessory);
-                                                                               }
-                                                                               mPermissionRequestPending = false;
-                                                                           }
-                                                                       }
-                                                                       else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED
-                                                                               .equals(action)) {
-                                                                           UsbAccessory accessory = (UsbAccessory) intent
-                                                                                   .getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-                                                                           if (accessory != null
-                                                                                   && accessory.equals(mAccessory)) {
-                                                                               closeAccessory();
-                                                                           }
-                                                                       }
-                                                                   }
-                                                               };
-
-    /**
-     * If the application has stopped and then has resumed, the application will check to see if the input and output
-     * stream of data is still active then checks to see if an accessory is present, if so, opens communication; if not,
-     * the application will request permission for communication.
-     */
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-
-        // resurrect the USBManager
-        if (mInputStream != null && mOutputStream != null) {
-            return;
-        }
-        UsbAccessory[] accessories = mUsbManager.getAccessoryList();
-        UsbAccessory accessory = (accessories == null ? null : accessories[0]);
-        if (accessory != null) {
-            if (mUsbManager.hasPermission(accessory)) {
-                openAccessory(accessory);
-            }
-            else {
-                synchronized (mUsbReceiver) {
-                    if (!mPermissionRequestPending) {
-                        mUsbManager.requestPermission(accessory, mPermissionIntent);
-                        mPermissionRequestPending = true;
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * When 'back' is pressed, shut off the USBManager support and terminate the app
@@ -162,131 +68,7 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
     @Override
     public void onBackPressed()
     {
-        closeAccessory();
-        if (isUSBReceiverRegistered)
-            unregisterReceiver(mUsbReceiver);
         finish();
-    }
-
-    /**
-     * In the event of the application being terminated or paused closeAccessory is called to end the data input stream.
-     */
-    protected void closeAccessory()
-    {
-        try {
-            if (mFileDescriptor != null) {
-                mFileDescriptor.close();
-            }
-        }
-        catch (IOException e) {
-        }
-        finally {
-            mFileDescriptor = null;
-            mAccessory = null;
-        }
-    }
-
-    /**
-     * Called upon the construction of the BroadcastReceiver assuming the BroadcastReceiver has found an accessory to
-     * interact with. openAccessory is also called in the onResume method. Opens up a data output and input stream for
-     * communication with an accessory.
-     * 
-     * @param accessory TODO:
-     */
-    protected void openAccessory(UsbAccessory accessory)
-    {
-        mFileDescriptor = mUsbManager.openAccessory(accessory);
-        if (mFileDescriptor != null) {
-            mAccessory = accessory;
-            FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-            mInputStream = new FileInputStream(fd);
-            mOutputStream = new FileOutputStream(fd);
-        }
-        else {
-            Log.d(TAG, "accessory open fail");
-        }
-    }
-
-    /**
-     * Called any time information is to be sent out from the application over the output stream. An array of bytes is
-     * created with the first value holding the "address" of the hardware being communicated with. In this case, 1 means
-     * the forward, 2 means reverse, etc. In our system, Arduino handles the task to be carried out by the hardware, so,
-     * Arduino only needs to know whether or not to carry out a particular action indicated by the action reference
-     * number.
-     * 
-     * @param target TODO:
-     */
-    public void sendCommand(byte target)
-    {
-        byte[] buffer = new byte[1];
-        buffer[0] = target;
-
-        Log.e(TAG, "Message sent" + buffer[0]);
-        if (mOutputStream != null) {
-            try {
-                // TODO: we could use this instead: mOutputStream.write(oneByte);
-                mOutputStream.write(buffer);
-            }
-            catch (IOException e) {
-                Log.e(TAG, "write failed", e);
-            }
-        }
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to stop
-     */
-    public void robotStop()
-    {
-        sendCommand((byte) 0);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to go forward
-     */
-    public void robotForward()
-    {
-        sendCommand((byte) 1);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to go backward
-     */
-    public void robotReverse()
-    {
-        sendCommand((byte) 2);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to go clockwise
-     */
-    public void robotClockwise()
-    {
-        sendCommand((byte) 3);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to go counterclockwise
-     */
-    public void robotCounterClockwise()
-    {
-        sendCommand((byte) 4);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to do a point turn right
-     */
-    public void robotPointTurnRight()
-    {
-        sendCommand((byte) 6);
-    }
-
-    /**
-     * Send a byte to the Arduino that instructs it to do a pont turn left
-     */
-    public void robotPointTurnLeft()
-    {
-        sendCommand((byte) 5);
     }
 
     /**
@@ -306,23 +88,6 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
 
         // Don't let the app sleep
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // Arduino Support
-
-        // Configure USBManager
-        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-        // Creates new IntentFilter to indicate future communication with a
-        // particular entity
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
-        registerReceiver(mUsbReceiver, filter);
-        isUSBReceiverRegistered = true;
-
-        if (getLastNonConfigurationInstance() != null) {
-            mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
-            openAccessory(mAccessory);
-        }
     }
 
     /**
@@ -434,4 +199,174 @@ public abstract class BasicBotActivityBeta extends Activity implements TextToSpe
      * This function gives us the ability to have an AlarmReceiver that can do all sorts of arbitrary stuff
      */
     abstract public void callback();
+
+    // /// OTG Hacks
+
+    /**
+     * Driver instance, passed in statically via {@link #show(Context, UsbSerialDriver)}.
+     * <p/>
+     * This is a devious hack; it'd be cleaner to re-create the driver using arguments passed in with the
+     * {@link #startActivity(Intent)} intent. We can get away with it because both activities will run in the same
+     * process, and this is a simple demo.
+     */
+    protected static UsbSerialDriver                  sDriver   = null;
+
+    private final ExecutorService                   mExecutor = Executors.newSingleThreadExecutor();
+
+    private SerialInputOutputManager                mSerialIoManager;
+
+    private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener()
+                                                              {
+
+                                                                  @Override
+                                                                  public void onRunError(Exception e)
+                                                                  {
+                                                                      // Log.d(TAG, "Runner stopped.");
+                                                                  }
+
+                                                                  @Override
+                                                                  public void onNewData(final byte[] data)
+                                                                  {
+                                                                      // we don't expect data to come back anymore...
+                                                                  }
+                                                              };
+
+    byte[]                                          data      = new byte[1];
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        stopIoManager();
+        if (sDriver != null) {
+            try {
+                sDriver.close();
+            }
+            catch (IOException e) {
+                // Ignore.
+            }
+            sDriver = null;
+        }
+        finish();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        // Log.d(TAG, "Resumed, sDriver=" + sDriver);
+        if (sDriver == null) {
+            Toast.makeText(this, "No serial device.", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            try {
+                sDriver.open();
+                sDriver.setParameters(115200, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
+            }
+            catch (IOException e) {
+                // Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
+                Toast.makeText(this, "Error opening device: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                try {
+                    sDriver.close();
+                }
+                catch (IOException e2) {
+                    // Ignore.
+                }
+                sDriver = null;
+                return;
+            }
+            Toast.makeText(this, "Serial device: " + sDriver.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+        }
+        onDeviceStateChange();
+    }
+
+    private void stopIoManager()
+    {
+        if (mSerialIoManager != null) {
+            // Log.i(TAG, "Stopping io manager ..");
+            mSerialIoManager.stop();
+            mSerialIoManager = null;
+        }
+    }
+
+    private void startIoManager()
+    {
+        if (sDriver != null) {
+            // Log.i(TAG, "Starting io manager ..");
+            mSerialIoManager = new SerialInputOutputManager(sDriver, mListener);
+            mExecutor.submit(mSerialIoManager);
+        }
+    }
+
+    private void onDeviceStateChange()
+    {
+        stopIoManager();
+        startIoManager();
+    }
+
+
+    /**
+     * Send a byte to the Arduino that instructs it to stop
+     */
+    public void myRobotStop()
+    {
+        otgSendCommand((byte) 0);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to go forward
+     */
+    public void myRobotForward()
+    {
+        otgSendCommand((byte) 1);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to go backward
+     */
+    public void myRobotReverse()
+    {
+        otgSendCommand((byte) 2);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to go clockwise
+     */
+    public void myRobotClockwise()
+    {
+        otgSendCommand((byte) 3);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to go counterclockwise
+     */
+    public void myRobotCounterClockwise()
+    {
+        otgSendCommand((byte) 4);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to do a point turn right
+     */
+    public void myRobotPointTurnRight()
+    {
+        otgSendCommand((byte) 6);
+    }
+
+    /**
+     * Send a byte to the Arduino that instructs it to do a pont turn left
+     */
+    public void myRobotPointTurnLeft()
+    {
+        otgSendCommand((byte) 5);
+    }
+
+    /**
+     * Custom sendCommand for interacting with OTG
+     */
+    void otgSendCommand(byte b)
+    {
+        data[0] = b;
+        mSerialIoManager.writeAsync(data);
+    }
 }

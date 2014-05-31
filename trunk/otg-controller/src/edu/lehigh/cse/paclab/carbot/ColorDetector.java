@@ -222,7 +222,7 @@ public class ColorDetector
         // start a spin to look for the color we want
         if (bestContour == null) {
             Log.d("Driving", "SEARCH");
-            ColorDetectionActivity.self.robotClockwise();
+            ColorDetectionActivity.self.myRobotClockwise();
             return;
         }
 
@@ -234,23 +234,23 @@ public class ColorDetector
         // if we are in the bottom third, turn right
         if (contourCenterY < maxY / 3) {
             if (lastMove != 'R')
-                ColorDetectionActivity.self.robotStop();
+                ColorDetectionActivity.self.myRobotStop();
             lastMove = 'R';
-            ColorDetectionActivity.self.robotPointTurnRight();
+            ColorDetectionActivity.self.myRobotPointTurnRight();
         }
         // middle third goes straight
         else if (contourCenterY < (2 * maxY / 3)) {
             if (lastMove != 'F')
-                ColorDetectionActivity.self.robotStop();
+                ColorDetectionActivity.self.myRobotStop();
             lastMove = 'F';
-            ColorDetectionActivity.self.robotForward();
+            ColorDetectionActivity.self.myRobotForward();
         }
         // top third goes left
         else {
             if (lastMove != 'L')
-                ColorDetectionActivity.self.robotStop();
+                ColorDetectionActivity.self.myRobotStop();
             lastMove = 'L';
-            ColorDetectionActivity.self.robotPointTurnLeft();
+            ColorDetectionActivity.self.myRobotPointTurnLeft();
         }
     }
 }
