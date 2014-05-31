@@ -4,8 +4,12 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -133,5 +137,19 @@ public class ColorDetectionActivity extends BasicBotActivityBeta
     @Override
     public void callback()
     {
+    }
+
+    /**
+     * Starts the activity, using the supplied driver instance.
+     *
+     * @param context
+     * @param driver
+     */
+    static void show(Context context, UsbSerialDriver driver)
+    {
+        sDriver = driver;
+        final Intent intent = new Intent(context, ColorDetectionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        context.startActivity(intent);
     }
 }
