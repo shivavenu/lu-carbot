@@ -51,10 +51,6 @@ void loop() {
     servoR.write(180);
     state = !state;
     break;
-    /*default:
-     servoR.write(90);
-     servoL.write(90);
-     break;*/
   }
 
   if (state == 1)
