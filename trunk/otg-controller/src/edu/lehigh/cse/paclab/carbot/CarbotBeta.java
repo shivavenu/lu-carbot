@@ -206,6 +206,8 @@ public class CarbotBeta extends Activity {
             TetheredBotBeta.show(this, driver);
         else if (mode == 3)
             RCReceiverActivity.show(this, driver);
+        else if (mode == 4)
+            ColorDetectionActivity.show(this, driver);
     }
     
     public void btnConfig(View v)
